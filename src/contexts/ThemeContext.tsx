@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
-type Theme = 'dark' | 'light' | 'system';
+// Change the Theme type to remove 'light'
+type Theme = 'dark' | 'system';
 
 interface ThemeContextType {
   theme: Theme;
@@ -11,7 +12,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>(() => {
-    return (localStorage.getItem('theme') as Theme) || 'light';
+    // Default to 'dark' instead of checking localStorage
+    return 'dark';
   });
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.classList.remove('light', 'dark');
 
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'dark'; // Force dark even for system theme
       root.classList.add(systemTheme);
     } else {
       root.classList.add(theme);
@@ -37,8 +39,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+  if (context === undefined) {
+    console.warn("useTheme must be used within a ThemeProvider. Using default theme.");
+    return { theme: 'dark', setTheme: () => {} };
   }
   return context;
 }
