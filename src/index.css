@@ -442,7 +442,7 @@
 
 /* Add this to your index.css */
 html, body {
-  overflow-y: auto;
+  /* overflow-y: auto; */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
