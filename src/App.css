@@ -18,6 +18,17 @@
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+body {
+  overflow-y: scroll;
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Chrome, Edge, Safari */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
