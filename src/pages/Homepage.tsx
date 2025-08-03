@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Star, CheckCircle, Users, TrendingUp, Shield } from "lucide-react"; // Removed Clock as it was unused
+import { ArrowRight, Star, CheckCircle, Users, TrendingUp, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 // Assuming these assets are correctly configured in your project
 import heroImage from "@/assets/hero-image.jpg";
@@ -62,24 +62,40 @@ export const Homepage = () => {
     { number: "95%", label: "Customer Satisfaction", icon: Star },
   ];
 
+  // [IMPROVED] - New data structure for "How It Works" incorporating SAETIP
   const howItWorks = [
     {
       step: "1",
-      title: "Register",
-      description: "Register in just 2 minutes with your Udyam number",
-      icon: "📝"
+      title: "Smart Onboarding",
+      description: "Quickly register via Udyam, Aadhaar, or PAN with our AI-powered smart onboarding.",
+      icon: "📝",
+      features: [
+        "Instant MSME verification via Udyam API",
+        "Seamless Aadhaar & PAN-based e-KYC",
+        "Secure and trustworthy process"
+      ]
     },
     {
       step: "2",
-      title: "Fill One Form",
-      description: "One smart form for all services - loans, orders, tools",
-      icon: "📋"
+      title: "API-First Aggregation",
+      description: "A single, dynamic form auto-populates data from GSTN & Account Aggregator networks.",
+      icon: "📋",
+      features: [
+        "Eliminates manual data entry",
+        "Integrates with government portals",
+        "One secure form for all services"
+      ]
     },
     {
       step: "3",
-      title: "Get Growth",
-      description: "Receive loans, orders, and new customers instantly",
-      icon: "📈"
+      title: "Instant Growth",
+      description: "Instantly become discoverable to lenders (OCEN), buyers (ONDC), and enterprise tools.",
+      icon: "📈",
+      features: [
+        "AI-driven trustworthy credit scoring",
+        "Immediate access to loans & orders",
+        "Full platform-wide enablement"
+      ]
     }
   ];
 
@@ -115,12 +131,12 @@ export const Homepage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section - Already has a fade-in animation, keeping it as is or can wrap with FadeInWhenVisible if desired */}
+      {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-primary to-accent py-24 lg:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-black/5"></div>
         <div className="container relative z-10 mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div className="text-white space-y-8 animate-fade-in"> {/* This already has animate-fade-in */}
+            <div className="text-white space-y-8 animate-fade-in">
               <div>
                 <Badge className="bg-white/20 text-white mb-6 text-sm px-6 py-3 rounded-full font-medium backdrop-blur-sm border-white/20">
                   🏦 India's First MSME Banking Platform
@@ -137,28 +153,17 @@ export const Homepage = () => {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-6">
-                <Button
-                  variant="hero"
-                  size="lg"
-                  className="rounded-lg shadow-lg"
-                  asChild
-                >
+                <Button variant="hero" size="lg" className="rounded-lg shadow-lg" asChild>
                   <Link to="/finance">
                     Start Free Today
                     <ArrowRight className="ml-3 h-6 w-6" />
                   </Link>
                 </Button>
-
-                <Button
-                  variant="outline"
-                  size="lg"
-                  className="border-2 border-white/50 text-white hover:bg-white/10 backdrop-blur-sm rounded-lg"
-                >
+                <Button variant="outline" size="lg" className="border-2 border-white/50 text-white hover:bg-white/10 backdrop-blur-sm rounded-lg">
                   Watch Demo
                 </Button>
               </div>
 
-              {/* Enhanced Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-12">
                 {stats.map((stat, index) => (
                   <div key={index} className="text-center bg-white/10 backdrop-blur-md rounded-lg p-4 hover:bg-white/15 transition-all duration-200 hover:scale-105">
@@ -201,152 +206,105 @@ export const Homepage = () => {
               <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-card rounded-2xl overflow-hidden">
                 <div className="relative h-56 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 z-10"></div>
-                  <img
-                    src={financeHub}
-                    alt="Finance Hub"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
+                  <img src={financeHub} alt="Finance Hub" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                    💰 Finance Hub
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    Loans, credit scoring, and subsidies with professional banking experience
-                  </p>
+                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">💰 Finance Hub</h3>
+                  <p className="text-muted-foreground mb-6">Loans, credit scoring, and subsidies with professional banking experience</p>
                   <div className="space-y-4 mb-6">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">48-hour loan approval</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">AI credit scoring</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">Auto subsidy finder</span>
-                    </div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /> <span className="text-sm">48-hour loan approval</span></div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /> <span className="text-sm">AI credit scoring</span></div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /> <span className="text-sm">Auto subsidy finder</span></div>
                   </div>
-                  <Button variant="default" asChild className="w-full rounded-lg">
-                    <Link to="/finance">
-                      Get Started
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <Button variant="default" asChild className="w-full rounded-lg"><Link to="/finance">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                 </CardContent>
               </Card>
 
               <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-card rounded-2xl overflow-hidden">
                 <div className="relative h-56 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 z-10"></div>
-                  <img
-                    src={marketplace}
-                    alt="Marketplace"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
+                  <img src={marketplace} alt="Marketplace" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                    🛒 Marketplace
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    New customers, tenders, and B2B orders through enterprise marketplace
-                  </p>
+                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">🛒 Marketplace</h3>
+                  <p className="text-muted-foreground mb-6">New customers, tenders, and B2B orders through enterprise marketplace</p>
                   <div className="space-y-4 mb-6">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">GeM tender matching</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">B2B marketplace</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">Service gigs platform</span>
-                    </div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /><span className="text-sm">GeM tender matching</span></div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /><span className="text-sm">B2B marketplace</span></div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /><span className="text-sm">Service gigs platform</span></div>
                   </div>
-                  <Button variant="accent" asChild className="w-full rounded-lg">
-                    <Link to="/marketplace">
-                      Explore Market
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <Button variant="accent" asChild className="w-full rounded-lg"><Link to="/marketplace">Explore Market <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                 </CardContent>
               </Card>
 
               <Card className="group hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-card rounded-2xl overflow-hidden">
                 <div className="relative h-56 overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 z-10"></div>
-                  <img
-                    src={businessTools}
-                    alt="Business Tools"
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
+                  <img src={businessTools} alt="Business Tools" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                 </div>
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
-                    🛠️ Business Tools
-                  </h3>
-                  <p className="text-muted-foreground mb-6">
-                    GST, accounting, and ERP - enterprise grade tools made simple
-                  </p>
+                  <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">🛠️ Business Tools</h3>
+                  <p className="text-muted-foreground mb-6">GST, accounting, and ERP - enterprise grade tools made simple</p>
                   <div className="space-y-4 mb-6">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">Voice-enabled ERP</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">AI accountant</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <CheckCircle className="h-5 w-5 text-success" />
-                      <span className="text-sm">GST automation</span>
-                    </div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /><span className="text-sm">Voice-enabled ERP</span></div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /><span className="text-sm">AI accountant</span></div>
+                    <div className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-success" /><span className="text-sm">GST automation</span></div>
                   </div>
-                  <Button variant="default" asChild className="w-full rounded-lg">
-                    <Link to="/tools">
-                      View Tools
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
+                  <Button variant="default" asChild className="w-full rounded-lg"><Link to="/tools">View Tools <ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                 </CardContent>
               </Card>
             </div>
           </div>
         </section>
       </FadeInWhenVisible>
-
-      {/* How It Works */}
+      
+      {/* [IMPROVED] How It Works Section */}
       <FadeInWhenVisible>
         <section className="py-20 bg-background">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
-                How It Works
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Grow your business in just 3 simple steps
+              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">How It Works</h2>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Our entire journey is powered by <strong className="font-semibold text-accent">SAETIP</strong>: a<br />
+                <span className="font-semibold text-primary">S</span>mart <span className="font-semibold text-primary">A</span>PI-Enabled <span className="font-semibold text-primary">T</span>rustworthy <span className="font-semibold text-primary">I</span>ntegrated <span className="font-semibold text-primary">P</span>rocess.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {howItWorks.map((step, index) => (
-                <div key={index} className="text-center group">
-                  <div className="relative mb-6">
-                    <div className="w-20 h-20 bg-gradient-to-r from-primary to-accent rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 shadow-lg">
-                      <span className="text-3xl">{step.icon}</span>
+            <div className="relative max-w-6xl mx-auto">
+              <div aria-hidden="true" className="absolute top-10 left-0 w-full h-0.5 bg-muted hidden md:block" style={{ zIndex: 0 }}>
+                <svg width="100%" height="100%"><line x1="0" y1="0" x2="100%" y2="0" strokeWidth="2" strokeDasharray="8 8" className="stroke-muted-foreground/30" /></svg>
+              </div>
+
+              <div className="relative z-10 grid md:grid-cols-3 gap-8 lg:gap-12">
+                {howItWorks.map((step) => (
+                  <Card key={step.step} className="flex flex-col text-center p-6 sm:p-8 bg-card border shadow-card rounded-2xl hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+                    <div className="relative mx-auto mb-6">
+                      <div className="w-20 h-20 bg-gradient-to-br from-primary/10 to-accent/10 rounded-full flex items-center justify-center">
+                        <div className="w-16 h-16 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center shadow-lg">
+                          <span className="text-4xl">{step.icon}</span>
+                        </div>
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-9 h-9 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-sm border-4 border-card">
+                        {step.step}
+                      </div>
                     </div>
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-accent text-accent-foreground rounded-full flex items-center justify-center font-bold text-sm">
-                      {step.step}
+
+                    <div className="flex flex-col flex-grow">
+                      <h3 className="text-2xl font-bold text-primary mb-4">{step.title}</h3>
+                      <p className="text-muted-foreground mb-6 flex-grow">{step.description}</p>
+                      
+                      <ul className="text-left space-y-3 text-muted-foreground mt-auto">
+                        {step.features.map((feature, fIndex) => (
+                          <li key={fIndex} className="flex items-start gap-3">
+                            <CheckCircle className="h-5 w-5 text-success flex-shrink-0 mt-0.5" />
+                            <span>{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-                  <h3 className="text-2xl font-bold text-primary mb-4">{step.title}</h3>
-                  <p className="text-lg text-muted-foreground">{step.description}</p>
-                </div>
-              ))}
+                  </Card>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -357,26 +315,17 @@ export const Homepage = () => {
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <div className="text-center mb-16">
-              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">
-                Success Stories
-              </h2>
-              <p className="text-xl text-muted-foreground">
-                Trusted by thousands of businesses
-              </p>
+              <h2 className="text-4xl lg:text-5xl font-bold text-primary mb-6">Success Stories</h2>
+              <p className="text-xl text-muted-foreground">Trusted by thousands of businesses</p>
             </div>
-
             <div className="grid md:grid-cols-3 gap-8">
               {testimonials.map((testimonial, index) => (
                 <Card key={index} className="p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-2xl border-0 shadow-card">
                   <CardContent className="space-y-4">
                     <div className="flex items-center gap-1 mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                      ))}
+                      {[...Array(testimonial.rating)].map((_, i) => (<Star key={i} className="h-5 w-5 fill-yellow-400 text-yellow-400" />))}
                     </div>
-                    <blockquote className="text-lg italic text-muted-foreground">
-                      "{testimonial.text}"
-                    </blockquote>
+                    <blockquote className="text-lg italic text-muted-foreground">"{testimonial.text}"</blockquote>
                     <div className="pt-4 border-t">
                       <div className="font-bold text-primary">{testimonial.name}</div>
                       <div className="text-sm text-muted-foreground">{testimonial.business}</div>
@@ -397,7 +346,6 @@ export const Homepage = () => {
               <h2 className="text-3xl font-bold text-primary mb-4">Trusted Partners</h2>
               <p className="text-muted-foreground">Working with India's leading institutions</p>
             </div>
-
             <div className="grid grid-cols-2 md:grid-cols-6 gap-6 items-center">
               {partners.map((partner, index) => (
                 <div key={index} className="text-center p-6 bg-muted/20 rounded-xl hover:bg-muted/30 transition-colors duration-200">
@@ -415,35 +363,18 @@ export const Homepage = () => {
         <section className="py-20 bg-gradient-to-r from-primary to-accent">
           <div className="container mx-auto px-4 text-center">
             <div className="max-w-3xl mx-auto text-white">
-              {/* Apply FadeInWhenVisible to individual elements for staggered effect */}
               <FadeInWhenVisible delay={0}>
-                <h2 className="text-4xl lg:text-5xl font-bold mb-6">
-                  Ready to Transform Your Business?
-                </h2>
+                <h2 className="text-4xl lg:text-5xl font-bold mb-6">Ready to Transform Your Business?</h2>
               </FadeInWhenVisible>
               <FadeInWhenVisible delay={150}>
-                <p className="text-xl mb-8 text-white/90">
-                  Join 50,000+ MSMEs who have already grown their business with EkVyapaar
-                </p>
+                <p className="text-xl mb-8 text-white/90">Join 50,000+ MSMEs who have already grown their business with EkVyapaar</p>
               </FadeInWhenVisible>
               <FadeInWhenVisible delay={300}>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button
-                    variant="hero"
-                    size="lg"
-                    className="bg-white text-primary hover:bg-white/90 rounded-lg shadow-lg"
-                    asChild
-                  >
-                    <Link to="/finance">
-                      Get Started Free
-                      <ArrowRight className="ml-3 h-6 w-6" />
-                    </Link>
+                  <Button variant="hero" size="lg" className="bg-white text-primary hover:bg-white/90 rounded-lg shadow-lg" asChild>
+                    <Link to="/finance">Get Started Free <ArrowRight className="ml-3 h-6 w-6" /></Link>
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-2 border-white/50 text-white hover:bg-white/10 rounded-lg"
-                  >
+                  <Button variant="outline" size="lg" className="border-2 border-white/50 text-white hover:bg-white/10 rounded-lg">
                     Schedule Demo
                   </Button>
                 </div>
