@@ -1,97 +1,28 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import {
-  TrendingUp,
-  IndianRupee,
-  Users,
-  ShoppingCart,
-  Bell,
-  Eye,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
-  Target,
-  Briefcase,
-  Star,
-  ArrowRight,
-  Calendar, // For a new quick action
-  FileText,
-  Wallet,
-  Package,
-  LineChart, // For Recharts
-  BarChart, // For Recharts
-  DollarSign, // For financial health
-  ShieldCheck, // For credit score
-  Lightbulb, // For market opportunities
-  Activity, // For recent activity
-  Building2 // For market opportunities
+  TrendingUp, IndianRupee, Users, ShoppingCart, Bell, Eye, Target, Briefcase, Star, ArrowRight, Calendar, FileText, Wallet, Package, DollarSign, ShieldCheck, Lightbulb, Activity, Building2, AlertTriangle, CheckCircle2
 } from "lucide-react";
-// Recharts imports
 import {
-  LineChart as RechartsLineChart, // Renamed to avoid conflict with Lucide icon
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  BarChart as RechartsBarChart, // Renamed for clarity
-  Bar
+  LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area
 } from 'recharts';
-
-import dashboardHero from "@/assets/dashboard-hero.jpg";
-
-// Reusable FadeInWhenVisible component (modified to trigger only once)
-const FadeInWhenVisible = ({ children, delay = 0, duration = 'duration-1500', translateY = 'translate-y-24' }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const domRef = useRef();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        // Changed: Only set to true and unobserve on first intersection
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(domRef.current); // Stop observing after it becomes visible once
-        }
-      });
-    }, {
-      threshold: 0.1 // Trigger when 10% of the element is visible
-    });
-
-    const currentRef = domRef.current; // Capture current ref for cleanup
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
-    };
-  }, []); // Empty dependency array means this effect runs once on mount
-
-  return (
-    <div
-      ref={domRef}
-      className={`
-        transition-all ${duration} ease-out
-        ${isVisible ? 'opacity-100 translate-y-0' : `opacity-0 ${translateY}`}
-      `}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-};
+import dashboardHero from "@/assets/dashboard-hero.jpg"; // You'll need a suitable hero image
 
 export function Dashboard() {
-  const quickActions = [
+  const [greeting, setGreeting] = useState('');
+
+  useEffect(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) setGreeting('Good Morning');
+    else if (hours < 18) setGreeting('Good Afternoon');
+    else setGreeting('Good Evening');
+  }, []);
+
+  const quickActions = useMemo(() => [
     { label: "View Profile", icon: Eye, link: "/profile" },
     { label: "New Order", icon: ShoppingCart, link: "/marketplace/products" },
     { label: "Apply for Loan", icon: Wallet, link: "/finance" },
@@ -100,344 +31,211 @@ export function Dashboard() {
     { label: "Update Inventory", icon: Package, link: "/tools/inventory" },
     { label: "Schedule Meeting", icon: Calendar, link: "/support" },
     { label: "Manage Customers", icon: Users, link: "/tools/crm" }
-  ];
+  ], []);
 
-  const activities = [
-    { icon: CheckCircle2, text: "Loan Approved - ₹5,00,000", time: "2 hours ago", color: "text-green-500" },
-    { icon: Target, text: "New Tender Match - LED Bulb Supply", time: "4 hours ago", color: "text-blue-500" },
-    { icon: ShoppingCart, text: "New Order Received - 1000 Units", time: "6 hours ago", color: "text-purple-500" },
-    { icon: AlertCircle, text: "GST Filing Due - 20th July", time: "1 day ago", color: "text-orange-500" },
-    { icon: Eye, text: "Your profile viewed 25 times", time: "2 days ago", color: "text-gray-500" },
-    { icon: IndianRupee, text: "Payment Received - ₹75,000", time: "3 days ago", color: "text-green-500" },
-    { icon: Briefcase, text: "New Customer Added - ABC Corp", time: "4 days ago", color: "text-cyan-500" },
-    { icon: Clock, text: "Meeting Scheduled with Mentor", time: "5 days ago", color: "text-indigo-500" }
-  ];
-
-  const notifications = [
-    { type: "destructive", title: "GST Filing Overdue!", message: "Please file your GST returns by 20th July to avoid penalties.", icon: AlertCircle },
-    { type: "warning", title: "New Tender Opportunity", message: "A high-value tender for Office Furniture Supply is available.", icon: Target },
+  const activities = useMemo(() => [
+    { icon: CheckCircle2, text: "Loan Approved - ₹5,00,000", time: "2 hours ago", color: "text-green-400" },
+    { icon: Target, text: "New Tender Match - LED Bulb Supply", time: "4 hours ago", color: "text-blue-400" },
+    { icon: ShoppingCart, text: "New Order Received - 1000 Units", time: "6 hours ago", color: "text-purple-400" },
+    { icon: IndianRupee, text: "Payment Received - ₹75,000", time: "3 days ago", color: "text-green-400" },
+  ], []);
+  
+  const notifications = useMemo(() => [
+    { type: "destructive", title: "GST Filing Due!", message: "File returns by 20th Aug to avoid penalties.", icon: AlertTriangle },
     { type: "success", title: "Loan Application Approved", message: "Your business loan of ₹5 Lakh has been approved.", icon: CheckCircle2 },
-    { type: "info", title: "New Feature Alert", message: "Voice commands are now available for Inventory Management.", icon: Lightbulb }
-  ];
+    { type: "info", title: "New Feature: Voice Commands", message: "Voice commands are now live for Inventory Management.", icon: Lightbulb }
+  ], []);
 
-  const marketOpportunities = [
-    { title: "Auto Parts Export", description: "New market in Germany with high demand.", priority: "High Priority", icon: TrendingUp, color: "text-red-500" },
-    { title: "Government Tender", description: "School Furniture Supply tender worth ₹1.5 Cr.", priority: "Medium Priority", icon: FileText, color: "text-blue-500" },
-    { title: "E-commerce Partnership", description: "Expand sales via Amazon B2B platform.", priority: "Low Priority", icon: ShoppingCart, color: "text-green-500" },
-    { title: "Local Business Collaboration", description: "Partnership opportunity with a local construction firm.", priority: "Medium Priority", icon: Building2, color: "text-purple-500" }
-  ];
+  const marketOpportunities = useMemo(() => [
+    { title: "Auto Parts Export to Germany", priority: "High", icon: TrendingUp, color: "text-red-400" },
+    { title: "Govt Tender: School Furniture", priority: "Medium", icon: FileText, color: "text-blue-400" },
+    { title: "Local Construction Partnership", priority: "Medium", icon: Building2, color: "text-purple-400" }
+  ], []);
+  
+  const growthData = useMemo(() => [
+    { month: "Jan", revenue: 250 }, { month: "Feb", revenue: 320 }, { month: "Mar", revenue: 410 },
+    { month: "Apr", revenue: 380 }, { month: "May", revenue: 450 }, { month: "Jun", revenue: 520 },
+    { month: "Jul", revenue: 480 }, { month: "Aug", revenue: 550 },
+  ], []);
 
-  const growthData = [
-    { month: "Jan", revenue: 250000 },
-    { month: "Feb", revenue: 320000 },
-    { month: "Mar", revenue: 410000 },
-    { month: "Apr", revenue: 380000 },
-    { month: "May", revenue: 450000 },
-    { month: "Jun", revenue: 520000 },
-    { month: "Jul", revenue: 480000 },
-  ];
+  const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } } as const;
+  const staggerContainer = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } } as const;
 
+  const CustomProgressBar = ({ value, colorClass }) => (
+    <div className="w-full bg-slate-700 rounded-full h-2.5">
+      <motion.div
+        className={`h-2.5 rounded-full ${colorClass}`}
+        initial={{ width: 0 }}
+        whileInView={{ width: `${value}%` }}
+        viewport={{ once: true }}
+        transition={{ duration: 1.5, ease: "easeOut" }}
+      />
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 font-inter"> {/* Enhanced background */}
-      {/* Hero Section */}
-      <div className="relative h-80 overflow-hidden rounded-b-2xl shadow-xl"> {/* Added shadow to hero */}
-        <img
-          src={dashboardHero}
-          alt="Business Dashboard"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-accent/80" />
-        <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-          <div className="animate-fade-in-up"> {/* Custom animation for hero */}
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 drop-shadow-lg"> {/* Added drop shadow */}
-              Business Dashboard
-            </h1>
-            <p className="text-lg md:text-xl opacity-90">
-              Complete overview of your business in one place
-            </p>
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-900 text-white font-sans">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div className="absolute top-[-10%] left-[5%] w-[500px] h-[500px] bg-purple-500/20 rounded-full filter blur-3xl animate-blob"></div>
+        <div className="absolute top-[10%] right-[5%] w-[600px] h-[600px] bg-sky-500/20 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-[-20%] left-[20%] w-[400px] h-[400px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
+      
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <div className="relative h-80 overflow-hidden flex items-center justify-center text-center">
+            <img src={dashboardHero} alt="Business Dashboard" className="absolute w-full h-full object-cover"/>
+            <div className="absolute inset-0 bg-slate-900/70" />
+            <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="relative flex flex-col items-center px-4">
+                <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400">
+                  {greeting}, EkVyapar User
+                </motion.h1>
+                <motion.p variants={fadeIn} className="text-xl text-slate-300 max-w-2xl mt-4">
+                  Here's your complete business overview for today.
+                </motion.p>
+            </motion.div>
+        </div>
 
-      <div className="container mx-auto px-4 py-8 -mt-20 relative z-10">
-        {/* Stats Overview */}
-        <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-white/95 backdrop-blur-md border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-2xl cursor-pointer"> {/* Enhanced card style */}
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Today's Revenue</p>
-                    <p className="text-2xl font-bold bg-gradient-to-r from-green-500 to-green-700 bg-clip-text text-transparent">₹45,230</p>
-                  </div>
-                  <div className="p-3 bg-green-100 rounded-xl">
-                    <IndianRupee className="h-6 w-6 text-green-600" />
-                  </div>
-                </div>
-                <div className="flex items-center mt-2 text-sm text-green-600">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  <span>+12.5%</span>
-                </div>
-              </CardContent>
-            </Card>
+        <div className="container mx-auto px-4 py-8 -mt-20 relative z-10">
+          {/* Stats Overview */}
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            {[
+              { title: "Today's Revenue", value: "₹45,230", change: "+12.5%", icon: IndianRupee, iconColor: "text-green-400" },
+              { title: "New Orders", value: "28", change: "+8.2%", icon: ShoppingCart, iconColor: "text-blue-400" },
+              { title: "Customers", value: "1,247", change: "+15.3%", icon: Users, iconColor: "text-purple-400" },
+              { title: "Growth Rate", value: "23.5%", change: "+3.1%", icon: Target, iconColor: "text-orange-400" },
+            ].map((stat, i) => (
+              <motion.div key={i} variants={fadeIn}>
+                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg hover:border-sky-400 transition-all duration-300">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <stat.icon className={`h-8 w-8 ${stat.iconColor}`} />
+                      <Badge variant="secondary">{stat.change}</Badge>
+                    </div>
+                    <p className="text-3xl font-bold mt-4 text-slate-100">{stat.value}</p>
+                    <p className="text-sm text-slate-400">{stat.title}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
 
-            <Card className="bg-white/95 backdrop-blur-md border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-2xl cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">New Orders</p>
-                    <p className="text-2xl font-bold">28</p>
-                  </div>
-                  <div className="p-3 bg-blue-100 rounded-xl">
-                    <ShoppingCart className="h-6 w-6 text-blue-600" />
-                  </div>
-                </div>
-                <div className="flex items-center mt-2 text-sm text-green-600">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  <span>+8.2%</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/95 backdrop-blur-md border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-2xl cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Customers</p>
-                    <p className="text-2xl font-bold">1,247</p>
-                  </div>
-                  <div className="p-3 bg-purple-100 rounded-xl">
-                    <Users className="h-6 w-6 text-purple-600" />
-                  </div>
-                </div>
-                <div className="flex items-center mt-2 text-sm text-green-600">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  <span>+15.3%</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white/95 backdrop-blur-md border border-gray-200 hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-2xl cursor-pointer">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Growth Rate</p>
-                    <p className="text-2xl font-bold">23.5%</p>
-                  </div>
-                  <div className="p-3 bg-orange-100 rounded-xl">
-                    <Target className="h-6 w-6 text-orange-600" />
-                  </div>
-                </div>
-                <div className="flex items-center mt-2 text-sm text-green-600">
-                  <TrendingUp className="h-4 w-4 mr-1" />
-                  <span>+3.1%</span>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </FadeInWhenVisible>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Quick Actions */}
-            <FadeInWhenVisible delay={100} duration="duration-1500" translateY="translate-y-24">
-              <Card className="rounded-2xl border-0 shadow-card hover:shadow-xl transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-primary">
-                    <Briefcase className="h-5 w-5" />
-                    Quick Actions
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {quickActions.map((action, index) => (
-                      <Button
-                        key={index}
-                        variant="outline"
-                        className="h-20 flex-col gap-2 hover:shadow-md hover:-translate-y-1 transition-all duration-200 rounded-lg group"
-                      >
-                        <action.icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform duration-200" />
-                        <span className="text-xs font-medium text-muted-foreground group-hover:text-primary">{action.label}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-8">
+              {/* Quick Actions */}
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Briefcase className="text-sky-400"/>Quick Actions</CardTitle></CardHeader>
+                  <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {quickActions.map((action, i) => (
+                      <Button key={i} variant="secondary" className="h-24 flex-col gap-2 rounded-lg bg-slate-800/50 hover:bg-slate-700">
+                        <action.icon className="h-6 w-6 text-sky-400" /><span className="text-xs font-medium text-slate-300">{action.label}</span>
                       </Button>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </FadeInWhenVisible>
-
-            {/* Business Health Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FadeInWhenVisible delay={200} duration="duration-1500" translateY="translate-y-24">
-                <Card className="rounded-2xl border-0 shadow-card hover:shadow-xl transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2 text-primary">
-                      <DollarSign className="h-5 w-5" />
-                      Financial Health
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span>Cash Flow</span>
-                          <span className="font-semibold">78%</span>
-                        </div>
-                        <Progress value={78} className="h-2 bg-blue-200" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span>Profitability</span>
-                          <span className="font-semibold">65%</span>
-                        </div>
-                        <Progress value={65} className="h-2 bg-green-200" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span>Liquidity</span>
-                          <span className="font-semibold">92%</span>
-                        </div>
-                        <Progress value={92} className="h-2 bg-purple-200" />
-                      </div>
-                    </div>
                   </CardContent>
                 </Card>
-              </FadeInWhenVisible>
+              </motion.div>
+              
+              {/* Financial & Credit Health */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                    <Card className="h-full bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><DollarSign className="text-green-400"/>Financial Health</CardTitle></CardHeader>
+                        <CardContent className="space-y-4">
+                            <div><div className="flex justify-between text-sm mb-1 text-slate-300"><span>Cash Flow</span><span>78%</span></div><CustomProgressBar value={78} colorClass="bg-blue-500" /></div>
+                            <div><div className="flex justify-between text-sm mb-1 text-slate-300"><span>Profitability</span><span>65%</span></div><CustomProgressBar value={65} colorClass="bg-green-500" /></div>
+                            <div><div className="flex justify-between text-sm mb-1 text-slate-300"><span>Liquidity</span><span>92%</span></div><CustomProgressBar value={92} colorClass="bg-purple-500" /></div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+                 <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                    <Card className="h-full bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="text-sky-400"/>Credit Score</CardTitle></CardHeader>
+                        <CardContent className="text-center">
+                            <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="text-5xl font-bold text-green-400 mb-2">742</motion.div>
+                            <div className="text-sm text-slate-400 mb-4">Excellent</div>
+                            <Button variant="outline" size="sm" className="rounded-full">View Report</Button>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+              </div>
 
-              <FadeInWhenVisible delay={300} duration="duration-1500" translateY="translate-y-24">
-                <Card className="rounded-2xl border-0 shadow-card hover:shadow-xl transition-all duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2 text-primary">
-                      <ShieldCheck className="h-5 w-5" />
-                      Credit Score
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center">
-                      <div className="text-5xl font-bold text-green-600 mb-2 animate-pulse-slow">742</div> {/* Animated score */}
-                      <div className="text-sm text-muted-foreground mb-4">Excellent Credit Score</div>
-                      <div className="flex items-center justify-center gap-1">
-                        {[1, 2, 3, 4].map((star) => (
-                          <Star key={star} className="h-6 w-6 fill-yellow-400 text-yellow-400 animate-bounce-in" style={{ animationDelay: `${star * 50}ms` }} />
-                        ))}
-                        <Star className="h-6 w-6 text-gray-300" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </FadeInWhenVisible>
+               {/* Recent Activity */}
+               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                    <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
+                        <CardHeader><CardTitle className="flex items-center gap-2"><Activity className="text-sky-400"/>Recent Activity</CardTitle></CardHeader>
+                        <CardContent className="space-y-2">
+                          {activities.map((act, i) => (
+                              <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                                  <act.icon className={`h-6 w-6 flex-shrink-0 ${act.color}`} />
+                                  <p className="text-sm text-slate-300 flex-grow">{act.text}</p>
+                                  <p className="text-xs text-slate-500 flex-shrink-0">{act.time}</p>
+                              </div>
+                          ))}
+                        </CardContent>
+                    </Card>
+                </motion.div>
             </div>
 
-            {/* Recent Activity */}
-            <FadeInWhenVisible delay={400} duration="duration-1500" translateY="translate-y-24">
-              <Card className="rounded-2xl border-0 shadow-card hover:shadow-xl transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-primary">
-                    <Activity className="h-5 w-5" />
-                    Recent Activity
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {activities.map((activity, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer">
-                        <activity.icon className={`h-5 w-5 ${activity.color}`} />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium">{activity.text}</p>
-                          <p className="text-xs text-muted-foreground">{activity.time}</p>
+            <div className="space-y-8">
+              {/* Notifications */}
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-sky-400"/>Notifications</CardTitle></CardHeader>
+                  <CardContent className="space-y-3">
+                    {notifications.map((n, i) => (
+                      <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${n.type === 'destructive' ? 'bg-red-500/10 border-red-500/30' : 'bg-green-500/10 border-green-500/30'}`}>
+                        <n.icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${n.type === 'destructive' ? 'text-red-400' : 'text-green-400'}`} />
+                        <div>
+                            <p className="text-sm font-semibold text-slate-100">{n.title}</p>
+                            <p className="text-xs text-slate-400">{n.message}</p>
                         </div>
-                        {/* Removed the ArrowRight that appears on hover, as the animation is now one-time */}
                       </div>
                     ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </FadeInWhenVisible>
-          </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+              
+              {/* Market Opportunities */}
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Lightbulb className="text-yellow-400"/>Market Opportunities</CardTitle></CardHeader>
+                   <CardContent className="space-y-4">
+                        {marketOpportunities.map((op, i) => (
+                          <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                            <op.icon className={`h-6 w-6 flex-shrink-0 ${op.color}`} />
+                            <p className="text-sm text-slate-300 flex-grow">{op.title}</p>
+                            <Badge variant={op.priority === "High" ? "destructive" : "secondary"} className="flex-shrink-0">{op.priority}</Badge>
+                          </div>
+                        ))}
+                   </CardContent>
+                </Card>
+              </motion.div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Notifications */}
-            <FadeInWhenVisible delay={500} duration="duration-1500" translateY="translate-y-24">
-              <Card className="rounded-2xl border-0 shadow-card hover:shadow-xl transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-primary">
-                    <Bell className="h-5 w-5" />
-                    Notifications
-                    <Badge variant="destructive" className="ml-2"> {/* Removed animate-bounce-in */}
-                      {notifications.filter(n => n.type === 'destructive' || n.type === 'warning').length}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {notifications.map((notification, index) => (
-                    <div key={index} className={`p-3 rounded-lg border ${notification.type === 'destructive' ? 'bg-red-50 border-red-200' : notification.type === 'warning' ? 'bg-orange-50 border-orange-200' : 'bg-green-50 border-green-200'} hover:shadow-md transition-shadow duration-200 cursor-pointer`}>
-                      <div className="flex items-start gap-2">
-                        <notification.icon className={`h-5 w-5 ${notification.type === 'destructive' ? 'text-red-600' : notification.type === 'warning' ? 'text-orange-600' : 'text-green-600'} flex-shrink-0`} />
-                        <div>
-                          <p className={`text-sm font-medium ${notification.type === 'destructive' ? 'text-red-800' : notification.type === 'warning' ? 'text-orange-800' : 'text-green-800'}`}>{notification.title}</p>
-                          <p className="text-xs text-muted-foreground">{notification.message}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </FadeInWhenVisible>
-
-            {/* Market Opportunities */}
-            <FadeInWhenVisible delay={600} duration="duration-1500" translateY="translate-y-24">
-              <Card className="rounded-2xl border-0 shadow-card hover:shadow-xl transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2 text-primary">
-                    <Lightbulb className="h-5 w-5" />
-                    Market Opportunities
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {marketOpportunities.map((opportunity, index) => (
-                    <div key={index} className="p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer flex items-start gap-3">
-                      <opportunity.icon className={`h-5 w-5 ${opportunity.color} flex-shrink-0`} />
-                      <div>
-                        <h4 className="font-medium text-sm">{opportunity.title}</h4>
-                        <p className="text-xs text-muted-foreground">{opportunity.description}</p>
-                        <Badge variant={opportunity.priority === "High Priority" ? "destructive" : opportunity.priority === "Medium Priority" ? "secondary" : "outline"} className="mt-2">
-                          {opportunity.priority}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            </FadeInWhenVisible>
-
-            {/* Business Growth Chart */}
-            <FadeInWhenVisible delay={700} duration="duration-1500" translateY="translate-y-24">
-              <Card className="rounded-2xl border-0 shadow-card hover:shadow-xl transition-all duration-300">
-                <CardHeader>
-                  <CardTitle className="text-lg flex items-center gap-2 text-primary">
-                    <TrendingUp className="h-5 w-5" />
-                    Business Growth
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="h-64"> {/* Fixed height for chart */}
-                  <ResponsiveContainer width="100%" height="100%">
-                    <RechartsLineChart
-                      data={growthData}
-                      margin={{ top: 5, right: 10, left: 10, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" strokeOpacity={0.3} />
-                      <XAxis dataKey="month" axisLine={false} tickLine={false} />
-                      <YAxis axisLine={false} tickLine={false} tickFormatter={(value) => `₹${value / 1000}K`} />
-                      <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
-                      <Legend />
-                      <Line type="monotone" dataKey="revenue" stroke="#8884d8" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 6 }} />
-                    </RechartsLineChart>
-                  </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            </FadeInWhenVisible>
+              {/* Business Growth Chart */}
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="text-sky-400"/>Business Growth (Revenue in ₹1000s)</CardTitle></CardHeader>
+                  <CardContent className="h-64 pr-4">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <AreaChart data={growthData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                        <defs>
+                          <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.4}/>
+                            <stop offset="95%" stopColor="#38bdf8" stopOpacity={0}/>
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
+                        <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}K`} />
+                        <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '0.5rem' }} labelStyle={{ color: '#e2e8f0' }} formatter={(value) => [`₹${Number(value) * 1000}`, 'Revenue']} />
+                        <Area type="monotone" dataKey="revenue" stroke="#38bdf8" strokeWidth={3} fill="url(#colorRevenue)" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
           </div>
         </div>
       </div>

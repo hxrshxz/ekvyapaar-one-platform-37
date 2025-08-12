@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,649 +8,279 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  Phone,
-  Video,
-  MessageCircle,
-  MapPin,
-  Clock,
-  PlayCircle,
-  BookOpen, // For Knowledge Base
-  Users, // For Community Forum
-  Headphones, // For Support icon
-  Search,
-  Star, // For ratings
-  Download, // For documents
-  HelpCircle, // For FAQs, Email Support
-  CheckCircle,
-  ArrowRight,
-  Lightbulb, // For AI Insights
-  FileQuestion, // For more FAQs
-  Building2, // For new support center
-  GraduationCap // For training
+  Phone, Video, MessageCircle, MapPin, PlayCircle, Users, HelpCircle, CheckCircle, ArrowRight, Building2, GraduationCap, X, Search
 } from "lucide-react";
-
-// Reusable FadeInWhenVisible component (modified to re-trigger on scroll)
-const FadeInWhenVisible = ({ children, delay = 0, duration = 'duration-1500', translateY = 'translate-y-24' }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const domRef = useRef();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        // Now toggles isVisible based on intersection, allowing re-triggering
-        setIsVisible(entry.isIntersecting);
-      });
-    }, {
-      threshold: 0.1 // Trigger when 10% of the element is visible
-    });
-
-    const currentRef = domRef.current; // Capture current ref for cleanup
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
-    };
-  }, []);
-
-  return (
-    <div
-      ref={domRef}
-      className={`
-        transition-all ${duration} ease-out
-        ${isVisible ? 'opacity-100 translate-y-0' : `opacity-0 ${translateY}`}
-      `}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-};
+import supportHero from "@/assets/support-hero.jpg"; // You'll need a suitable hero image
 
 export const Support = () => {
-  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [showMap, setShowMap] = useState(false);
+  // State for search and progress tracking
+  const [searchTerm, setSearchTerm] = useState("");
+  const [watchedVideos, setWatchedVideos] = useState(new Set());
 
-  const supportOptions = [
-    {
-      type: "call",
-      title: "Talk to MSME Support",
-      description: "Instant phone call support for urgent queries.",
-      availability: "24/7 Available",
-      responseTime: "Instant",
-      icon: Phone,
-      color: "bg-green-500",
-      action: "Call Now"
-    },
-    {
-      type: "video",
-      title: "Video Call Support",
-      description: "Screen sharing and visual guidance for complex issues.",
-      availability: "9 AM - 9 PM (Mon-Sat)",
-      responseTime: "2-3 minutes",
-      icon: Video,
-      color: "bg-blue-500",
-      action: "Start Video Call"
-    },
-    {
-      type: "chat",
-      title: "WhatsApp Support",
-      description: "Convenient chat, photos, and voice messages support.",
-      availability: "24/7 Available",
-      responseTime: "5-10 minutes",
-      icon: MessageCircle,
-      color: "bg-green-600",
-      action: "Open WhatsApp"
-    },
-    {
-      type: "center",
-      title: "Find Nearby Center",
-      description: "Personalized help and document assistance at local centers.",
-      availability: "10 AM - 8 PM (Mon-Fri)",
-      responseTime: "Same Day",
-      icon: MapPin,
-      color: "bg-orange-500",
-      action: "View Centers"
-    },
-    {
-      type: "email",
-      title: "Email Support",
-      description: "Detailed written assistance for non-urgent inquiries.",
-      availability: "24/7 Available",
-      responseTime: "2-4 hours",
-      icon: HelpCircle,
-      color: "bg-purple-500",
-      action: "Send Email"
-    },
-    {
-      type: "live",
-      title: "Live Chat",
-      description: "Real-time text support directly on our website.",
-      availability: "9 AM - 9 PM (Mon-Sun)",
-      responseTime: "1-2 minutes",
-      icon: MessageCircle,
-      color: "bg-cyan-500",
-      action: "Start Chat"
-    },
-    {
-      type: "community",
-      title: "Community Forum",
-      description: "Connect with other MSMEs and get peer support.",
-      availability: "24/7",
-      responseTime: "Varies",
-      icon: Users,
-      color: "bg-yellow-500",
-      action: "Visit Forum"
-    },
-    {
-      type: "knowledge",
-      title: "Knowledge Base",
-      description: "Self-serve articles and guides for common issues.",
-      availability: "24/7",
-      responseTime: "Instant",
-      icon: BookOpen,
-      color: "bg-red-500",
-      action: "Read Articles"
-    }
-  ];
+  const supportCenters = useMemo(() => [
+    { name: "Mayapuri Center", address: "B-14, Mayapuri Industrial Area, New Delhi" },
+    { name: "Lajpat Nagar Center", address: "Shop 45, Central Market, Lajpat Nagar II, New Delhi" },
+    { name: "Karol Bagh Center", address: "15A, First Floor, Ajmal Khan Road, Karol Bagh, New Delhi" },
+  ], []);
 
-  const videoModules = [
-    {
-      id: 1,
-      title: "How to Register on EkVyapar",
-      duration: "5:32",
-      views: "12,456",
-      level: "Beginner",
-      category: "Getting Started",
-      thumbnail: "https://placehold.co/400x225/A78BFA/ffffff?text=Registration+Guide", // Placeholder image
-      description: "A quick guide to completing your 2-minute registration with Udyam number."
-    },
-    {
-      id: 2,
-      title: "Filling Loan Application Form",
-      duration: "8:15",
-      views: "23,789",
-      level: "Beginner",
-      category: "Finance",
-      thumbnail: "https://placehold.co/400x225/4CAF50/ffffff?text=Loan+Application", // Placeholder image
-      description: "Learn the step-by-step process for a smooth loan application."
-    },
-    {
-      id: 3,
-      title: "How to Apply for GeM Tenders",
-      duration: "12:45",
-      views: "18,234",
-      level: "Intermediate",
-      category: "Marketplace",
-      thumbnail: "https://placehold.co/400x225/3B82F6/ffffff?text=GeM+Tenders", // Placeholder image
-      description: "A complete guide to successfully bidding on government tenders."
-    },
-    {
-      id: 4,
-      title: "ERP Lite - Voice Commands Guide",
-      duration: "15:22",
-      views: "31,567",
-      level: "Advanced",
-      category: "Business Tools",
-      thumbnail: "https://placehold.co/400x225/8B5CF6/ffffff?text=Voice+ERP", // Placeholder image
-      description: "Master managing your business operations using simple voice commands."
-    },
-    {
-      id: 5,
-      title: "GST Return Filing Simplified",
-      duration: "10:18",
-      views: "28,456",
-      level: "Intermediate",
-      category: "Business Tools",
-      thumbnail: "https://placehold.co/400x225/10B981/ffffff?text=GST+Filing", // Placeholder image
-      description: "Automate your GST filing process and ensure compliance effortlessly."
-    },
-    {
-      id: 6,
-      title: "Digital Marketing Basics for MSMEs",
-      duration: "20:35",
-      views: "15,789",
-      level: "Beginner",
-      category: "Marketing",
-      thumbnail: "https://placehold.co/400x225/EF4444/ffffff?text=Digital+Marketing", // Placeholder image
-      description: "Promote your business effectively on social media and Google."
-    },
-    {
-      id: 7,
-      title: "Understanding Your Credit Score",
-      duration: "7:00",
-      views: "9,876",
-      level: "Beginner",
-      category: "Finance",
-      thumbnail: "https://placehold.co/400x225/F59E0B/ffffff?text=Credit+Score", // Placeholder image
-      description: "Learn how your credit score impacts your loan eligibility."
-    },
-    {
-      id: 8,
-      title: "Inventory Management Best Practices",
-      duration: "11:05",
-      views: "21,000",
-      level: "Intermediate",
-      category: "Business Tools",
-      thumbnail: "https://placehold.co/400x225/6366F1/ffffff?text=Inventory+Mgmt", // Placeholder image
-      description: "Optimize your stock levels and reduce waste with smart strategies."
-    }
-  ];
+  const supportOptions = useMemo(() => [
+    { title: "Talk to Support", description: "Instant phone support for urgent queries.", availability: "24/7 Available", icon: Phone, color: "text-green-400", actionText: "Call Now", onClick: () => {} },
+    { title: "Video Call Support", description: "Screen sharing for complex issues.", availability: "9 AM - 9 PM (Mon-Sat)", icon: Video, color: "text-blue-400", actionText: "Start Video Call", onClick: () => {} },
+    { title: "WhatsApp Support", description: "Convenient chat, photo, and voice support.", availability: "24/7 Available", icon: MessageCircle, color: "text-emerald-400", actionText: "Open WhatsApp", onClick: () => {} },
+    { title: "Find Nearby Center", description: "Personalized help at local centers.", availability: "10 AM - 8 PM (Mon-Fri)", icon: Building2, color: "text-orange-400", actionText: "View Centers", onClick: () => setShowMap(true) },
+    { title: "Email Support", description: "Detailed written assistance for non-urgent issues.", availability: "24/7 Available", icon: HelpCircle, color: "text-purple-400", actionText: "Send Email", onClick: () => {} },
+    { title: "Community Forum", description: "Connect with other MSMEs for peer support.", availability: "24/7", icon: Users, color: "text-yellow-400", actionText: "Visit Forum", onClick: () => {} },
+  ], []);
 
-  const faqs = [
-    {
-      question: "What is required for EkVyapar registration?",
-      answer: "Just your Udyam registration number and mobile number. The registration process is quick and typically completed in under 2 minutes."
-    },
-    {
-      question: "How long does loan approval take?",
-      answer: "You can expect pre-approval within 48 hours. Final loan approval and disbursement usually take between 5-7 business days, depending on documentation."
-    },
-    {
-      question: "Are all services available in English?",
-      answer: "Yes, the entire EkVyapar platform, including all business tools, marketplace features, and support options, is fully available in English. Our voice commands also work seamlessly in English."
-    },
-    {
-      question: "Is my business data secure on EkVyapar's ERP?",
-      answer: "Absolutely. We employ bank-level security measures to protect your data. All your information is encrypted and safely stored in secure cloud servers."
-    },
-    {
-      question: "Can I get a loan without collateral?",
-      answer: "Yes, many of our business loan products, especially instant business loans, are designed to be collateral-free. Eligibility depends on your credit score and business history."
-    },
-    {
-      question: "How do I apply for government tenders through EkVyapar?",
-      answer: "Our Marketplace features a dedicated section for GeM tenders. You can find matching tenders, get assistance with documentation, and apply directly through our platform. Watch our 'How to Apply for GeM Tenders' video for a step-by-step guide."
-    }
-  ];
+  const videoModules = useMemo(() => [
+    { id: 1, title: "How to Register on EkVyapar", duration: "5:32", thumbnail: "https://images.pexels.com/photos/7567434/pexels-photo-7567434.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 2, title: "Filling Loan Application Form", duration: "8:15", thumbnail: "https://images.pexels.com/photos/845451/pexels-photo-845451.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 3, title: "How to Apply for GeM Tenders", duration: "12:45", thumbnail: "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 4, title: "ERP Lite - Voice Commands Guide", duration: "15:22", thumbnail: "https://images.pexels.com/photos/7688160/pexels-photo-7688160.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 5, title: "GST Return Filing Simplified", duration: "10:18", thumbnail: "https://images.pexels.com/photos/7821516/pexels-photo-7821516.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 6, title: "Inventory Management Best Practices", duration: "11:05", thumbnail: "https://images.pexels.com/photos/3807755/pexels-photo-3807755.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 7, title: "Understanding Working Capital", duration: "7:40", thumbnail: "https://images.pexels.com/photos/210990/pexels-photo-210990.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 8, title: "Digital Marketing 101 for MSMEs", duration: "18:55", thumbnail: "https://images.pexels.com/photos/1779487/pexels-photo-1779487.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 9, title: "CRM: Managing Customer Relationships", duration: "9:30", thumbnail: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 10, title: "Using the Quick Billing Tool", duration: "6:25", thumbnail: "https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 11, title: "Advanced GeM Bidding Strategies", duration: "22:10", thumbnail: "https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+    { id: 12, title: "AI Accountant: Profit & Loss Reports", duration: "13:48", thumbnail: "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" },
+  ], []);
+  
+  const faqs = useMemo(() => [
+    { question: "What is required for registration?", answer: "Just your Udyam registration number and mobile number. The process is typically completed in under 2 minutes." },
+    { question: "How long does loan approval take?", answer: "You can expect pre-approval within 48 hours. Final disbursement usually takes 5-7 business days, depending on documentation." },
+    { question: "Is my business data secure on the ERP?", answer: "Absolutely. We employ bank-level security with full encryption to protect your data, stored on secure cloud servers." },
+    { question: "Can I get a loan without collateral?", answer: "Yes, many of our loan products are designed to be collateral-free. Eligibility depends on your credit score and business history." },
+  ], []);
 
-  const supportCenters = [
-    {
-      name: "Mayapuri Center",
-      address: "B-14, Mayapuri Industrial Area, New Delhi - 110064",
-      contact: "+91 98765-43210",
-      timing: "10 AM - 8 PM (Mon-Sat)",
-      services: ["Registration", "Loan Help", "Tech Support", "Document Verification"]
-    },
-    {
-      name: "Lajpat Nagar Center",
-      address: "Shop 45, Central Market, Lajpat Nagar II, New Delhi - 110024",
-      contact: "+91 98765-43211",
-      timing: "9 AM - 9 PM (Mon-Sun)",
-      services: ["Video Call Assistance", "Training Workshops", "GST Filing Support"]
-    },
-    {
-      name: "Karol Bagh Center",
-      address: "15A, First Floor, Ajmal Khan Road, Karol Bagh, New Delhi - 110005",
-      contact: "+91 98765-43212",
-      timing: "10 AM - 7 PM (Mon-Fri)",
-      services: ["Business Consulting", "Financial Advisory", "ERP Setup Help"]
-    },
-    {
-      name: "Noida Sector 18 Center",
-      address: "G-20, The Great India Place, Sector 18, Noida, UP - 201301",
-      contact: "+91 98765-43213",
-      timing: "11 AM - 9 PM (All Days)",
-      services: ["Marketplace Onboarding", "Product Listing", "Tender Bidding Guidance"]
-    }
-  ];
+  const filteredVideos = useMemo(() => 
+    videoModules.filter(video => 
+      video.title.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [videoModules, searchTerm]);
+
+  const progressPercentage = (watchedVideos.size / videoModules.length) * 100;
+
+  const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } } as const;
+  const staggerContainer = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } } as const;
+  
+  const apiKey = 'YOUR_Maps_API_KEY'; // <-- IMPORTANT: Replace with your actual key
+  const origin = encodeURIComponent(supportCenters[0].address);
+  const destination = encodeURIComponent(supportCenters[supportCenters.length - 1].address);
+  const waypoints = supportCenters.slice(1, -1).map(center => encodeURIComponent(center.address)).join('|');
+  const mapUrl = `http://googleusercontent.com/maps/embed/v1/directions?key=${apiKey}&origin=${origin}&destination=${destination}&waypoints=${waypoints}`;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="bg-primary py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center text-white">
-            <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-              <Badge className="bg-accent text-white mb-6 text-lg px-6 py-2">
-                📚 Learn & Support
-              </Badge>
-            </FadeInWhenVisible>
-            <FadeInWhenVisible delay={150} duration="duration-1500" translateY="translate-y-24">
-              <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-                We're Here to Help,
-                <span className="text-accent-light block">Every Step of the Way</span>
-              </h1>
-            </FadeInWhenVisible>
-            <FadeInWhenVisible delay={300} duration="duration-1500" translateY="translate-y-24">
-              <p className="text-xl lg:text-2xl mb-8 text-primary-foreground/80">
-                24/7 support, free training videos, and local help centers
-              </p>
-            </FadeInWhenVisible>
+    <div className="min-h-screen bg-slate-900 text-white">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+        <div className="absolute top-[5%] left-[5%] w-[400px] h-[400px] bg-purple-500/20 rounded-full filter blur-3xl animate-blob"></div>
+        <div className="absolute top-[20%] right-[10%] w-[500px] h-[500px] bg-sky-500/20 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-[5%] left-[20%] w-[300px] h-[300px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
+      </div>
+      
+      <div className="relative z-10">
+        <section className="relative h-[32rem] overflow-hidden flex items-center justify-center text-center">
+          <img src={supportHero} alt="Customer Support" className="absolute w-full h-full object-cover"/>
+          <div className="absolute inset-0 bg-slate-900/70" />
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="relative flex flex-col items-center px-4">
+            <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400">
+              We're Here to Help
+            </motion.h1>
+            <motion.p variants={fadeIn} className="text-xl text-slate-300 max-w-3xl mt-4 mb-8">
+              Get instant, 24/7 support through calls, chats, video training, and local centers. Your success is our priority.
+            </motion.p>
+            <motion.div variants={fadeIn} className="flex gap-4">
+              <Button size="lg" className="bg-sky-600 hover:bg-sky-500 h-12 px-8 text-base"> <Phone className="mr-2 h-5 w-5" /> Get Instant Help</Button>
+              <Button size="lg" variant="outline" className="h-12 px-8 text-base border-slate-700 bg-slate-800/50 hover:bg-slate-800 hover:text-white"><PlayCircle className="mr-2 h-5 w-5" /> Watch Training</Button>
+            </motion.div>
+          </motion.div>
+        </section>
 
-            <FadeInWhenVisible delay={450} duration="duration-1500" translateY="translate-y-24">
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="secondary" size="lg" className="text-xl px-8 py-4 h-auto">
-                  <Phone className="mr-2 h-5 w-5" />
-                  Get Instant Help
-                </Button>
-                <Button variant="outline" size="lg" className="text-xl px-8 py-4 h-auto border-2 border-white text-white hover:bg-white hover:text-primary">
-                  <PlayCircle className="mr-2 h-5 w-5" />
-                  Watch Training Videos
-                </Button>
+        <div className="container mx-auto px-4 py-16 space-y-24">
+          <section>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
+              <motion.h2 variants={fadeIn} className="text-3xl md:text-4xl font-bold">How Can We Help You Today?</motion.h2>
+              <motion.p variants={fadeIn} className="text-lg text-slate-400 mt-2">Choose the support channel that works best for you.</motion.p>
+            </motion.div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {supportOptions.map((option) => (
+                <motion.div key={option.title} variants={fadeIn}>
+                  <Card className="h-full p-6 bg-white/5 border-white/10 hover:border-sky-400 transition-all duration-300 rounded-2xl shadow-lg hover:shadow-sky-500/20">
+                    <div className="flex items-center gap-4 mb-4">
+                      <option.icon className={`h-10 w-10 ${option.color}`} />
+                      <div>
+                        <CardTitle className="text-xl text-slate-100">{option.title}</CardTitle>
+                        <CardDescription className="text-slate-400">{option.description}</CardDescription>
+                      </div>
+                    </div>
+                    <CardContent className="p-0 space-y-4">
+                      <Badge variant="secondary">{option.availability}</Badge>
+                      <Button onClick={option.onClick} className="w-full bg-slate-700 hover:bg-slate-600">{option.actionText}<ArrowRight className="ml-2 h-4 w-4" /></Button>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </section>
+
+          <section>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
+              <motion.h2 variants={fadeIn} className="text-3xl md:text-4xl font-bold flex items-center justify-center gap-3"><GraduationCap/> Video Training Library</motion.h2>
+              <motion.p variants={fadeIn} className="text-lg text-slate-400 mt-2">Learn everything you need with our short, easy-to-follow video tutorials.</motion.p>
+            </motion.div>
+            
+            <div className="max-w-4xl mx-auto mb-12 space-y-6">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Input 
+                  type="text" 
+                  placeholder="Search for a video (e.g., 'GST', 'Loan')" 
+                  className="w-full bg-slate-800 border-slate-700 pl-10 h-12 text-base"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-            </FadeInWhenVisible>
-          </div>
-        </div>
-      </section>
-
-      {/* Support Options */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-primary mb-4">How Can We Help?</h2>
-              <p className="text-xl text-muted-foreground">Choose support that works for you</p>
-            </div>
-          </FadeInWhenVisible>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {supportOptions.map((option, index) => (
-              <FadeInWhenVisible key={index} delay={index * 100} duration="duration-1000" translateY="translate-y-16">
-                <Card className="hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                  <CardHeader className="text-center">
-                    <div className={`w-16 h-16 ${option.color} rounded-full flex items-center justify-center mx-auto mb-4`}>
-                      <option.icon className="h-8 w-8 text-white" />
-                    </div>
-                    <CardTitle className="text-xl">{option.title}</CardTitle>
-                    <CardDescription className="text-sm">{option.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-green-600" />
-                        <span>{option.availability}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Headphones className="h-4 w-4 text-blue-600" />
-                        <span>Response Time: {option.responseTime}</span>
-                      </div>
-                    </div>
-
-                    <Button className="w-full">
-                      {option.action}
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </FadeInWhenVisible>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Video Learning */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-primary mb-4">📺 Video Training</h2>
-              <p className="text-xl text-muted-foreground">Learn everything through short videos like YouTube</p>
-            </div>
-          </FadeInWhenVisible>
-
-          {/* Search and Filter */}
-          <FadeInWhenVisible delay={100} duration="duration-1000" translateY="translate-y-16">
-            <div className="max-w-2xl mx-auto mb-8">
-              <div className="flex gap-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search videos..."
-                    className="pl-10 text-lg"
+              <div>
+                <div className="flex justify-between mb-1">
+                  <span className="text-base font-medium text-sky-400">Your Progress</span>
+                  <span className="text-sm font-medium text-sky-400">{Math.round(progressPercentage)}% Complete</span>
+                </div>
+                <div className="w-full bg-slate-700 rounded-full h-2.5">
+                  <motion.div 
+                    className="bg-sky-500 h-2.5 rounded-full" 
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercentage}%` }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
                   />
                 </div>
-                <Button variant="outline">Filter</Button>
               </div>
             </div>
-          </FadeInWhenVisible>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {videoModules.map((video, index) => (
-              <FadeInWhenVisible key={video.id} delay={index * 100} duration="duration-1000" translateY="translate-y-16">
-                <Card className="hover:shadow-lg transition-shadow duration-300 cursor-pointer">
-                  <CardHeader>
-                    <div className="relative">
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="w-full h-40 object-cover rounded-lg"
-                        onError={(e) => { 
-                          const target = e.target as HTMLImageElement;
-                          target.onerror = null;
-                          target.src = "https://placehold.co/400x225/CCCCCC/000000?text=Video+Thumbnail";
-                        }} // Fallback image
-                      />
-                      <div className="absolute inset-0 bg-black/30 rounded-lg flex items-center justify-center">
-                        <PlayCircle className="h-16 w-16 text-white" />
+            <AnimatePresence>
+              <motion.div layout initial="hidden" animate="visible" variants={staggerContainer} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredVideos.length > 0 ? (
+                  filteredVideos.map((video) => (
+                    <motion.div layout key={video.id} variants={fadeIn}>
+                      <Card 
+                        className="h-full bg-white/5 border-white/10 hover:border-sky-400 transition-all duration-300 rounded-2xl shadow-lg hover:shadow-sky-500/20 overflow-hidden group cursor-pointer"
+                        onClick={() => {
+                          setWatchedVideos(prev => new Set(prev).add(video.id));
+                        }}
+                      >
+                        <div className="relative">
+                          <img src={video.thumbnail} alt={video.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"/>
+                          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <PlayCircle className="h-16 w-16 text-white" />
+                          </div>
+                          <Badge className="absolute top-2 right-2 bg-slate-900/70 text-white">{video.duration}</Badge>
+                          {watchedVideos.has(video.id) && (
+                            <Badge variant="secondary" className="absolute top-2 left-2 bg-green-500/80 text-white border-green-400">
+                              <CheckCircle className="h-4 w-4 mr-1"/>
+                              Watched
+                            </Badge>
+                          )}
+                        </div>
+                        <CardContent className="p-4">
+                          <h3 className="font-bold text-lg text-slate-100">{video.title}</h3>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center py-10">
+                    <p className="text-slate-400 text-lg">No videos found for "{searchTerm}". Try another search.</p>
+                  </div>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </section>
+          
+          <section>
+             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
+              <motion.h2 variants={fadeIn} className="text-3xl md:text-4xl font-bold">Frequently Asked Questions</motion.h2>
+            </motion.div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="max-w-4xl mx-auto space-y-4">
+              {faqs.map((faq) => (
+                <motion.div key={faq.question} variants={fadeIn}>
+                  <Card className="p-6 bg-white/5 border-white/10 rounded-2xl">
+                    <h3 className="text-lg font-semibold text-sky-400 mb-2">{faq.question}</h3>
+                    <p className="text-slate-300">{faq.answer}</p>
+
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          </section>
+          
+          <section>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                <Card className="bg-slate-800/50 border-white/10 shadow-2xl backdrop-blur-lg p-8 md:p-12">
+                  <div className="grid md:grid-cols-2 gap-12 items-center">
+                    <div className="space-y-4">
+                      <h2 className="text-4xl font-bold text-white">Contact Our Team</h2>
+                      <p className="text-lg text-slate-300">Have a specific question or need detailed help? Fill out the form, and our support specialists will get back to you within 2-4 hours.</p>
+                      <div className="space-y-3 pt-4">
+                        <div className="flex items-center gap-3"><Phone className="h-5 w-5 text-sky-400"/><span>1800-123-MSME (6763)</span></div>
+                        <div className="flex items-center gap-3"><HelpCircle className="h-5 w-5 text-sky-400"/><span>support@ekvyapar.com</span></div>
+                        <div className="flex items-center gap-3"><MapPin className="h-5 w-5 text-sky-400"/><span>New Delhi, India</span></div>
                       </div>
-                      <Badge className="absolute top-2 right-2 bg-black/70 text-white">
-                        {video.duration}
-                      </Badge>
                     </div>
-                    <CardTitle className="text-lg mt-4">{video.title}</CardTitle>
-                    <CardDescription>{video.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between items-center text-sm text-muted-foreground mb-4">
-                      <span className="flex items-center gap-1">
-                        <Users className="h-4 w-4" />
-                        {video.views} views
-                      </span>
-                      <Badge variant="outline">{video.level}</Badge>
-                    </div>
-
-                    <Button className="w-full">
-                      <PlayCircle className="h-4 w-4 mr-2" />
-                      Watch Video
-                    </Button>
-                  </CardContent>
-                </Card>
-              </FadeInWhenVisible>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-primary mb-4">❓ Frequently Asked Questions</h2>
-              <p className="text-xl text-muted-foreground">Common questions and answers</p>
-            </div>
-          </FadeInWhenVisible>
-
-          <div className="max-w-4xl mx-auto space-y-4">
-            {faqs.map((faq, index) => (
-              <FadeInWhenVisible key={index} delay={index * 100} duration="duration-1000" translateY="translate-y-16">
-                <Card className="p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                      Q
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold mb-2">{faq.question}</h3>
-                      <p className="text-muted-foreground">{faq.answer}</p>
-                    </div>
+                    <form className="space-y-4">
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div><Label htmlFor="name">Name</Label><Input id="name" placeholder="Your Name" className="bg-slate-800 border-slate-700 mt-1"/></div>
+                        <div><Label htmlFor="phone">Phone</Label><Input id="phone" placeholder="+91" className="bg-slate-800 border-slate-700 mt-1"/></div>
+                      </div>
+                      <div><Label htmlFor="email">Email</Label><Input id="email" type="email" placeholder="you@company.com" className="bg-slate-800 border-slate-700 mt-1"/></div>
+                      <div><Label htmlFor="message">Your Message</Label><Textarea id="message" placeholder="Describe your issue or question..." className="bg-slate-800 border-slate-700 mt-1" rows={4}/></div>
+                      <Button size="lg" className="w-full bg-sky-600 hover:bg-sky-500">Send Message</Button>
+                    </form>
                   </div>
                 </Card>
-              </FadeInWhenVisible>
-            ))}
-          </div>
-
-          <FadeInWhenVisible delay={faqs.length * 100 + 100} duration="duration-1000" translateY="translate-y-16">
-            <div className="text-center mt-8">
-              <Button variant="outline" size="lg">
-                <FileQuestion className="h-5 w-5 mr-2" /> {/* Changed icon */}
-                View More Questions
-              </Button>
-            </div>
-          </FadeInWhenVisible>
+            </motion.div>
+          </section>
         </div>
-      </section>
+      </div>
 
-      {/* Local Support Centers */}
-      <section className="py-16 bg-background">
-        <div className="container mx-auto px-4">
-          <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-primary mb-4">📍 Nearby Help Centers</h2>
-              <p className="text-xl text-muted-foreground">Personal help at local shops and CSCs</p>
-            </div>
-          </FadeInWhenVisible>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            {supportCenters.map((center, index) => (
-              <FadeInWhenVisible key={index} delay={index * 100} duration="duration-1000" translateY="translate-y-16">
-                <Card className="hover:shadow-lg transition-shadow duration-300">
-                  <CardHeader>
-                    <CardTitle className="text-xl flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-red-500" />
-                      {center.name}
-                    </CardTitle>
-                    <CardDescription>{center.address}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-green-600" />
-                        <span>{center.contact}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-blue-600" />
-                        <span>{center.timing}</span>
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="font-semibold mb-2">Services:</h4>
-                      <div className="flex flex-wrap gap-1">
-                        {center.services.map((service, idx) => (
-                          <Badge key={idx} variant="outline" className="text-xs">
-                            {service}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <Button className="w-full">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      View on Map
-                    </Button>
-                  </CardContent>
-                </Card>
-              </FadeInWhenVisible>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Form */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-              <Card className="p-8">
-                <CardHeader className="text-center">
-                  <CardTitle className="text-3xl font-bold">📝 Send Feedback</CardTitle>
-                  <CardDescription className="text-lg">
-                    Your feedback is very important to us
-                  </CardDescription>
+      <AnimatePresence>
+        {showMap && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowMap(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.95 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-[90%] h-[90%] max-w-6xl"
+            >
+              <Card className="h-full bg-slate-800 border-slate-700 flex flex-col">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle>EkVyapar Support Centers - Delhi</CardTitle>
+                  <Button variant="ghost" size="icon" onClick={() => setShowMap(false)}>
+                    <X className="h-6 w-6" />
+                  </Button>
                 </CardHeader>
-                <CardContent>
-                  <form className="space-y-6">
-                    <FadeInWhenVisible delay={100} duration="duration-1000" translateY="translate-y-16">
-                      <div className="grid md:grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="name">Name</Label>
-                          <Input id="name" placeholder="Your name" />
-                        </div>
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Mobile Number</Label>
-                          <Input id="phone" placeholder="+91 98765-43210" />
-                        </div>
-                      </div>
-                    </FadeInWhenVisible>
-
-                    <FadeInWhenVisible delay={200} duration="duration-1000" translateY="translate-y-16">
-                      <div className="space-y-2">
-                        <Label htmlFor="business">Business Name</Label>
-                        <Input id="business" placeholder="Your business" />
-                      </div>
-                    </FadeInWhenVisible>
-
-                    <FadeInWhenVisible delay={300} duration="duration-1000" translateY="translate-y-16">
-                      <div className="space-y-2">
-                        <Label htmlFor="category">Help Category</Label>
-                        <select className="w-full p-3 border rounded-lg">
-                          <option>Loan Related</option>
-                          <option>Technical Support</option>
-                          <option>Registration Help</option>
-                          <option>General Query</option>
-                          <option>Marketplace Issue</option>
-                          <option>Feedback & Suggestions</option>
-                        </select>
-                      </div>
-                    </FadeInWhenVisible>
-
-                    <FadeInWhenVisible delay={400} duration="duration-1000" translateY="translate-y-16">
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Your Message</Label>
-                        <Textarea
-                          id="message"
-                          placeholder="Please describe in detail what kind of help you need..."
-                          rows={4}
-                        />
-                      </div>
-                    </FadeInWhenVisible>
-
-                    <FadeInWhenVisible delay={500} duration="duration-1000" translateY="translate-y-16">
-                      <Button size="lg" className="w-full text-lg">
-                        <MessageCircle className="h-5 w-5 mr-2" />
-                        Send Message
-                      </Button>
-                    </FadeInWhenVisible>
-                  </form>
+                <CardContent className="flex-grow p-0">
+                  <iframe
+                    src={mapUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen={true}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
                 </CardContent>
               </Card>
-            </FadeInWhenVisible>
-          </div>
-        </div>
-      </section>
-
-      {/* Emergency Support */}
-      <section className="py-16 bg-gradient-to-r from-red-600 to-red-700">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-3xl mx-auto">
-            <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-              <h2 className="text-4xl font-bold text-white mb-6">
-                🚨 Emergency Support
-              </h2>
-            </FadeInWhenVisible>
-            <FadeInWhenVisible delay={150} duration="duration-1500" translateY="translate-y-24">
-              <p className="text-xl text-red-100 mb-8">
-                For urgent problems, call immediately
-              </p>
-            </FadeInWhenVisible>
-            <FadeInWhenVisible delay={300} duration="duration-1500" translateY="translate-y-24">
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="hero" size="lg" className="text-xl px-12 py-4 h-auto bg-white text-red-600 hover:bg-red-50">
-                  <Phone className="mr-2 h-6 w-6" />
-                  1800-123-MSME (6763)
-                </Button>
-                <Button variant="outline" size="lg" className="text-xl px-8 py-4 h-auto border-2 border-white text-white hover:bg-white hover:text-red-600">
-                  <MessageCircle className="mr-2 h-5 w-5" />
-                  WhatsApp: +91-98765-HELP
-                </Button>
-              </div>
-            </FadeInWhenVisible>
-          </div>
-        </div>
-      </section>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

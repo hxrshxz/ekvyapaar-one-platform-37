@@ -1,536 +1,229 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  Search,
-  Star,
-  MapPin,
-  Clock,
-  Users,
-  ShoppingCart,
-  FileText,
-  TrendingUp,
-  ArrowRight,
-  Filter,
-  Heart,
-  Eye,
-  MessageCircle,
-  Award,
-  Download,
-  Sparkles, // For All Services
-  Factory, // For Manufacturing
-  Palette, // For Design Services
-  Smartphone, // For Digital Marketing
-  Truck, // For Logistics
-  Briefcase, // For Accounting
-  Laptop, // For Tech Support
-  User, // For Freelancer image
-  Building, // For Product image (Construction)
-  Lightbulb, // For Product image (Electronics)
-  ClipboardList, // For Tenders
-  Package, // For Inventory
-  Settings // For Industrial Valves
+  Search, Star, MapPin, Sparkles, Factory, Palette, Smartphone, Truck, Briefcase, Laptop, FileText as FileTextIcon, Users, ShoppingCart, Printer, MessageSquare
 } from "lucide-react";
 import marketplaceHero from "@/assets/marketplace-hero.jpg";
 
-// Reusable FadeInWhenVisible component
-const FadeInWhenVisible = ({ children, delay = 0, duration = 'duration-1500', translateY = 'translate-y-24' }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const domRef = useRef();
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        // Changed: Now toggles isVisible based on intersection, allowing re-triggering
-        setIsVisible(entry.isIntersecting);
-      });
-    }, {
-      threshold: 0.1 // Trigger when 10% of the element is visible
-    });
-
-    const currentRef = domRef.current; // Capture current ref for cleanup
-    if (currentRef) {
-      observer.observe(currentRef);
-    }
-
-    return () => {
-      if (currentRef) {
-        observer.unobserve(currentRef);
-      }
-    };
-  }, []);
-
-  return (
-    <div
-      ref={domRef}
-      className={`
-        transition-all ${duration} ease-out
-        ${isVisible ? 'opacity-100 translate-y-0' : `opacity-0 ${translateY}`}
-      `}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-};
-
 export const Marketplace = () => {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const serviceCategories = [
-    { id: "all", name: "All Services", icon: Sparkles, count: 2847 },
-    { id: "manufacturing", name: "Manufacturing", icon: Factory, count: 845 },
-    { id: "design", name: "Design Services", icon: Palette, count: 456 },
-    { id: "digital", name: "Digital Marketing", icon: Smartphone, count: 289 },
-    { id: "logistics", name: "Logistics", icon: Truck, count: 234 },
-    { id: "finance", name: "Accounting", icon: Briefcase, count: 178 },
-    { id: "tech", name: "Tech Support", icon: Laptop, count: 156 },
-    { id: "legal", name: "Legal Services", icon: FileText, count: 98 },
-    { id: "hr", name: "HR & Recruitment", icon: Users, count: 72 },
+    { id: "all", name: "All", icon: Sparkles },
+    { id: "manufacturing", name: "Manufacturing", icon: Factory },
+    { id: "design", name: "Design", icon: Palette },
+    { id: "digital", name: "Marketing", icon: Smartphone },
+    { id: "logistics", name: "Logistics", icon: Truck },
+    { id: "finance", name: "Accounting", icon: Briefcase },
+    { id: "tech", name: "Tech", icon: Laptop },
+    { id: "legal", name: "Legal", icon: FileTextIcon },
+    { id: "hr", name: "HR", icon: Users },
+    { id: "printing", name: "Printing", icon: Printer },
+    { id: "consulting", name: "Consulting", icon: MessageSquare },
   ];
 
-  const freelancers = [
-    {
-      name: "Rajesh Kumar",
-      title: "CAD Designer & Manufacturing Expert",
-      location: "Gurgaon, Haryana",
-      rating: 4.9,
-      reviews: 127,
-      hourlyRate: "₹500/hour",
-      skills: ["AutoCAD", "SolidWorks", "3D Modeling", "Manufacturing"],
-      image: User, // Lucide Icon
-      completedProjects: 89,
-      responseTime: "Within 2 hours",
-      category: "manufacturing"
-    },
-    {
-      name: "Priya Sharma",
-      title: "Digital Marketing Specialist",
-      location: "Delhi, India",
-      rating: 4.8,
-      reviews: 94,
-      hourlyRate: "₹400/hour",
-      skills: ["Social Media", "SEO", "Content Marketing", "Analytics"],
-      image: User, // Lucide Icon
-      completedProjects: 156,
-      responseTime: "Within 1 hour",
-      category: "digital"
-    },
-    {
-      name: "Amit Verma",
-      title: "Web Developer & Tech Consultant",
-      location: "Bangalore, Karnataka",
-      rating: 4.7,
-      reviews: 203,
-      hourlyRate: "₹600/hour",
-      skills: ["React", "Node.js", "MongoDB", "AWS"],
-      image: User, // Lucide Icon
-      completedProjects: 142,
-      responseTime: "Within 3 hours",
-      category: "tech"
-    },
-    {
-      name: "Sneha Patel",
-      title: "Financial Advisor & CA",
-      location: "Mumbai, Maharashtra",
-      rating: 4.9,
-      reviews: 85,
-      hourlyRate: "₹800/hour",
-      skills: ["Taxation", "Financial Planning", "GST", "Auditing"],
-      image: User, // Lucide Icon
-      completedProjects: 67,
-      responseTime: "Within 4 hours",
-      category: "finance"
-    },
-    {
-      name: "Rohit Singh",
-      title: "Logistics & Supply Chain Expert",
-      location: "Chennai, Tamil Nadu",
-      rating: 4.6,
-      reviews: 112,
-      hourlyRate: "₹450/hour",
-      skills: ["Supply Chain", "Inventory", "Transportation", "Warehousing"],
-      image: User, // Lucide Icon
-      completedProjects: 98,
-      responseTime: "Within 2 hours",
-      category: "logistics"
-    },
-    {
-      name: "Kavya Reddy",
-      title: "Graphic Designer & Brand Consultant",
-      location: "Hyderabad, Telangana",
-      rating: 4.8,
-      reviews: 156,
-      hourlyRate: "₹350/hour",
-      skills: ["Graphic Design", "Branding", "UI/UX", "Adobe Creative"],
-      image: User, // Lucide Icon
-      completedProjects: 234,
-      responseTime: "Within 1 hour",
-      category: "design"
-    },
-    {
-      name: "Suresh Rao",
-      title: "Corporate Lawyer",
-      location: "Bengaluru, Karnataka",
-      rating: 4.7,
-      reviews: 78,
-      hourlyRate: "₹1200/hour",
-      skills: ["Contract Law", "IP Law", "Business Law"],
-      image: User,
-      completedProjects: 55,
-      responseTime: "Within 6 hours",
-      category: "legal"
-    },
-    {
-      name: "Deepa Singh",
-      title: "HR Consultant",
-      location: "Pune, Maharashtra",
-      rating: 4.5,
-      reviews: 42,
-      hourlyRate: "₹700/hour",
-      skills: ["Recruitment", "Payroll", "Employee Relations"],
-      image: User,
-      completedProjects: 30,
-      responseTime: "Within 5 hours",
-      category: "hr"
-    }
-  ];
+  // --- EXPANDED DATA SETS ---
+  const freelancers = useMemo(() => [
+    { name: "Rajesh Kumar", title: "CAD Designer & Prototyping", location: "Gurgaon, Haryana", rating: 4.9, hourlyRate: "₹500", skills: ["AutoCAD", "SolidWorks", "3D Printing"], image: "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "manufacturing" },
+    { name: "Priya Sharma", title: "Digital Marketing & SEO Strategist", location: "Delhi, India", rating: 4.8, hourlyRate: "₹400", skills: ["SEO", "PPC", "Content Strategy"], image: "https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "digital" },
+    { name: "Amit Verma", title: "Full-Stack Web Developer", location: "Bangalore, Karnataka", rating: 4.9, hourlyRate: "₹650", skills: ["React", "Node.js", "MongoDB"], image: "https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "tech" },
+    { name: "Sneha Patel", title: "Chartered Accountant & GST Expert", location: "Mumbai, Maharashtra", rating: 5.0, hourlyRate: "₹800", skills: ["Taxation", "GST Filing", "Auditing"], image: "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "finance" },
+    { name: "Kavya Reddy", title: "UI/UX & Brand Identity Designer", location: "Hyderabad, Telangana", rating: 4.8, hourlyRate: "₹450", skills: ["Figma", "Branding", "User Research"], image: "https://images.pexels.com/photos/1065084/pexels-photo-1065084.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "design" },
+    { name: "Suresh Rao", title: "Corporate & Commercial Lawyer", location: "Bengaluru, Karnataka", rating: 4.7, hourlyRate: "₹1200", skills: ["Contract Law", "IP Law", "Compliance"], image: "https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "legal" },
+    { name: "Vikram Singh", title: "Logistics Optimization Consultant", location: "Chennai, Tamil Nadu", rating: 4.6, hourlyRate: "₹550", skills: ["Supply Chain", "Warehousing", "ERP"], image: "https://images.pexels.com/photos/837358/pexels-photo-837358.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "logistics" },
+    { name: "Anjali Mehta", title: "HR & Recruitment Specialist", location: "Pune, Maharashtra", rating: 4.8, hourlyRate: "₹500", skills: ["Recruitment", "Payroll", "Policy Making"], image: "https://images.pexels.com/photos/3772510/pexels-photo-3772510.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "hr" },
+    { name: "Manoj Desai", title: "Offset & Digital Printing Expert", location: "Ahmedabad, Gujarat", rating: 4.9, hourlyRate: "₹300", skills: ["Offset Printing", "Digital Print", "Color Matching"], image: "https://images.pexels.com/photos/846741/pexels-photo-846741.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "printing" },
+    { name: "Sunita Iyer", title: "Business Strategy Consultant", location: "Delhi, India", rating: 5.0, hourlyRate: "₹2000", skills: ["Market Entry", "Growth Strategy", "Biz Plan"], image: "https://images.pexels.com/photos/1181579/pexels-photo-1181579.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "consulting" },
+    { name: "Nitin Gadkari", title: "App Developer (iOS & Android)", location: "Pune, Maharashtra", rating: 4.7, hourlyRate: "₹700", skills: ["Swift", "Kotlin", "React Native"], image: "https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "tech" },
+    { name: "Fatima Khan", title: "Social Media Manager", location: "Lucknow, UP", rating: 4.6, hourlyRate: "₹250", skills: ["Instagram Growth", "Facebook Ads", "Influencers"], image: "https://images.pexels.com/photos/1542085/pexels-photo-1542085.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", category: "digital" },
+  ], []);
 
-  const products = [
-    {
-      name: "Steel Rods - TMT 16mm",
-      seller: "Kumar Steel Works",
-      price: "₹45,000/ton",
-      location: "Mumbai, Maharashtra",
-      rating: 4.7,
-      reviews: 89,
-      image: Building, // Lucide Icon
-      inStock: true,
-      minOrder: "1 ton"
-    },
-    {
-      name: "LED Bulbs - 9W Pack",
-      seller: "Bright Electronics",
-      price: "₹120/piece",
-      location: "Delhi, India",
-      rating: 4.5,
-      reviews: 156,
-      image: Lightbulb, // Lucide Icon
-      inStock: true,
-      minOrder: "50 pieces"
-    },
-    {
-      name: "Cement - OPC 53 Grade",
-      seller: "BuildMax Supplies",
-      price: "₹350/bag",
-      location: "Pune, Maharashtra",
-      rating: 4.8,
-      reviews: 203,
-      image: Package, // Lucide Icon
-      inStock: false,
-      minOrder: "100 bags"
-    },
-    {
-      name: "Industrial Valves - DN50",
-      seller: "Precision Engineering",
-      price: "₹8,500/unit",
-      location: "Ahmedabad, Gujarat",
-      rating: 4.6,
-      reviews: 75,
-      image: Settings, // Lucide Icon
-      inStock: true,
-      minOrder: "5 units"
-    },
-    {
-      name: "Office Chairs - Ergonomic",
-      seller: "Comfort Furnishings",
-      price: "₹4,200/piece",
-      location: "Hyderabad, Telangana",
-      rating: 4.9,
-      reviews: 110,
-      image: Users, // Lucide Icon (representing office workers)
-      inStock: true,
-      minOrder: "10 pieces"
-    }
-  ];
+  const products = useMemo(() => [
+    { name: "9W LED Bulbs (Pack of 10)", seller: "Surya Electronics", price: "₹850 /pack", image: "https://images.pexels.com/photos/8134762/pexels-photo-8134762.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "Solar Panels (330W)", seller: "Adani Solar", price: "₹8,000 /panel", image: "https://images.pexels.com/photos/433308/pexels-photo-433308.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    // { name: "TMT Steel Rods (16mm)", seller: "Jindal Steel", price: "₹45,000 /ton", image: "https://images.pexels.com/photos/21014/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "Cotton Fabric (40s Count)", seller: "Ludhiana Textile Mills", price: "₹120 /meter", image: "https://images.pexels.com/photos/4210850/pexels-photo-4210850.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "Laptop Computers (Bulk)", seller: "Delhi IT Solutions", price: "₹35,000 /pc", image: "https://images.pexels.com/photos/4158/apple-iphone-smartphone-desk.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: false },
+    { name: "A4 Printing Paper Ream", seller: "TNPL Papers", price: "₹280 /ream", image: "https://images.pexels.com/photos/4218883/pexels-photo-4218883.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "Clothes", seller: "Featherlite", price: "₹4,200 /pc", image: "https://images.pexels.com/photos/1148957/pexels-photo-1148957.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: false },
+    { name: "Industrial Ball Valves (DN50)", seller: "Precision Engineering", price: "₹8,500 /unit", image: "https://images.pexels.com/photos/8459275/pexels-photo-8459275.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "Corrugated Boxes (3 Ply)", seller: "National Packaging", price: "₹1,500 /100pcs", image: "https://images.pexels.com/photos/704555/pexels-photo-704555.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "HDPE Granules (Natural)", seller: "Reliance Polymers", price: "₹95 /kg", image: "https://images.pexels.com/photos/6858688/pexels-photo-6858688.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "calculators (Bulk)", seller: "Apex Safety Gear", price: "₹250 /pc", image: "https://images.pexels.com/photos/5412431/pexels-photo-5412431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+    { name: "Industrial Chemicals (HCL)", seller: "Surat Chemicals", price: "₹3,000 /barrel", image: "https://images.pexels.com/photos/256417/pexels-photo-256417.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", inStock: true },
+  ], []);
 
-  const tenders = [
-    {
-      title: "Supply of Office Furniture",
-      organization: "Municipal Corporation Delhi",
-      value: "₹25,00,000",
-      deadline: "15 Feb 2024",
-      status: "Open",
-      category: "Furniture",
-      location: "Delhi",
-      documents: 5
-    },
-    {
-      title: "Construction of School Building",
-      organization: "Education Department Maharashtra",
-      value: "₹1,50,00,000",
-      deadline: "28 Feb 2024",
-      status: "Open",
-      category: "Construction",
-      location: "Maharashtra",
-      documents: 12
-    },
-    {
-      title: "IT Equipment Procurement",
-      organization: "State Bank of India",
-      value: "₹75,00,000",
-      deadline: "10 Mar 2024",
-      status: "Open",
-      category: "Technology",
-      location: "Pan India",
-      documents: 8
-    },
-    {
-      title: "Digital Marketing Services",
-      organization: "Ministry of MSME",
-      value: "₹50,00,000",
-      deadline: "20 Mar 2024",
-      status: "Open",
-      category: "Marketing",
-      location: "Delhi",
-      documents: 6
-    },
-    {
-      title: "Logistics Services for FMCG",
-      organization: "Reliance Retail",
-      value: "₹2,00,00,000",
-      deadline: "5 Apr 2024",
-      status: "Open",
-      category: "Logistics",
-      location: "Gujarat",
-      documents: 10
-    }
-  ];
+  const tenders = useMemo(() => [
+    { title: "Supply of Office Furniture", organization: "Municipal Corporation Delhi", value: "₹25,00,000", deadline: "15 Oct 2025" },
+    { title: "Construction of School Building", organization: "Education Dept, Maharashtra", value: "₹1,50,00,000", deadline: "28 Oct 2025" },
+    { title: "IT Equipment Procurement", organization: "State Bank of India", value: "₹75,00,000", deadline: "10 Nov 2025" },
+    { title: "Annual Maintenance for ACs", organization: "CPWD, New Delhi", value: "₹15,00,000", deadline: "25 Nov 2025" },
+    { title: "Hiring of Security Services", organization: "Bangalore Metro Rail", value: "₹50,00,000", deadline: "05 Dec 2025" },
+    { title: "Digital Marketing Services", organization: "Ministry of Tourism", value: "₹80,00,000", deadline: "12 Dec 2025" },
+    { title: "Procurement of Lab Equipment", organization: "AIIMS, Delhi", value: "₹2,00,00,000", deadline: "02 Jan 2026" },
+    { title: "Logistics Partner for Events", organization: "FICCI", value: "₹40,00,000", deadline: "15 Jan 2026" },
+  ], []);
+  
+  const filteredFreelancers = useMemo(() => {
+    return freelancers.filter(f => 
+      (activeCategory === 'all' || f.category === activeCategory) &&
+      (f.name.toLowerCase().includes(searchTerm.toLowerCase()) || f.title.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }, [freelancers, activeCategory, searchTerm]);
+
+  const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } } as const;
+  const staggerContainer = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08, delayChildren: 0.2 } } } as const;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="relative h-96 overflow-hidden">
-        <img
-          src={marketplaceHero}
-          alt="Marketplace"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-primary/80" />
-        <div className="absolute inset-0 flex items-center justify-center text-center text-white">
-          {/* Staggered fade-in for hero content */}
-          <div className="flex flex-col items-center">
-            <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-24">
-              <h1 className="text-5xl font-bold mb-4">Marketplace</h1>
-            </FadeInWhenVisible>
-            <FadeInWhenVisible delay={200} duration="duration-1500" translateY="translate-y-24">
-              <p className="text-xl mb-8">Find services, products, and business opportunities</p>
-            </FadeInWhenVisible>
-            <FadeInWhenVisible delay={400} duration="duration-1500" translateY="translate-y-24">
-              <Button variant="secondary" size="lg" className="rounded-lg">
-                Explore Market
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </FadeInWhenVisible>
-          </div>
-        </div>
+    <div className="min-h-screen bg-slate-900 text-white">
+      {/* Background */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
+          <div className="absolute top-[5%] left-[5%] w-[400px] h-[400px] bg-purple-500/20 rounded-full filter blur-3xl animate-blob"></div>
+          <div className="absolute top-[20%] right-[10%] w-[500px] h-[500px] bg-sky-500/20 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-[5%] left-[20%] w-[300px] h-[300px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
+      
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <div className="relative h-[28rem] overflow-hidden flex items-center justify-center text-center">
+            <img src={marketplaceHero} alt="Marketplace" className="absolute w-full h-full object-cover"/>
+            <div className="absolute inset-0 bg-slate-900/70" />
+            <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="relative flex flex-col items-center px-4">
+                <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400">
+                  Connect & Grow
+                </motion.h1>
+                <motion.p variants={fadeIn} className="text-xl text-slate-300 max-w-2xl mt-4 mb-8">
+                  Your one-stop B2B hub for services, products, and new business opportunities.
+                </motion.p>
+                <motion.div variants={fadeIn} className="relative w-full max-w-lg">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <Input placeholder="Search for 'CAD design', 'steel rods', or tenders..." className="w-full rounded-full bg-white/10 border-white/20 pl-12 h-12 text-white placeholder:text-slate-400" />
+                </motion.div>
+            </motion.div>
+        </div>
 
-      <div className="container mx-auto px-4 py-16">
-        <Tabs defaultValue="services" className="w-full">
-          {/* TabsList with FadeInWhenVisible */}
-          <FadeInWhenVisible delay={0} duration="duration-1500" translateY="translate-y-16">
-            <TabsList className="grid w-full grid-cols-3 rounded-lg">
-              <TabsTrigger value="services">Service Gigs</TabsTrigger>
-              <TabsTrigger value="products">Product Store</TabsTrigger>
-              <TabsTrigger value="tenders">Tenders & Orders</TabsTrigger>
-            </TabsList>
-          </FadeInWhenVisible>
+        <div className="container mx-auto px-4 py-16">
+          <Tabs defaultValue="services" className="w-full">
+            <motion.div initial="hidden" animate="visible" variants={fadeIn}>
+              <TabsList className="grid w-full grid-cols-3 rounded-xl bg-slate-800/80 backdrop-blur-sm p-1 h-12">
+                <TabsTrigger value="services">Services</TabsTrigger>
+                <TabsTrigger value="products">Products</TabsTrigger>
+                <TabsTrigger value="tenders">Tenders</TabsTrigger>
+              </TabsList>
+            </motion.div>
+            
+            {/* Services Tab */}
+            <TabsContent value="services" className="mt-8 space-y-8">
+              <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="space-y-4">
+                  <motion.h2 variants={fadeIn} className="text-2xl font-bold text-slate-100">Find Professional Services</motion.h2>
+                  <motion.div variants={fadeIn} className="flex flex-wrap gap-2">
+                    {serviceCategories.map((category) => (
+                      <Button
+                        key={category.id}
+                        variant={activeCategory === category.id ? "default" : "secondary"}
+                        onClick={() => setActiveCategory(category.id)}
+                        className="rounded-full"
+                      >
+                        <category.icon className="h-4 w-4 mr-2" />
+                        {category.name}
+                      </Button>
+                    ))}
+                  </motion.div>
+              </motion.div>
 
-          <TabsContent value="services" className="space-y-8">
-            {/* Service Categories with FadeInWhenVisible */}
-            <FadeInWhenVisible delay={100} duration="duration-1500" translateY="translate-y-16">
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-                {serviceCategories.map((category, index) => (
-                  <Button
-                    key={category.id}
-                    variant={activeCategory === category.id ? "default" : "outline"}
-                    onClick={() => setActiveCategory(category.id)}
-                    className="h-auto p-4 flex-col gap-2 rounded-lg"
-                  >
-                    <category.icon className="h-8 w-8" /> {/* Render Lucide Icon */}
-                    <span className="text-xs">{category.name}</span>
-                    <Badge variant="secondary" className="text-xs">{category.count}</Badge>
-                  </Button>
+              <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredFreelancers.map((freelancer) => (
+                  <motion.div key={freelancer.name} variants={fadeIn} className="group">
+                    <Card className="h-full bg-white/5 border-white/10 hover:border-sky-400 transition-all duration-300 rounded-2xl shadow-lg hover:shadow-sky-500/20">
+                      <CardHeader className="flex flex-row items-center gap-4">
+                        <img src={freelancer.image} alt={freelancer.name} className="w-16 h-16 rounded-full object-cover border-2 border-slate-700"/>
+                        <div>
+                          <h3 className="font-bold text-slate-100">{freelancer.name}</h3>
+                          <p className="text-sm text-sky-400">{freelancer.title}</p>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="flex items-center gap-4 text-sm text-slate-400">
+                          <div className="flex items-center gap-1"><Star className="h-4 w-4 text-amber-400" /> {freelancer.rating}</div>
+                          <div className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {freelancer.location}</div>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {freelancer.skills.map((skill) => ( <Badge key={skill} variant="secondary">{skill}</Badge> ))}
+                        </div>
+                        <div className="flex justify-between items-center pt-2">
+                          <div className="text-lg font-bold text-slate-100">{freelancer.hourlyRate}<span className="text-sm font-normal text-slate-400">/hr</span></div>
+                          <Button size="sm" className="rounded-full bg-slate-700 hover:bg-slate-600">Contact</Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
-              </div>
-            </FadeInWhenVisible>
-
-            {/* Freelancer Cards with staggered FadeInWhenVisible */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {freelancers.map((freelancer, index) => (
-                <FadeInWhenVisible key={index} delay={index * 100} duration="duration-1000" translateY="translate-y-16">
-                  <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-2xl border-0 shadow-card">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <freelancer.image className="h-10 w-10" /> {/* Render Lucide Icon */}
+              </motion.div>
+            </TabsContent>
+            
+            {/* Products Tab */}
+            <TabsContent value="products" className="mt-8 space-y-8">
+               <motion.h2 initial="hidden" animate="visible" variants={fadeIn} className="text-2xl font-bold text-slate-100">Browse Industrial & Business Products</motion.h2>
+               <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {products.map((product) => (
+                    <motion.div key={product.name} variants={fadeIn} className="group">
+                      <Card className="h-full bg-white/5 border-white/10 hover:border-sky-400 transition-all duration-300 rounded-2xl shadow-lg hover:shadow-sky-500/20 overflow-hidden">
+                        <img src={product.image} alt={product.name} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"/>
+                        <CardContent className="p-4 space-y-3 flex flex-col justify-between h-[calc(100%-10rem)]">
                           <div>
-                            <h3 className="font-bold">{freelancer.name}</h3>
-                            <p className="text-sm text-muted-foreground">{freelancer.title}</p>
+                            <h3 className="font-bold text-slate-100 truncate">{product.name}</h3>
+                            <p className="text-sm text-slate-400">by {product.seller}</p>
                           </div>
-                        </div>
-                        <Heart className="h-5 w-5 text-muted-foreground hover:text-red-500 cursor-pointer" />
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span>{freelancer.rating}</span>
-                          <span className="text-muted-foreground">({freelancer.reviews})</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">{freelancer.location}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1">
-                        {freelancer.skills.slice(0, 3).map((skill, idx) => (
-                          <Badge key={idx} variant="secondary" className="text-xs">{skill}</Badge>
-                        ))}
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <div className="text-lg font-bold text-primary">{freelancer.hourlyRate}</div>
-                        <Button size="sm" className="rounded-lg">
-                          <MessageCircle className="h-4 w-4 mr-2" />
-                          Contact
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </FadeInWhenVisible>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="products" className="space-y-8">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {products.map((product, index) => (
-                <FadeInWhenVisible key={index} delay={index * 100} duration="duration-1000" translateY="translate-y-16">
-                  <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <product.image className="h-10 w-10" /> {/* Render Lucide Icon */}
                           <div>
-                            <h3 className="font-bold">{product.name}</h3>
-                            <p className="text-sm text-muted-foreground">{product.seller}</p>
+                            <div className="flex justify-between items-center mb-3">
+                              <div className="text-lg font-bold text-sky-400">{product.price}</div>
+                              <Badge variant={product.inStock ? "default" : "destructive"}>{product.inStock ? "In Stock" : "Out of Stock"}</Badge>
+                            </div>
+                            <Button disabled={!product.inStock} className="w-full bg-slate-700 hover:bg-slate-600">Add to Cart</Button>
                           </div>
-                        </div>
-                        <Badge variant={product.inStock ? "secondary" : "destructive"}>
-                          {product.inStock ? "In Stock" : "Out of Stock"}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="flex items-center gap-4 text-sm">
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <span>{product.rating}</span>
-                          <span className="text-muted-foreground">({product.reviews})</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-muted-foreground">{product.location}</span>
-                        </div>
-                      </div>
-
-                      <div className="text-sm text-muted-foreground">
-                        Min Order: {product.minOrder}
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <div className="text-lg font-bold text-primary">{product.price}</div>
-                        <Button size="sm" disabled={!product.inStock}>
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          {product.inStock ? "Add to Cart" : "Notify Me"}
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </FadeInWhenVisible>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="tenders" className="space-y-8">
-            <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
-              {tenders.map((tender, index) => (
-                <FadeInWhenVisible key={index} delay={index * 100} duration="duration-1000" translateY="translate-y-16">
-                  <Card className="hover:shadow-lg transition-all duration-300">
-                    <CardHeader>
-                      <div className="flex justify-between items-start">
-                        <div>
-                          <CardTitle className="text-lg">
-                            {tender.title}
-                          </CardTitle>
-                          <CardDescription>{tender.organization}</CardDescription>
-                        </div>
-                        <Badge variant="secondary">{tender.status}</Badge>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Value:</span>
-                          <div className="font-semibold text-green-600">
-                            {tender.value}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Deadline:</span>
-                          <div className="font-semibold text-red-600">
-                            {tender.deadline}
-                          </div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Category:</span>
-                          <div className="font-semibold">{tender.category}</div>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Location:</span>
-                          <div className="font-semibold">{tender.location}</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-sm">
-                        <FileText className="h-4 w-4 text-muted-foreground" />
-                        <span>{tender.documents} documents required</span>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <Button size="sm" className="flex-1">
-                          <Eye className="h-4 w-4 mr-2" />
-                          View Details
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </FadeInWhenVisible>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+               </motion.div>
+            </TabsContent>
+            
+            {/* Tenders Tab */}
+            <TabsContent value="tenders" className="mt-8 space-y-8">
+              <motion.h2 initial="hidden" animate="visible" variants={fadeIn} className="text-2xl font-bold text-slate-100">Latest Tenders & Procurement Orders</motion.h2>
+              <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-4">
+                  {tenders.map((tender) => (
+                    <motion.div key={tender.title} variants={fadeIn}>
+                      <Card className="bg-white/5 border-white/10 hover:border-sky-400 transition-all duration-300 rounded-2xl shadow-lg hover:shadow-sky-500/20">
+                          <CardContent className="p-6 grid md:grid-cols-4 items-center gap-6">
+                              <div className="md:col-span-2">
+                                <h3 className="font-bold text-lg text-sky-400">{tender.title}</h3>
+                                <p className="text-sm text-slate-300">{tender.organization}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-slate-400">Value</p>
+                                <p className="font-semibold text-slate-100">{tender.value}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-slate-400">Deadline</p>
+                                <p className="font-semibold text-red-400">{tender.deadline}</p>
+                              </div>
+                              <Button className="md:col-start-4 rounded-full">View Details</Button>
+                          </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+              </motion.div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   );
