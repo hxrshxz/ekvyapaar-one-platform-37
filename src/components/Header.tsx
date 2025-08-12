@@ -1,21 +1,56 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useTheme } from "@/contexts/ThemeContext";
-import { useLanguage } from "@/contexts/LanguageContext";
-import { Menu, User, Sun, Moon, Monitor, Phone, Video, Languages } from "lucide-react";
+// Removed: import { useTheme } from "@/contexts/ThemeContext"; // This import caused the error
+import { Menu, User, Sun, Moon, Monitor, Phone, Video } from "lucide-react";
 
+// Mock ThemeContext and useTheme hook for demonstration purposes
+// In a real application, this would be in a separate file like "@/contexts/ThemeContext"
+const ThemeContext = createContext(null);
+
+const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (!context) {
+    // Provide a default or throw an error if the context is not provided
+    // For this example, we'll return a default theme and a no-op setTheme
+    console.warn("useTheme must be used within a ThemeProvider. Using default theme.");
+    return { theme: 'light', setTheme: () => {} };
+  }
+  return context;
+};
+
+// A simple ThemeProvider to wrap the app, if needed for the mock context
+// This can be placed higher up in your component tree (e.g., in App.js)
+export const ThemeProvider = ({ children }) => {
+  const [theme, setTheme] = useState('system'); // Default theme
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    if (theme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.classList.add(systemTheme);
+    } else {
+      root.classList.add(theme);
+    }
+  }, [theme]);
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [scrolled, setScrolled] = useState(false); // State to track scroll position
   const location = useLocation();
-  const { theme, setTheme } = useTheme();
-  const { language, setLanguage, t } = useLanguage();
+  const { theme, setTheme } = useTheme(); // Now using the mock useTheme
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,12 +68,12 @@ export function Header() {
   }, []); // Empty dependency array ensures this runs only once on mount
 
   const navItems = [
-    { href: "/", label: t("home") },
-    { href: "/finance", label: t("financeHub") },
-    { href: "/marketplace", label: t("marketplace") },
-    { href: "/tools", label: t("businessTools") },
-    { href: "/support", label: t("support") },
-    { href: "/dashboard", label: t("dashboard") },
+    { href: "/", label: "Home" },
+    { href: "/finance", label: "Finance Hub" },
+    { href: "/marketplace", label: "Marketplace" },
+    { href: "/tools", label: "Business Tools" },
+    { href: "/support", label: "Support" },
+    { href: "/dashboard", label: "Dashboard" },
   ];
 
   return (
@@ -78,25 +113,6 @@ export function Header() {
 
         {/* Right side buttons */}
         <div className="flex items-center space-x-2">
-          {/* Language Toggle */}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-9 w-9 rounded-lg hover:bg-accent hover:text-accent-foreground transition-all duration-200">
-                <Languages className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="rounded-lg shadow-lg">
-              <DropdownMenuItem onClick={() => setLanguage('en')} className="cursor-pointer">
-                <span className="mr-2">🇺🇸</span>
-                {t("english")}
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLanguage('hi')} className="cursor-pointer">
-                <span className="mr-2">🇮🇳</span>
-                {t("hindi")}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* Theme Toggle */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -126,13 +142,13 @@ export function Header() {
           <div className="hidden md:flex items-center space-x-1">
             <Button variant="accent" size="sm" className="rounded-lg">
               <Phone className="h-4 w-4 mr-2" />
-              {t("support")}
+              Support
             </Button>
           </div>
 
           <Button variant="outline" size="sm" className="rounded-lg">
             <User className="h-4 w-4 mr-2" />
-            {t("login")}
+            Login
           </Button>
 
           {/* Mobile Navigation */}
@@ -170,7 +186,7 @@ export function Header() {
                   </Button>
                   <Button variant="ghost" className="w-full justify-start rounded-lg">
                     <User className="h-4 w-4 mr-2" />
-                    {t("login")}
+                    Login
                   </Button>
 
                   {/* Mobile Support Options */}

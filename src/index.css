@@ -16,41 +16,41 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 15%;
 
-    /* Primary: Professional Navy Blue */
-    --primary: 213 89% 27%; /* #1A365D - Professional Banking Blue */
+    /* Primary: Deep Blue */
+    --primary: 247 91% 25%; /* #1B1464 */
     --primary-foreground: 0 0% 100%;
-    --primary-light: 213 89% 35%;
-    --primary-dark: 213 89% 20%;
+    --primary-light: 247 91% 35%;
+    --primary-dark: 247 91% 18%;
 
-    /* Secondary: Warm Corporate Gray */
-    --secondary: 210 11% 93%;
-    --secondary-foreground: 213 27% 26%;
+    /* Secondary: Clean Neutral */
+    --secondary: 220 15% 96%;
+    --secondary-foreground: 220 20% 15%;
 
-    /* Muted Colors - Professional Neutrals */
-    --muted: 210 11% 96%;
-    --muted-foreground: 213 15% 50%;
+    /* Muted Colors - Soft Clean */
+    --muted: 220 15% 97%;
+    --muted-foreground: 220 15% 45%;
 
-    /* Accent: Corporate Teal */
-    --accent: 173 79% 35%; /* #1B998B - Professional Teal */
+    /* Accent: Teal Green */
+    --accent: 140 100% 39%; /* #00C853 */
     --accent-foreground: 0 0% 100%;
-    --accent-light: 173 79% 45%;
-    --accent-dark: 173 79% 25%;
+    --accent-light: 140 100% 45%;
+    --accent-dark: 140 100% 35%;
 
-    /* Success: Professional Green */
-    --success: 142 69% 40%; /* #22C55E - Professional Success Green */
+    /* Success: Bright Green */
+    --success: 140 100% 39%;
     --success-foreground: 0 0% 100%;
-    --success-light: 142 69% 50%;
+    --success-light: 140 100% 45%;
 
-    /* Warning: Corporate Orange */
-    --warning: 30 100% 45%; /* #E67E22 - Professional Warning Orange */
+    /* Warning: Professional Orange */
+    --warning: 25 95% 55%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 55%; /* #DC2626 - Professional Error Red */
+    --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 213 20% 87%;
-    --input: 210 11% 97%;
-    --ring: 213 89% 27%;
+    --border: 240 15% 90%;
+    --input: 240 15% 95%;
+    --ring: 247 91% 25%;
 
     /* Clean Modern Colors - No Gradients */
     --solid-primary: hsl(var(--primary));
@@ -72,9 +72,9 @@
       0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-button: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px 0 rgb(0 0 0 / 0.06);
 
-    /* Professional Typography */
-    --font-sans: "Inter", "Segoe UI", "system-ui", sans-serif;
-    --font-display: "Inter", "Segoe UI", system-ui, sans-serif;
+    /* Modern Typography */
+    --font-sans: "Inter", "Poppins", system-ui, sans-serif;
+    --font-display: "Poppins", "Inter", system-ui, sans-serif;
 
     /* Smooth Animations */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -103,47 +103,49 @@
   }
 
   .dark {
-    /* Professional Dark Theme */
-    --background: 213 31% 9%; /* Dark Navy */
-    --foreground: 0 0% 95%;
+    /* Dark SBI Banking Theme */
+    --background: 240 25% 8%;
+    --foreground: 0 0% 98%;
 
-    --card: 213 31% 12%;
-    --card-foreground: 0 0% 95%;
+    --card: 240 20% 12%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 213 31% 12%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 240 20% 12%;
+    --popover-foreground: 0 0% 98%;
 
-    /* Dark Primary: Professional Blue */
-    --primary: 213 89% 55%; /* Brighter but professional */
-    --primary-foreground: 213 31% 9%;
-    --primary-light: 213 89% 65%;
-    --primary-dark: 213 89% 45%;
+    /* Dark Primary: Bright SBI Blue */
+    --primary: 247 91% 65%;
+    --primary-foreground: 240 25% 8%;
+    --primary-light: 247 91% 75%;
+    --primary-dark: 247 91% 55%;
+    --primary-glow: 247 91% 80%;
 
-    /* Dark Secondary: Professional Gray */
-    --secondary: 213 15% 25%;
-    --secondary-foreground: 0 0% 95%;
+    /* Dark Secondary: Bright Magenta */
+    --secondary: 330 96% 65%;
+    --secondary-foreground: 240 25% 8%;
+    --secondary-light: 330 96% 75%;
+    --secondary-dark: 330 96% 55%;
 
-    --muted: 213 15% 15%;
-    --muted-foreground: 213 10% 70%;
+    --muted: 240 15% 15%;
+    --muted-foreground: 240 10% 70%;
 
-    /* Dark Accent: Professional Teal */
-    --accent: 173 79% 55%;
-    --accent-foreground: 213 31% 9%;
-    --accent-light: 173 79% 65%;
-    --accent-dark: 173 79% 45%;
+    --accent: 280 85% 60%;
+    --accent-foreground: 240 25% 8%;
+    --accent-light: 280 85% 70%;
+    --accent-dark: 280 85% 50%;
 
-    --success: 142 69% 55%;
-    --success-foreground: 213 31% 9%;
+    --success: 140 70% 60%;
+    --success-foreground: 240 25% 8%;
 
-    --warning: 30 100% 60%;
-    --warning-foreground: 213 31% 9%;
+    --warning: 35 95% 65%;
+    --warning-foreground: 240 25% 8%;
 
-    --destructive: 0 84% 65%;
-    --destructive-foreground: 213 31% 9%;
+    --destructive: 0 85% 65%;
+    --destructive-foreground: 240 25% 8%;
 
-    --border: 213 15% 20%;
-    --input: 213 15% 18%;
-    --ring: 213 89% 55%;
+    --border: 240 15% 20%;
+    --input: 240 15% 18%;
+    --ring: 247 91% 65%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
