@@ -12,6 +12,9 @@ import { BusinessTools } from "./pages/BusinessTools";
 import { Support } from "./pages/Support";
 import { Dashboard } from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
+import { AuthProvider } from "./contexts/AuthContext";
+import RequireAuth from "./components/RequireAuth";
 
 const queryClient = new QueryClient();
 
@@ -19,21 +22,24 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/finance" element={<FinanceHub />} />
-            <Route path="/marketplace" element={<Marketplace />} />
-            <Route path="/tools" element={<BusinessTools />} />
-            <Route path="/support" element={<Support />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Header />
+            <Routes>
+              <Route path="/" element={<Homepage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/finance" element={<RequireAuth><FinanceHub /></RequireAuth>} />
+              <Route path="/marketplace" element={<RequireAuth><Marketplace /></RequireAuth>} />
+              <Route path="/tools" element={<RequireAuth><BusinessTools /></RequireAuth>} />
+              <Route path="/support" element={<RequireAuth><Support /></RequireAuth>} />
+              <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>

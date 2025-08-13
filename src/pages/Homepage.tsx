@@ -1,6 +1,7 @@
 "use client";
 import React, { useMemo } from 'react';
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -69,8 +70,8 @@ export const Homepage = () => {
             The all-in-one platform for MSMEs. Manage finances, find new customers, and automate your operations with AI-powered tools.
           </motion.p>
           <motion.div variants={fadeIn} className="mt-10 flex flex-col sm:flex-row items-center gap-4">
-            <Button asChild size="lg" className="bg-sky-600 hover:bg-sky-500 h-12 px-8 text-base w-full sm:w-auto"><a href="/dashboard"><Zap className="mr-2 h-5 w-5" />Go to Dashboard</a></Button>
-            <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base border-slate-700 bg-slate-800/50 hover:bg-slate-700 hover:text-white w-full sm:w-auto"><a href="/finance">Explore Features</a></Button>
+            <Button asChild size="lg" className="bg-sky-600 hover:bg-sky-500 h-12 px-8 text-base w-full sm:w-auto"><Link to="/login"><Zap className="mr-2 h-5 w-5" />Go to Dashboard</Link></Button>
+            <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base border-slate-700 bg-slate-800/50 hover:bg-slate-700 hover:text-white w-full sm:w-auto"><Link to="/login">Explore Features</Link></Button>
           </motion.div>
           <motion.div variants={fadeIn} style={{ perspective: '2000px' }} className="mt-24 w-full max-w-6xl">
             <div style={{ transform: 'rotateX(15deg) rotateZ(-2deg)' }} className="relative rounded-2xl p-2 transition-transform duration-500 hover:scale-105">
@@ -105,7 +106,7 @@ export const Homepage = () => {
                       <h3 className="text-2xl font-bold text-slate-100 mb-2">{pillar.title}</h3>
                       <p className="text-slate-400 mb-6 flex-grow">{pillar.desc}</p>
                       <div className="space-y-3 mb-6">{pillar.features.map((feat, fi) => (<div key={fi} className="flex items-center gap-3"><CheckCircle className="h-5 w-5 text-green-400" /><span>{feat}</span></div>))}</div>
-                      <Button asChild className="w-full mt-auto bg-slate-700 hover:bg-slate-600"><a href={pillar.link}>{pillar.buttonText}<ArrowRight className="ml-2 h-4 w-4" /></a></Button>
+                      <Button asChild className="w-full mt-auto bg-slate-700 hover:bg-slate-600"><Link to="/login">{pillar.buttonText}<ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
                     </div>
                   </Card>
                 </motion.div>
@@ -173,7 +174,7 @@ export const Homepage = () => {
                       <div className="text-center space-y-6">
                           <h2 className="text-4xl font-bold text-white">Ready to Transform Your Business?</h2>
                           <p className="text-lg text-slate-300 max-w-2xl mx-auto">Join 50,000+ MSMEs who have already simplified their operations and accelerated their growth with EkVyapaar.</p>
-                          <Button size="lg" asChild className="bg-white text-slate-900 hover:bg-slate-200 h-14 px-10 text-lg font-bold"><a href="/finance">Get Started for Free<ArrowRight className="ml-3 h-6 w-6" /></a></Button>
+                          <Button size="lg" asChild className="bg-white text-slate-900 hover:bg-slate-200 h-14 px-10 text-lg font-bold"><Link to="/login">Get Started for Free<ArrowRight className="ml-3 h-6 w-6" /></Link></Button>
                       </div>
                   </Card>
               </motion.div>

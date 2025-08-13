@@ -5,10 +5,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, User, Sun, Moon, Phone, Rocket } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 // NOTE: This component assumes it is wrapped in a real ThemeProvider.
 // For demo purposes, we'll mock a simple theme toggle.
-
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
@@ -16,14 +16,20 @@ export function Header() {
   // A simplified theme state for this component's demo
   const [theme, setTheme] = useState('dark');
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/finance", label: "Finance Hub" },
-    { href: "/marketplace", label: "Marketplace" },
-    { href: "/tools", label: "Business Tools" },
-    { href: "/support", label: "Support" },
-    { href: "/dashboard", label: "Dashboard" },
-  ];
+  const { isAuthenticated } = useAuth();
+  
+  const navItems = isAuthenticated
+    ? [
+      { href: "/", label: "Home" },
+      { href: "/finance", label: "Finance Hub" },
+      { href: "/marketplace", label: "Marketplace" },
+      { href: "/tools", label: "Business Tools" },
+      { href: "/support", label: "Support" },
+      { href: "/dashboard", label: "Dashboard" },
+    ]
+    : [
+      { href: "/", label: "Home" },
+    ];
   
   const activePath = location.pathname;
 
@@ -68,14 +74,18 @@ export function Header() {
             {theme === 'light' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
 
-          <Button variant="outline" size="sm" className="hidden md:inline-flex rounded-full bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg">
-            <User className="h-4 w-4 mr-2" />
-            Login
-          </Button>
+          {!isAuthenticated && (
+            <Button asChild variant="outline" size="sm" className="hidden md:inline-flex rounded-full bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg">
+              <Link to="/login"><User className="h-4 w-4 mr-2" />
+              Login</Link>
+            </Button>
+          )}
           
-          <Button size="sm" className="hidden md:inline-flex rounded-full bg-sky-600 hover:bg-sky-500">
-            <Phone className="h-4 w-4 mr-2" />
-            Support
+          <Button asChild size="sm" className="hidden md:inline-flex rounded-full bg-sky-600 hover:bg-sky-500">
+            <Link to={isAuthenticated ? "/support" : "/login"}>
+              <Phone className="h-4 w-4 mr-2" />
+              Support
+            </Link>
           </Button>
 
           {/* Mobile Navigation */}
@@ -100,13 +110,19 @@ export function Header() {
                   </Link>
                 ))}
                 <div className="pt-4 border-t border-slate-700 space-y-2">
-                  <Button variant="outline" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-                    <User className="h-5 w-5 mr-3" />
-                    Login
-                  </Button>
-                  <Button variant="default" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-sky-600 hover:bg-sky-500">
-                    <Phone className="h-5 w-5 mr-3" />
-                    Contact Support
+                  {!isAuthenticated && (
+                    <Button asChild variant="outline" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+                      <Link to="/login">
+                        <User className="h-5 w-5 mr-3" />
+                        Login
+                      </Link>
+                    </Button>
+                  )}
+                  <Button asChild variant="default" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-sky-600 hover:bg-sky-500">
+                    <Link to={isAuthenticated ? "/support" : "/login"}>
+                      <Phone className="h-5 w-5 mr-3" />
+                      Contact Support
+                    </Link>
                   </Button>
                 </div>
               </div>
