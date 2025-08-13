@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import { AuthProvider } from "./contexts/AuthContext";
 import RequireAuth from "./components/RequireAuth";
+import PublicOnly from "./components/PublicOnly";
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,7 @@ const App = () => (
           <BrowserRouter>
             <Header />
             <Routes>
-              <Route path="/" element={<Homepage />} />
+              <Route path="/" element={<PublicOnly><Homepage /></PublicOnly>} />
               <Route path="/login" element={<Login />} />
               <Route path="/finance" element={<RequireAuth><FinanceHub /></RequireAuth>} />
               <Route path="/marketplace" element={<RequireAuth><Marketplace /></RequireAuth>} />

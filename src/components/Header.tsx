@@ -20,7 +20,6 @@ export function Header() {
   
   const navItems = isAuthenticated
     ? [
-      { href: "/", label: "Home" },
       { href: "/finance", label: "Finance Hub" },
       { href: "/marketplace", label: "Marketplace" },
       { href: "/tools", label: "Business Tools" },
