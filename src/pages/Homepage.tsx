@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useLanguage } from "@/contexts/LanguageContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Star, CheckCircle, Users, TrendingUp, Shield, Landmark, Gem, Globe, FilePenLine, Combine, Rocket, Banknote, Zap } from "lucide-react";
@@ -15,7 +14,6 @@ import businessTools from "@/assets/business-tools.jpg";
 import dashboardPreviewImage from '@/assets/dashboard.png';
 
 export const Homepage = () => {
-  const { t } = useLanguage();
   // Data for sections below the hero
   const howItWorks = useMemo(() => [
     { step: "1", title: "Smart Onboarding", description: "Quickly register via Udyam, Aadhaar, or PAN with our AI-powered smart onboarding.", icon: FilePenLine, features: ["Instant MSME verification via Udyam API", "Seamless Aadhaar & PAN-based e-KYC", "Secure and trustworthy process"] },
@@ -65,15 +63,15 @@ export const Homepage = () => {
           className="min-h-screen flex flex-col items-center justify-center text-center pt-24 pb-12"
         >
           <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 leading-tight">
-            {t('homepage.hero.title.before')} <br />
+            Unlock your Business Potential with <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-br from-sky-400 to-sky-500">EkVyapaar</span>
           </motion.h1>
           <motion.p variants={fadeIn} className="mt-6 max-w-2xl text-lg text-slate-300">
-            {t('homepage.hero.subtitle')}
+            The all-in-one platform for MSMEs. Manage finances, find new customers, and automate your operations with AI-powered tools.
           </motion.p>
           <motion.div variants={fadeIn} className="mt-10 flex flex-col sm:flex-row items-center gap-4">
-            <Button asChild size="lg" className="bg-sky-600 hover:bg-sky-500 h-12 px-8 text-base w-full sm:w-auto"><Link to="/login"><Zap className="mr-2 h-5 w-5" />{t('homepage.hero.cta.dashboard')}</Link></Button>
-            <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base border-slate-700 bg-slate-800/50 hover:bg-slate-700 hover:text-white w-full sm:w-auto"><Link to="/login">{t('homepage.hero.cta.explore')}</Link></Button>
+            <Button asChild size="lg" className="bg-sky-600 hover:bg-sky-500 h-12 px-8 text-base w-full sm:w-auto"><Link to="/login"><Zap className="mr-2 h-5 w-5" />Go to Dashboard</Link></Button>
+            <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base border-slate-700 bg-slate-800/50 hover:bg-slate-700 hover:text-white w-full sm:w-auto"><Link to="/login">Explore Features</Link></Button>
           </motion.div>
           <motion.div variants={fadeIn} style={{ perspective: '2000px' }} className="mt-24 w-full max-w-6xl">
             <div style={{ transform: 'rotateX(15deg) rotateZ(-2deg)' }} className="relative rounded-2xl p-2 transition-transform duration-500 hover:scale-105">
@@ -92,14 +90,14 @@ export const Homepage = () => {
           {/* Core Pillars Section */}
           <section>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-16">
-              <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold">{t('homepage.pillars.title')}</motion.h2>
-              <motion.p variants={fadeIn} className="text-lg text-slate-400 mt-4 max-w-3xl mx-auto">{t('homepage.pillars.subtitle')}</motion.p>
+              <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold">Three Pillars of Your Growth</motion.h2>
+              <motion.p variants={fadeIn} className="text-lg text-slate-400 mt-4 max-w-3xl mx-auto">Finance, Marketplace, and Technology - a unified professional banking experience designed for MSMEs.</motion.p>
             </motion.div>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
               {[
-                { title: t('homepage.pillars.card.finance.title'), desc: "Loans, credit scoring, and subsidies.", features: ["48-hour loan approval", "AI credit scoring", "Auto subsidy finder"], image: financeHub, link: "/finance", buttonText: t('homepage.pillars.card.finance.button') },
-                { title: t('homepage.pillars.card.marketplace.title'), desc: "New customers, tenders, and B2B orders.", features: ["GeM tender matching", "B2B product store", "Service gigs platform"], image: marketplace, link: "/marketplace", buttonText: t('homepage.pillars.card.marketplace.button') },
-                { title: t('homepage.pillars.card.tools.title'), desc: "GST, accounting, and ERP made simple.", features: ["Voice-enabled ERP", "AI accountant", "GST automation"], image: businessTools, link: "/tools", buttonText: t('homepage.pillars.card.tools.button') }
+                { title: "Finance Hub", desc: "Loans, credit scoring, and subsidies.", features: ["48-hour loan approval", "AI credit scoring", "Auto subsidy finder"], image: financeHub, link: "/finance", buttonText: "Get Started" },
+                { title: "Marketplace", desc: "New customers, tenders, and B2B orders.", features: ["GeM tender matching", "B2B product store", "Service gigs platform"], image: marketplace, link: "/marketplace", buttonText: "Explore Market" },
+                { title: "Business Tools", desc: "GST, accounting, and ERP made simple.", features: ["Voice-enabled ERP", "AI accountant", "GST automation"], image: businessTools, link: "/tools", buttonText: "View Tools" }
               ].map((pillar, i) => (
                 <motion.div key={i} variants={fadeIn}>
                   <Card className="h-full flex flex-col bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg hover:border-sky-400 transition-all duration-300 overflow-hidden group">
@@ -119,9 +117,10 @@ export const Homepage = () => {
           {/* How It Works Section */}
           <section>
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-16">
-                  <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold">{t('homepage.how.title')}</motion.h2>
+                  <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold">A Smarter Way to Grow</motion.h2>
                   <motion.p variants={fadeIn} className="text-lg text-slate-400 mt-4 max-w-3xl mx-auto">
-                    {t('homepage.how.subtitle')}
+                    Our entire journey is powered by <strong className="font-semibold text-sky-400">SAETIP</strong>: a<br />
+                    <span className="font-semibold">S</span>mart <span className="font-semibold">A</span>PI-Enabled <span className="font-semibold">T</span>rustworthy <span className="font-semibold">I</span>ntegrated <span className="font-semibold">P</span>rocess.
                   </motion.p>
               </motion.div>
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
@@ -141,7 +140,7 @@ export const Homepage = () => {
           {/* Testimonials Section */}
           <section>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-16">
-                <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold">{t('homepage.testimonials.title')}</motion.h2>
+                <motion.h2 variants={fadeIn} className="text-4xl md:text-5xl font-bold">Trusted by Thousands of MSMEs</motion.h2>
             </motion.div>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
               {testimonials.map((t, i) => (
@@ -159,7 +158,7 @@ export const Homepage = () => {
           {/* Partners Section */}
           <section>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="text-center mb-12">
-              <motion.h2 variants={fadeIn} className="text-3xl font-bold text-slate-200">{t('homepage.partners.title')}</motion.h2>
+              <motion.h2 variants={fadeIn} className="text-3xl font-bold text-slate-200">Our Trusted Partners & Integrations</motion.h2>
             </motion.div>
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
               {partners.map((p, i) => (
@@ -170,15 +169,15 @@ export const Homepage = () => {
 
           {/* Final CTA Section */}
           <section>
-            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                <Card className="bg-gradient-to-br from-sky-500/20 to-purple-500/20 border-white/10 shadow-2xl backdrop-blur-lg p-8 md:p-12">
-                    <div className="text-center space-y-6">
-                        <h2 className="text-4xl font-bold text-white">{t('homepage.final.title')}</h2>
-                        <p className="text-lg text-slate-300 max-w-2xl mx-auto">{t('homepage.final.subtitle')}</p>
-                        <Button size="lg" asChild className="bg-white text-slate-900 hover:bg-slate-200 h-14 px-10 text-lg font-bold"><Link to="/login">{t('homepage.final.button')}<ArrowRight className="ml-3 h-6 w-6" /></Link></Button>
-                    </div>
-                </Card>
-            </motion.div>
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
+                  <Card className="bg-gradient-to-br from-sky-500/20 to-purple-500/20 border-white/10 shadow-2xl backdrop-blur-lg p-8 md:p-12">
+                      <div className="text-center space-y-6">
+                          <h2 className="text-4xl font-bold text-white">Ready to Transform Your Business?</h2>
+                          <p className="text-lg text-slate-300 max-w-2xl mx-auto">Join 50,000+ MSMEs who have already simplified their operations and accelerated their growth with EkVyapaar.</p>
+                          <Button size="lg" asChild className="bg-white text-slate-900 hover:bg-slate-200 h-14 px-10 text-lg font-bold"><Link to="/login">Get Started for Free<ArrowRight className="ml-3 h-6 w-6" /></Link></Button>
+                      </div>
+                  </Card>
+              </motion.div>
           </section>
         </div>
       </div>
