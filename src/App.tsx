@@ -13,7 +13,7 @@ import { BusinessTools } from "./pages/BusinessTools";
 import { Support } from "./pages/Support";
 import { Dashboard } from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
+import {LoginModal} from "./pages/LoginModal";
 import { AuthProvider } from "./contexts/AuthContext";
 import RequireAuth from "./components/RequireAuth";
 import PublicOnly from "./components/PublicOnly";
@@ -32,7 +32,7 @@ const App = () => (
               <Header />
               <Routes>
                 <Route path="/" element={<PublicOnly><Homepage /></PublicOnly>} />
-                <Route path="/login" element={<Login />} />
+                {/* <Route path="/login" element={<Login />} /> */}
                 <Route path="/finance" element={<RequireAuth><FinanceHub /></RequireAuth>} />
                 <Route path="/marketplace" element={<RequireAuth><Marketplace /></RequireAuth>} />
                 <Route path="/tools" element={<RequireAuth><BusinessTools /></RequireAuth>} />
