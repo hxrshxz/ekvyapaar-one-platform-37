@@ -4,26 +4,34 @@ import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, User, Sun, Moon, Phone, Rocket } from "lucide-react";
+import { Menu, User, Sun, Moon, Phone, Rocket, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // NOTE: This component assumes it is wrapped in a real ThemeProvider.
 // For demo purposes, we'll mock a simple theme toggle.
-
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   
   // A simplified theme state for this component's demo
   const [theme, setTheme] = useState('dark');
+  const { lang, setLang, t } = useLanguage();
 
-  const navItems = [
-    { href: "/", label: "Home" },
-    { href: "/finance", label: "Finance Hub" },
-    { href: "/marketplace", label: "Marketplace" },
-    { href: "/tools", label: "Business Tools" },
-    { href: "/support", label: "Support" },
-    { href: "/dashboard", label: "Dashboard" },
-  ];
+  const { isAuthenticated, logout } = useAuth();
+  
+  const navItems = isAuthenticated
+    ? [
+      { href: "/finance", label: t("header.nav.finance") },
+      { href: "/marketplace", label: t("header.nav.marketplace") },
+      { href: "/tools", label: t("header.nav.tools") },
+      { href: "/support", label: t("header.nav.support") },
+      { href: "/dashboard", label: t("header.nav.dashboard") },
+    ]
+    : [
+      { href: "/", label: t("header.nav.home") },
+    ];
+  
   
   const activePath = location.pathname;
 
@@ -63,20 +71,37 @@ export function Header() {
 
         {/* Right side buttons */}
         <div className="flex items-center space-x-2">
+          {/* Language Toggle */}
+          <div className="flex items-center rounded-full bg-slate-800/50 border border-slate-700 backdrop-blur-lg">
+            <Button variant={lang === 'en' ? 'default' : 'ghost'} size="sm" className="rounded-full px-3" onClick={() => setLang('en')}>{t('header.actions.lang.en')}</Button>
+            <Button variant={lang === 'hi' ? 'default' : 'ghost'} size="sm" className="rounded-full px-3" onClick={() => setLang('hi')}>{t('header.actions.lang.hi')}</Button>
+          </div>
+
           {/* Theme Toggle */}
           <Button onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')} variant="ghost" size="icon" className="h-10 w-10 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg">
             {theme === 'light' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
 
-          <Button variant="outline" size="sm" className="hidden md:inline-flex rounded-full bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg">
-            <User className="h-4 w-4 mr-2" />
-            Login
-          </Button>
+          {!isAuthenticated && (
+            <Button asChild variant="outline" size="sm" className="hidden md:inline-flex rounded-full bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg">
+              <Link to="/login"><User className="h-4 w-4 mr-2" />
+              {t('header.actions.login')}</Link>
+            </Button>
+          )}
           
-          <Button size="sm" className="hidden md:inline-flex rounded-full bg-sky-600 hover:bg-sky-500">
-            <Phone className="h-4 w-4 mr-2" />
-            Support
+          <Button asChild size="sm" className="hidden md:inline-flex rounded-full bg-sky-600 hover:bg-sky-500">
+            <Link to={isAuthenticated ? "/support" : "/login"}>
+              <Phone className="h-4 w-4 mr-2" />
+              {t('header.actions.support')}
+            </Link>
           </Button>
+
+          {isAuthenticated && (
+            <Button onClick={logout} variant="outline" size="sm" className="hidden md:inline-flex rounded-full bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg">
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
+            </Button>
+          )}
 
           {/* Mobile Navigation */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -100,14 +125,26 @@ export function Header() {
                   </Link>
                 ))}
                 <div className="pt-4 border-t border-slate-700 space-y-2">
-                  <Button variant="outline" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
-                    <User className="h-5 w-5 mr-3" />
-                    Login
+                  {!isAuthenticated && (
+                    <Button asChild variant="outline" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+                      <Link to="/login">
+                        <User className="h-5 w-5 mr-3" />
+                        {t('header.actions.login')}
+                      </Link>
+                    </Button>
+                  )}
+                  <Button asChild variant="default" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-sky-600 hover:bg-sky-500">
+                    <Link to={isAuthenticated ? "/support" : "/login"}>
+                      <Phone className="h-5 w-5 mr-3" />
+                      {t('header.actions.support')}
+                    </Link>
                   </Button>
-                  <Button variant="default" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-sky-600 hover:bg-sky-500">
-                    <Phone className="h-5 w-5 mr-3" />
-                    Contact Support
-                  </Button>
+                  {isAuthenticated && (
+                    <Button onClick={() => {logout(); setIsOpen(false);}} variant="outline" className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">
+                      <LogOut className="h-5 w-5 mr-3" />
+                      Logout
+                    </Button>
+                  )}
                 </div>
               </div>
             </SheetContent>

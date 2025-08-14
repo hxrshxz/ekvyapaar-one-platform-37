@@ -5,6 +5,9 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+   optimizeDeps: {
+    exclude: ['chunk-R6S4VRB5'], // Add the problematic dependency here
+  },
   server: {
     host: "::",
     port: 8080,
