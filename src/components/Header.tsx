@@ -182,7 +182,7 @@ export function Header() {
                     item.scroll ? (
                       <Scroll /* ... */ >{item.label}</Scroll>
                     ) : (
-                      <Link /* ... */ >{item.label}</Link>
+                      <Link to={item.href}>{item.label}</Link>
                     )
                   )}
 

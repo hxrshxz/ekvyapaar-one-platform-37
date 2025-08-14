@@ -163,7 +163,7 @@ export const Homepage = () => {
             </motion.h1>
             <motion.p
               variants={fadeIn}
-              className="mt-6 max-w-2xl text-xl text-slate-300"
+              className="mt-12 max-w-2xl text-xl text-slate-300"
             >
               The all-in-one platform for MSMEs. Effortlessly manage your
               finances, discover and engage new customers, and{" "}
@@ -212,7 +212,7 @@ export const Homepage = () => {
                   <img
                     src={dashboardPreviewImage}
                     alt="EkVyapaar Dashboard Preview"
-                    className="w-full h-auto rounded-lg"
+                    className="w-full h-auto rounded-lg mt-[-80px]"
                   />
                 </div>
               </div>
