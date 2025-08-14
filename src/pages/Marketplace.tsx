@@ -90,7 +90,7 @@ export const Marketplace = () => {
           <div className="absolute bottom-[5%] left-[20%] w-[300px] h-[300px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
       
-      <div className="relative z-10">
+      <div className="relative z-10 mt-[-80px]">
         {/* Hero Section */}
         <div className="relative h-[28rem] overflow-hidden flex items-center justify-center text-center">
             <img src={marketplaceHero} alt="Marketplace" className="absolute w-full h-full object-cover"/>

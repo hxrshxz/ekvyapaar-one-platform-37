@@ -17,7 +17,7 @@ export const translations: Record<Language, Record<string, string>> = {
     // Homepage hero
     "homepage.hero.title.before": "Unlock your Business Potential with",
     "homepage.hero.subtitle": "The all-in-one platform for MSMEs. Manage finances, find new customers, and automate your operations with AI-powered tools.",
-    "homepage.hero.cta.dashboard": "Go to Dashboard",
+    "homepage.hero.cta.dashboard": "Login",
     "homepage.hero.cta.explore": "Explore Features",
 
     // Pillars

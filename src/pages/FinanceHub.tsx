@@ -323,8 +323,8 @@ export const FinanceHub = () => {
                 <div className="absolute bottom-[-20%] left-[20%] w-[400px] h-[400px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
             </div>
             
-            <div className="relative z-10 container mx-auto px-4 py-16">
-                <section className="relative text-center my-16 h-80 flex flex-col justify-center items-center">
+            <div className="relative z-10 container mx-auto px-4 py-16 mt-[-80px]">
+                <section className="relative text-center my-16 h-80 flex flex-col justify-center items-center ">
                   <img src="https://images.pexels.com/photos/8370752/pexels-photo-8370752.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt="Financial Growth Chart" className="absolute top-0 left-0 w-full h-full object-cover rounded-3xl opacity-20"/>
                   <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-slate-900 to-transparent"></div>
                   <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="relative">

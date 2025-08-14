@@ -104,7 +104,7 @@
 
   .dark {
     /* Dark SBI Banking Theme */
-    --background: 240 25% 8%;
+    --background: 340 25% 8%;
     --foreground: 0 0% 98%;
 
     --card: 240 20% 12%;
@@ -115,16 +115,16 @@
 
     /* Dark Primary: Bright SBI Blue */
     --primary: 247 91% 65%;
-    --primary-foreground: 240 25% 8%;
+    --primary-foreground: white
     --primary-light: 247 91% 75%;
     --primary-dark: 247 91% 55%;
     --primary-glow: 247 91% 80%;
 
     /* Dark Secondary: Bright Magenta */
-    --secondary: 330 96% 65%;
-    --secondary-foreground: 240 25% 8%;
-    --secondary-light: 330 96% 75%;
-    --secondary-dark: 330 96% 55%;
+  --secondary: 192 85% 45%;
+  --secondary-foreground: 210 20% 98%;
+  --secondary-light: 192 85% 60%;
+  --secondary-dark: 192 85% 30%;
 
     --muted: 240 15% 15%;
     --muted-foreground: 240 10% 70%;

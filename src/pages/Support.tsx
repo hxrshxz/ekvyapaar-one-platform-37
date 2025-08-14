@@ -79,7 +79,7 @@ export const Support = () => {
         <div className="absolute bottom-[5%] left-[20%] w-[300px] h-[300px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
       
-      <div className="relative z-10">
+      <div className="relative z-10 mt-[-80px]">
         <section className="relative h-[32rem] overflow-hidden flex items-center justify-center text-center">
           <img src={supportHero} alt="Customer Support" className="absolute w-full h-full object-cover"/>
           <div className="absolute inset-0 bg-slate-900/70" />

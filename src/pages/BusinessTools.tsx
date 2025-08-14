@@ -20,6 +20,7 @@ const Typewriter = ({ text, delay = 0 }: { text: string; delay?: number }) => {
     }),
   };
   const child = {
+    // FIX: Corrected 'opacihy' to 'opacity'
     visible: { opacity: 1, y: 0, transition: { damping: 12, stiffness: 100 } },
     hidden: { opacity: 0, y: 20 },
   };
@@ -182,10 +183,10 @@ export const BusinessTools = () => {
         <div className="absolute bottom-[5%] left-[20%] w-[300px] h-[300px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
       <div className="relative z-10">
-        <section className="relative h-[32rem] overflow-hidden flex items-center justify-center text-center">
+        <section className="relative h-[32rem] overflow-hidden flex items-center justify-center text-center mt-[-80px]">
           <img src={toolsHero} alt="Business Tools" className="absolute w-full h-full object-cover animate-slow-zoom"/>
           <div className="absolute inset-0 bg-slate-900/70" />
-          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="relative flex flex-col items-center px-4">
+          <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="relative flex flex-col items-center px-4 ">
             <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400">Automate Your Business</motion.h1>
             <motion.p variants={fadeIn} className="text-xl text-slate-300 max-w-3xl mt-4 mb-8">A full suite of free, AI-powered tools designed to simplify your operations.</motion.p>
           </motion.div>
@@ -268,7 +269,7 @@ export const BusinessTools = () => {
                   <p className="text-lg text-slate-300 max-w-2xl mx-auto">Get all 7 tools, including ERP Lite, GST Helper, and AI Accountant, at no cost. No hidden charges, no credit card required.</p>
                   <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-200 h-14 px-10 text-lg font-bold"><TrendingUp className="mr-2 h-6 w-6" />Get Started for Free</Button>
                 </div>
-              </Card>
+              </Card> 
             </motion.div>
           </section>
         </div>

@@ -81,7 +81,7 @@ export function Dashboard() {
         <div className="absolute bottom-[-20%] left-[20%] w-[400px] h-[400px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
       </div>
       
-      <div className="relative z-10">
+      <div className="relative z-10 mt-[-78px]">
         {/* Hero Section */}
         <div className="relative h-80 overflow-hidden flex items-center justify-center text-center">
             <img src={dashboardHero} alt="Business Dashboard" className="absolute w-full h-full object-cover"/>
