@@ -55,10 +55,10 @@ const CircularProgress = ({ score }: { score: number }) => {
                     transition={{ duration: 1.5, ease: "easeOut" }} strokeDasharray={`${circumference} ${circumference}`}
                 />
             </svg>
-            <div className={`absolute flex flex-col items-center justify-center ${colorClass}`}>
+            {/* <div className={`absolute flex flex-col items-center justify-center ${colorClass}`}>
                 <span className="text-4xl font-bold"><AnimatedNumber value={score} isInteger={true} /></span>
                 <span className="text-sm font-medium">CIBIL SCORE</span>
-            </div>
+            </div> */}
         </div>
     );
 };
@@ -382,8 +382,8 @@ export const FinanceHub = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                
-                <div className="grid lg:grid-cols-2 gap-16 items-start mt-24">
+                {/* CIBIL SCORE AND EMI LOAN CALCULATOR */}
+                {/* <div className="grid lg:grid-cols-2 gap-16 items-start mt-24">
                     <motion.div variants={fadeIn} initial="hidden" whileInView="visible" viewport={{ once: true }}>
                         <Card className="bg-white/5 border-white/10 shadow-2xl backdrop-blur-lg">
                             <CardHeader><CardTitle className="text-2xl flex items-center gap-3"><ShieldCheck className="text-sky-400"/>Check Your CIBIL Score</CardTitle><CardDescription className="text-slate-400">Get a free, instant CIBIL score check to understand your loan eligibility.</CardDescription></CardHeader>
@@ -435,7 +435,7 @@ export const FinanceHub = () => {
                             </CardContent>
                         </Card>
                     </motion.div>
-                </div>
+                </div> */}
             </div>
 
             <AnimatePresence>
