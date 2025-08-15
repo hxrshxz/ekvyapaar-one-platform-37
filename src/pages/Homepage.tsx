@@ -1,5 +1,4 @@
 "use client";
-// ✨ Added useState to the import
 import React, { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -25,10 +24,63 @@ import marketplace from "@/assets/marketplace.jpg";
 import businessTools from "@/assets/business-tools.jpg";
 import dashboardPreviewImage from "@/assets/dashboard.png";
 import { Spotlight } from "@/components/Spotlight";
-import { LoginModal } from "./LoginModal";// ✨ 1. Import the new modal
+import { LoginModal } from "./LoginModal";
+
+// ✨ Reusable component for the new section headers.
+const SectionHeader = ({
+  pill,
+  title,
+  description,
+}: {
+  pill: string;
+  title: string;
+  description: string;
+}) => (
+  <motion.div
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, amount: 0.3 }}
+    variants={{
+      hidden: { opacity: 0 },
+      visible: { opacity: 1, transition: { staggerChildren: 0.15 } },
+    }}
+    className="text-left"
+  >
+    <motion.div
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 },
+      }}
+      className="mb-4 flex justify-start"
+    >
+      <div className="flex items-center gap-2 rounded-full border border-sky-800/50 bg-slate-800/50 px-3 py-1 text-sm font-medium text-sky-300">
+        <div className="h-2 w-2 rounded-full bg-sky-400"></div>
+        {pill}
+        <ArrowRight className="h-4 w-4" />
+      </div>
+    </motion.div>
+    <motion.h2
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 },
+      }}
+      className="text-4xl md:text-5xl font-bold text-slate-100"
+    >
+      {title}
+    </motion.h2>
+    <motion.p
+      variants={{
+        hidden: { opacity: 0, y: 20 },
+        visible: { opacity: 1, y: 0 },
+      }}
+      className="mt-4 max-w-3xl text-lg text-slate-400"
+    >
+      {description}
+    </motion.p>
+  </motion.div>
+);
 
 export const Homepage = () => {
-  // ✨ State to control the modal's visibility
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   const howItWorks = useMemo(
@@ -123,25 +175,24 @@ export const Homepage = () => {
   } as const;
 
   return (
-    // ✨ 2. Wrap everything in a React Fragment
     <>
       <div className="min-h-screen w-full bg-black text-white mt-[-80px] overflow-x-hidden">
         {/* Background Grid */}
-        <div className="absolute inset-0 z-0 ">
+<div className="absolute top-0 left-0 w-full h-[180%] z-0">
           <div
             className="absolute inset-0"
             style={{
               backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='%23334155'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e")`,
               maskImage:
-                "radial-gradient(circle 1000px at 50% 120%, black, transparent)",
+                "radial-gradient(circle 1000px at 46% 56%, black, transparent)",
             }}
           />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 ">
-          {/* ATMOSPHERIC HERO SECTION */}
+          {/* ATMOSPHERIC HERO SECTION (UNCHANGED) */}
           <motion.section
-            id="home" // ID for header navigation
+            id="home"
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
@@ -151,7 +202,6 @@ export const Homepage = () => {
               className="-top-40 left-0 md:left-60 md:-top-20"
               fill="white"
             />
-
             <motion.h1
               variants={fadeIn}
               className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 leading-tight mt-28"
@@ -180,7 +230,6 @@ export const Homepage = () => {
               variants={fadeIn}
               className="mt-10 flex flex-col sm:flex-row items-center gap-4"
             >
-              {/* ✨ 3. Corrected Login button (no 'asChild') */}
               <Button
                 size="lg"
                 className="bg-sky-600 hover:bg-sky-500 h-12 px-8 text-base w-full sm:w-auto"
@@ -188,7 +237,6 @@ export const Homepage = () => {
               >
                 Login
               </Button>
-              {/* ✨ 3. Restored "Explore Features" button */}
               <Button
                 asChild
                 size="lg"
@@ -221,29 +269,13 @@ export const Homepage = () => {
 
           {/* --- ALL OTHER SECTIONS NOW FOLLOW --- */}
           <div className="space-y-48 pb-48" id="features">
-            {/* Core Pillars Section */}
-            <section>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerContainer}
-                className="text-center mb-24"
-              >
-                <motion.h2
-                  variants={fadeIn}
-                  className="text-4xl md:text-5xl font-bold"
-                >
-                  Three Pillars of Your Growth
-                </motion.h2>
-                <motion.p
-                  variants={fadeIn}
-                  className="text-lg text-slate-400 mt-4 max-w-3xl mx-auto"
-                >
-                  Finance, Marketplace, and Technology - a unified professional
-                  banking experience designed for MSMEs.
-                </motion.p>
-              </motion.div>
+            {/* Core Pillars Section (CHANGED) */}
+            <section className="space-y-16">
+              <SectionHeader
+                pill="Core Features"
+                title="Three Pillars of Your Growth"
+                description="Finance, Marketplace, and Technology - a unified professional banking experience designed for MSMEs."
+              />
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -306,7 +338,9 @@ export const Homepage = () => {
                         <div className="space-y-3 mb-6">
                           {pillar.features.map((feat, fi) => (
                             <div key={fi} className="flex items-center gap-3">
-                              <CheckCircle className="h-5 w-5 text-green-400" />
+                              <CheckCircle
+                                className="h-5 w-5 text-green-400"
+                              />
                               <span>{feat}</span>
                             </div>
                           ))}
@@ -327,37 +361,13 @@ export const Homepage = () => {
               </motion.div>
             </section>
 
-            {/* How It Works Section */}
-            <section>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerContainer}
-                className="text-center mb-24"
-              >
-                <motion.h2
-                  variants={fadeIn}
-                  className="text-4xl md:text-5xl font-bold"
-                >
-                  A Smarter Way to Grow
-                </motion.h2>
-                <motion.p
-                  variants={fadeIn}
-                  className="text-lg text-slate-400 mt-4 max-w-3xl mx-auto"
-                >
-                  Our entire journey is powered by{" "}
-                  <strong className="font-semibold text-sky-400">SAETIP</strong>:
-                  a<br />
-                  <span className="inline-block mt-3">
-                    <span className="font-semibold">S</span>mart{" "}
-                    <span className="font-semibold">A</span>PI-Enabled{" "}
-                    <span className="font-semibold">T</span>rustworthy{" "}
-                    <span className="font-semibold">I</span>ntegrated{" "}
-                    <span className="font-semibold">P</span>rocess.
-                  </span>
-                </motion.p>
-              </motion.div>
+            {/* How It Works Section (CHANGED) */}
+            <section className="space-y-16">
+              <SectionHeader
+                pill="Our Process"
+                title="A Smarter Way to Grow"
+                description="Our entire journey is powered by SAETIP: a Smart API-Enabled Trustworthy Integrated Process that automates complexity."
+              />
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -374,10 +384,15 @@ export const Homepage = () => {
                       <h3 className="text-2xl font-bold text-slate-100 mb-3">
                         {step.title}
                       </h3>
-                      <p className="text-slate-400 mb-6">{step.description}</p>
+                      <p className="text-slate-400 mb-6">
+                        {step.description}
+                      </p>
                       <ul className="text-left space-y-3 text-slate-300">
                         {step.features.map((feature, fIndex) => (
-                          <li key={fIndex} className="flex items-start gap-3">
+                          <li
+                            key={fIndex}
+                            className="flex items-start gap-3"
+                          >
                             <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0 mt-0.5" />
                             <span>{feature}</span>
                           </li>
@@ -389,22 +404,13 @@ export const Homepage = () => {
               </motion.div>
             </section>
 
-            {/* Testimonials Section */}
-            <section id="testimonials">
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerContainer}
-                className="text-center mb-24"
-              >
-                <motion.h2
-                  variants={fadeIn}
-                  className="text-4xl md:text-5xl font-bold"
-                >
-                  Trusted by Thousands of MSMEs
-                </motion.h2>
-              </motion.div>
+            {/* Testimonials Section (CHANGED) */}
+            <section id="testimonials" className="space-y-16">
+              <SectionHeader
+                pill="Social Proof"
+                title="Trusted by Thousands of MSMEs"
+                description="Real stories from businesses in Delhi, Gurgaon, and Faridabad who have accelerated their growth with EkVyapaar."
+              />
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -427,8 +433,12 @@ export const Homepage = () => {
                         "{t.text}"
                       </blockquote>
                       <div className="pt-4 border-t border-slate-700">
-                        <div className="font-bold text-slate-100">{t.name}</div>
-                        <div className="text-sm text-slate-400">{t.business}</div>
+                        <div className="font-bold text-slate-100">
+                          {t.name}
+                        </div>
+                        <div className="text-sm text-slate-400">
+                          {t.business}
+                        </div>
                       </div>
                     </Card>
                   </motion.div>
@@ -436,22 +446,13 @@ export const Homepage = () => {
               </motion.div>
             </section>
 
-            {/* Partners Section */}
-            <section>
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                variants={staggerContainer}
-                className="text-center mb-20"
-              >
-                <motion.h2
-                  variants={fadeIn}
-                  className="text-3xl font-bold text-slate-200"
-                >
-                  Our Trusted Partners & Integrations
-                </motion.h2>
-              </motion.div>
+            {/* Partners Section (CHANGED) */}
+            <section className="space-y-16">
+              <SectionHeader
+                pill="Ecosystem"
+                title="Our Trusted Partners & Integrations"
+                description="Built on a foundation of India's robust digital public infrastructure and leading financial institutions."
+              />
               <motion.div
                 initial="hidden"
                 whileInView="visible"
@@ -472,7 +473,7 @@ export const Homepage = () => {
               </motion.div>
             </section>
 
-            {/* Final CTA Section */}
+            {/* Final CTA Section (UNCHANGED) */}
             <section>
               <motion.div
                 initial="hidden"
@@ -506,8 +507,7 @@ export const Homepage = () => {
           </div>
         </div>
       </div>
-      
-      {/* ✨ 4. Render the modal component */}
+
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}

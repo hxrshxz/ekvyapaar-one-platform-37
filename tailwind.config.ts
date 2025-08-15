@@ -138,4 +138,8 @@ export default {
     },
     // MODIFICATION: Changed `require("tailwindcss-animate")` to use the imported variable
     plugins: [tailwindcssAnimate],
+    plugins: [
+    require('@tailwindcss/typography'), // Add this line
+  ],
+    
 } satisfies Config;
