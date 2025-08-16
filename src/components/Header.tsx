@@ -16,13 +16,9 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-
-  // ✨ 2. Add state to manage the login modal
   const [showLoginModal, setShowLoginModal] = useState(false);
-
   const { lang, setLang, t } = useLanguage();
   const { isAuthenticated, logout } = useAuth();
-
   const [activeLink, setActiveLink] = useState(
     location.pathname === "/" ? "home" : location.pathname
   );
@@ -52,17 +48,16 @@ export function Header() {
   };
   
   return (
-    // ✨ 3. Wrap component in a fragment
     <>
-      <header className="sticky top-0 z-50 w-full">
-        <div className="container flex items-center justify-between h-20">
+      <header className="sticky top-4 z-50 w-full">
+        <div className="container flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
             <img src={ekvyapaarLogo} alt="EkVyapaar Logo" className="h-11 rounded w-auto" />
-            <span className="font-bold text-xl text-slate-100">EkVyapaar</span>
+            <span className="font-bold text-xl text-slate-800">EkVyapaar</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-2 bg-slate-800/50 border border-slate-700 rounded-full p-2 backdrop-blur-lg">
+          <nav className="hidden md:flex items-center space-x-1 bg-gradient-to-b from-white/60 to-white/50 border border-slate-200/80 rounded-full p-1 shadow-lg backdrop-blur-xl">
             {navItems.map((item) =>
               item.scroll ? (
                 <Scroll
@@ -76,14 +71,14 @@ export function Header() {
                   className={`cursor-pointer relative text-sm font-medium transition-colors duration-300 rounded-full px-4 py-2 ${
                     activeLink === item.href
                       ? "text-white"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-500 hover:text-slate-900"
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
                   {activeLink === item.href && (
                     <motion.div
-                      layoutId="active-pill"
-                      className="absolute inset-0 bg-sky-600"
+                      layoutId="active-pill-header"
+                      className="absolute inset-0 bg-sky-500"
                       style={{ borderRadius: 9999 }}
                       transition={{ duration: 0.6, type: "spring" }}
                     />
@@ -97,13 +92,13 @@ export function Header() {
                   className={`relative text-sm font-medium transition-colors duration-300 rounded-full px-4 py-2 ${
                     activeLink === item.href
                       ? "text-white"
-                      : "text-slate-400 hover:text-white"
+                      : "text-slate-500 hover:text-slate-900"
                   }`}
                 >
                   {activeLink === item.href && (
                     <motion.div
-                      layoutId="active-pill"
-                      className="absolute inset-0 bg-sky-600"
+                      layoutId="active-pill-header"
+                      className="absolute inset-0 bg-sky-500"
                       style={{ borderRadius: 9999 }}
                       transition={{ duration: 0.6, type: "spring" }}
                     />
@@ -117,9 +112,9 @@ export function Header() {
           {/* Right side buttons */}
           <div className="flex items-center space-x-2">
             {/* Language Toggle */}
-            <div className="flex items-center rounded-full bg-slate-800/50 border border-slate-700 backdrop-blur-lg">
+            <div className="hidden sm:flex items-center rounded-full p-1 bg-gradient-to-b from-white/60 to-white/50 border border-slate-200/80 shadow-lg backdrop-blur-xl">
               <Button
-                variant={lang === "en" ? "default" : "ghost"}
+                variant={lang === "en" ? "secondary" : "ghost"}
                 size="sm"
                 className="rounded-full px-3"
                 onClick={() => setLang("en")}
@@ -127,7 +122,7 @@ export function Header() {
                 {t("header.actions.lang.en")}
               </Button>
               <Button
-                variant={lang === "hi" ? "default" : "ghost"}
+                variant={lang === "hi" ? "secondary" : "ghost"}
                 size="sm"
                 className="rounded-full px-3"
                 onClick={() => setLang("hi")}
@@ -137,11 +132,10 @@ export function Header() {
             </div>
 
             {!isAuthenticated && (
-              // ✨ 4. Update the desktop Login button
               <Button
                 variant="outline"
                 size="sm"
-                className="hidden md:inline-flex rounded-full bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg"
+                className="hidden md:inline-flex rounded-full bg-gradient-to-b from-white/60 to-white/50 border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900 shadow-lg backdrop-blur-xl"
                 onClick={() => setShowLoginModal(true)}
               >
                 <User className="h-4 w-4 mr-2" />
@@ -154,7 +148,7 @@ export function Header() {
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="hidden md:inline-flex rounded-full bg-slate-800/50 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg"
+                className="hidden md:inline-flex rounded-full bg-gradient-to-b from-white/60 to-white/50 border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900 shadow-lg backdrop-blur-xl"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -167,34 +161,32 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden h-10 w-10 rounded-full bg-slate-800/50 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white backdrop-blur-lg"
+                  className="md:hidden h-10 w-10 rounded-full bg-gradient-to-b from-white/60 to-white/50 border border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900 shadow-lg backdrop-blur-xl"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className="w-[300px] bg-slate-900/80 backdrop-blur-xl border-l-slate-700 text-white"
+                className="w-[300px] bg-white/80 backdrop-blur-xl border-l-slate-200/80 text-slate-900"
               >
                 <div className="flex flex-col space-y-4 mt-8">
-                  {/* ... navItems map ... */}
                   {navItems.map((item) =>
                     item.scroll ? (
-                      <Scroll /* ... */ >{item.label}</Scroll>
+                      <Scroll key={item.href} to={item.href} spy={true} smooth={true} duration={500} offset={-80} onClick={() => setIsOpen(false)} className="cursor-pointer text-lg text-slate-700 hover:text-sky-500 transition-colors">{item.label}</Scroll>
                     ) : (
-                      <Link to={item.href}>{item.label}</Link>
+                      <Link key={item.href} to={item.href} onClick={() => setIsOpen(false)} className="text-lg text-slate-700 hover:text-sky-500 transition-colors">{item.label}</Link>
                     )
                   )}
 
-                  <div className="pt-4 border-t border-slate-700 space-y-2">
+                  <div className="pt-4 border-t border-slate-200/80 space-y-2">
                     {!isAuthenticated && (
-                      // ✨ 5. Update the mobile Login button
                       <Button
                         variant="outline"
-                        className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+                        className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900"
                         onClick={() => {
                           setShowLoginModal(true);
-                          setIsOpen(false); // Close the sheet as well
+                          setIsOpen(false);
                         }}
                       >
                         <User className="h-5 w-5 mr-3" />
@@ -204,7 +196,7 @@ export function Header() {
                     <Button
                       asChild
                       variant="default"
-                      className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-sky-600 hover:bg-sky-500"
+                      className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-sky-500 hover:bg-sky-600"
                     >
                       <Link to={isAuthenticated ? "/support" : "#"} onClick={!isAuthenticated ? () => {setShowLoginModal(true); setIsOpen(false);} : undefined}>
                         <Phone className="h-5 w-5 mr-3" />
@@ -218,7 +210,7 @@ export function Header() {
                           setIsOpen(false);
                         }}
                         variant="outline"
-                        className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white"
+                        className="w-full justify-start rounded-lg text-lg p-3 h-auto bg-transparent border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900"
                       >
                         <LogOut className="h-5 w-5 mr-3" />
                         Logout
@@ -232,7 +224,6 @@ export function Header() {
         </div>
       </header>
       
-      {/* ✨ 6. Render the modal component */}
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
