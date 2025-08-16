@@ -75,6 +75,9 @@
     /* Modern Typography */
     --font-sans: "Inter", "Poppins", system-ui, sans-serif;
     --font-display: "Poppins", "Inter", system-ui, sans-serif;
+    --font-sora: "Sora", sans-serif;
+    --font-outfit: "Outfit", sans-serif;
+    --font-boldonse: "Boldonse", system-ui;
 
     /* Smooth Animations */
     --transition-base: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -437,6 +440,26 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
+  }
+}
+
+@layer utilities {
+  .font-sora {
+    font-family: var(--font-sora);
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+  
+  .font-outfit {
+    font-family: var(--font-outfit);
+    font-optical-sizing: auto;
+    font-style: normal;
+  }
+  
+  .font-boldonse {
+    font-family: var(--font-boldonse);
+    font-weight: 400;
+    font-style: normal;
   }
 }
 
