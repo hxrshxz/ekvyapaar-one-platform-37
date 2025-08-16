@@ -22,6 +22,9 @@ export default {
             fontFamily: {
                 'sans': ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
                 'display': ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
+                'sora': ['Sora', 'sans-serif'],
+                'outfit': ['Outfit', 'sans-serif'],
+                'boldonse': ['Boldonse', 'system-ui'],
             },
             colors: {
                 border: 'hsl(var(--border))',
