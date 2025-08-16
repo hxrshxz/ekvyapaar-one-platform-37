@@ -1,4 +1,4 @@
-"use client";
+"use-client";
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,8 @@ import {
   TrendingUp, IndianRupee, Users, ShoppingCart, Bell, Eye, Target, Briefcase, Star, ArrowRight, Calendar, FileText, Wallet, Package, DollarSign, ShieldCheck, Lightbulb, Activity, Building2, AlertTriangle, CheckCircle2
 } from "lucide-react";
 import {
-  LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area
+  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
-import dashboardHero from "@/assets/dashboard-hero.jpg"; // You'll need a suitable hero image
 
 export function Dashboard() {
   const [greeting, setGreeting] = useState('');
@@ -34,10 +33,10 @@ export function Dashboard() {
   ], []);
 
   const activities = useMemo(() => [
-    { icon: CheckCircle2, text: "Loan Approved - ₹5,00,000", time: "2 hours ago", color: "text-green-400" },
-    { icon: Target, text: "New Tender Match - LED Bulb Supply", time: "4 hours ago", color: "text-blue-400" },
-    { icon: ShoppingCart, text: "New Order Received - 1000 Units", time: "6 hours ago", color: "text-purple-400" },
-    { icon: IndianRupee, text: "Payment Received - ₹75,000", time: "3 days ago", color: "text-green-400" },
+    { icon: CheckCircle2, text: "Loan Approved - ₹5,00,000", time: "2 hours ago", color: "text-green-500" },
+    { icon: Target, text: "New Tender Match - LED Bulb Supply", time: "4 hours ago", color: "text-blue-500" },
+    { icon: ShoppingCart, text: "New Order Received - 1000 Units", time: "6 hours ago", color: "text-purple-500" },
+    { icon: IndianRupee, text: "Payment Received - ₹75,000", time: "3 days ago", color: "text-green-500" },
   ], []);
   
   const notifications = useMemo(() => [
@@ -47,9 +46,9 @@ export function Dashboard() {
   ], []);
 
   const marketOpportunities = useMemo(() => [
-    { title: "Auto Parts Export to Germany", priority: "High", icon: TrendingUp, color: "text-red-400" },
-    { title: "Govt Tender: School Furniture", priority: "Medium", icon: FileText, color: "text-blue-400" },
-    { title: "Local Construction Partnership", priority: "Medium", icon: Building2, color: "text-purple-400" }
+    { title: "Auto Parts Export to Germany", priority: "High", icon: TrendingUp, color: "text-red-500" },
+    { title: "Govt Tender: School Furniture", priority: "Medium", icon: FileText, color: "text-blue-500" },
+    { title: "Local Construction Partnership", priority: "Medium", icon: Building2, color: "text-purple-500" }
   ], []);
   
   const growthData = useMemo(() => [
@@ -58,11 +57,17 @@ export function Dashboard() {
     { month: "Jul", revenue: 480 }, { month: "Aug", revenue: 550 },
   ], []);
 
+  const notificationStyles = {
+    destructive: { bg: 'bg-red-50 border-red-200', icon: 'text-red-500' },
+    success: { bg: 'bg-green-50 border-green-200', icon: 'text-green-500' },
+    info: { bg: 'bg-blue-50 border-blue-200', icon: 'text-blue-500' }
+  };
+
   const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } } } as const;
   const staggerContainer = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } } } as const;
 
   const CustomProgressBar = ({ value, colorClass }) => (
-    <div className="w-full bg-slate-700 rounded-full h-2.5">
+    <div className="w-full bg-slate-200 rounded-full h-2.5">
       <motion.div
         className={`h-2.5 rounded-full ${colorClass}`}
         initial={{ width: 0 }}
@@ -74,23 +79,24 @@ export function Dashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white font-sans">
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-        <div className="absolute top-[-10%] left-[5%] w-[500px] h-[500px] bg-purple-500/20 rounded-full filter blur-3xl animate-blob"></div>
-        <div className="absolute top-[10%] right-[5%] w-[600px] h-[600px] bg-sky-500/20 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-[-20%] left-[20%] w-[400px] h-[400px] bg-green-500/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans isolate">
+      {/* --- Aurora Background --- */}
+      <div className="absolute inset-0 -z-10 h-full w-full overflow-hidden">
+        <div className="absolute -top-1/4 left-0 h-[800px] w-[800px] bg-purple-200/50 rounded-full blur-3xl filter animate-blob animation-delay-2000"></div>
+        <div className="absolute -top-1/3 right-0 h-[800px] w-[800px] bg-sky-200/50 rounded-full blur-3xl filter animate-blob"></div>
+        <div className="absolute -bottom-1/4 left-1/3 h-[600px] w-[600px] bg-pink-200/50 rounded-full blur-3xl filter animate-blob animation-delay-4000"></div>
       </div>
       
-      <div className="relative z-10 mt-[-78px]">
+      {/* --- FIX: New Content Wrapper with Page-Long Blending Gradient --- */}
+      <div className="relative z-10 mt-[-78px] bg-gradient-to-b from-slate-50/0 via-slate-50/80 via-20% to-slate-50 to-40%">
         {/* Hero Section */}
-        <div className="relative h-80 overflow-hidden flex items-center justify-center text-center">
-            <img src={dashboardHero} alt="Business Dashboard" className="absolute w-full h-full object-cover"/>
-            <div className="absolute inset-0 bg-slate-900/70" />
+        <div className="relative h-80 flex items-center justify-center text-center">
+            {/* The old gradient overlay is removed from here */}
             <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="relative flex flex-col items-center px-4">
-                <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400">
+                <motion.h1 variants={fadeIn} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-slate-600">
                   {greeting}, EkVyapar User
                 </motion.h1>
-                <motion.p variants={fadeIn} className="text-xl text-slate-300 max-w-2xl mt-4">
+                <motion.p variants={fadeIn} className="text-xl text-slate-600 max-w-2xl mt-4">
                   Here's your complete business overview for today.
                 </motion.p>
             </motion.div>
@@ -100,20 +106,20 @@ export function Dashboard() {
           {/* Stats Overview */}
           <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[
-              { title: "Today's Revenue", value: "₹45,230", change: "+12.5%", icon: IndianRupee, iconColor: "text-green-400" },
-              { title: "New Orders", value: "28", change: "+8.2%", icon: ShoppingCart, iconColor: "text-blue-400" },
-              { title: "Customers", value: "1,247", change: "+15.3%", icon: Users, iconColor: "text-purple-400" },
-              { title: "Growth Rate", value: "23.5%", change: "+3.1%", icon: Target, iconColor: "text-orange-400" },
+              { title: "Today's Revenue", value: "₹45,230", change: "+12.5%", icon: IndianRupee, iconColor: "text-green-500" },
+              { title: "New Orders", value: "28", change: "+8.2%", icon: ShoppingCart, iconColor: "text-blue-500" },
+              { title: "Customers", value: "1,247", change: "+15.3%", icon: Users, iconColor: "text-purple-500" },
+              { title: "Growth Rate", value: "23.5%", change: "+3.1%", icon: Target, iconColor: "text-orange-500" },
             ].map((stat, i) => (
               <motion.div key={i} variants={fadeIn}>
-                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg hover:border-sky-400 transition-all duration-300">
+                <Card className="bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <stat.icon className={`h-8 w-8 ${stat.iconColor}`} />
                       <Badge variant="secondary">{stat.change}</Badge>
                     </div>
-                    <p className="text-3xl font-bold mt-4 text-slate-100">{stat.value}</p>
-                    <p className="text-sm text-slate-400">{stat.title}</p>
+                    <p className="text-3xl font-bold mt-4 text-slate-800">{stat.value}</p>
+                    <p className="text-sm text-slate-500">{stat.title}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -124,12 +130,12 @@ export function Dashboard() {
             <div className="lg:col-span-2 space-y-8">
               {/* Quick Actions */}
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
-                  <CardHeader><CardTitle className="flex items-center gap-2"><Briefcase className="text-sky-400"/>Quick Actions</CardTitle></CardHeader>
+                <Card className="bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Briefcase className="text-sky-500"/>Quick Actions</CardTitle></CardHeader>
                   <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {quickActions.map((action, i) => (
-                      <Button key={i} variant="secondary" className="h-24 flex-col gap-2 rounded-lg bg-slate-800/50 hover:bg-slate-700">
-                        <action.icon className="h-6 w-6 text-sky-400" /><span className="text-xs font-medium text-slate-300">{action.label}</span>
+                      <Button key={i} variant="secondary" className="h-24 flex-col gap-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700">
+                        <action.icon className="h-6 w-6 text-sky-500" /><span className="text-xs font-medium text-center">{action.label}</span>
                       </Button>
                     ))}
                   </CardContent>
@@ -139,21 +145,21 @@ export function Dashboard() {
               {/* Financial & Credit Health */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                    <Card className="h-full bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
-                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><DollarSign className="text-green-400"/>Financial Health</CardTitle></CardHeader>
+                    <Card className="h-full bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><DollarSign className="text-green-500"/>Financial Health</CardTitle></CardHeader>
                         <CardContent className="space-y-4">
-                            <div><div className="flex justify-between text-sm mb-1 text-slate-300"><span>Cash Flow</span><span>78%</span></div><CustomProgressBar value={78} colorClass="bg-blue-500" /></div>
-                            <div><div className="flex justify-between text-sm mb-1 text-slate-300"><span>Profitability</span><span>65%</span></div><CustomProgressBar value={65} colorClass="bg-green-500" /></div>
-                            <div><div className="flex justify-between text-sm mb-1 text-slate-300"><span>Liquidity</span><span>92%</span></div><CustomProgressBar value={92} colorClass="bg-purple-500" /></div>
+                            <div><div className="flex justify-between text-sm mb-1 text-slate-600"><span>Cash Flow</span><span>78%</span></div><CustomProgressBar value={78} colorClass="bg-blue-500" /></div>
+                            <div><div className="flex justify-between text-sm mb-1 text-slate-600"><span>Profitability</span><span>65%</span></div><CustomProgressBar value={65} colorClass="bg-green-500" /></div>
+                            <div><div className="flex justify-between text-sm mb-1 text-slate-600"><span>Liquidity</span><span>92%</span></div><CustomProgressBar value={92} colorClass="bg-purple-500" /></div>
                         </CardContent>
                     </Card>
                 </motion.div>
                  <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                    <Card className="h-full bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
-                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="text-sky-400"/>Credit Score</CardTitle></CardHeader>
+                    <Card className="h-full bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><ShieldCheck className="text-sky-500"/>Credit Score</CardTitle></CardHeader>
                         <CardContent className="text-center">
-                            <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="text-5xl font-bold text-green-400 mb-2">742</motion.div>
-                            <div className="text-sm text-slate-400 mb-4">Excellent</div>
+                            <motion.div animate={{ scale: [1, 1.05, 1] }} transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }} className="text-5xl font-bold text-green-500 mb-2">742</motion.div>
+                            <div className="text-sm text-slate-500 mb-4">Excellent</div>
                             <Button variant="outline" size="sm" className="rounded-full">View Report</Button>
                         </CardContent>
                     </Card>
@@ -162,14 +168,14 @@ export function Dashboard() {
 
                {/* Recent Activity */}
                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                    <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
-                        <CardHeader><CardTitle className="flex items-center gap-2"><Activity className="text-sky-400"/>Recent Activity</CardTitle></CardHeader>
+                    <Card className="bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                        <CardHeader><CardTitle className="flex items-center gap-2"><Activity className="text-sky-500"/>Recent Activity</CardTitle></CardHeader>
                         <CardContent className="space-y-2">
                           {activities.map((act, i) => (
-                              <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                              <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-100 transition-colors">
                                   <act.icon className={`h-6 w-6 flex-shrink-0 ${act.color}`} />
-                                  <p className="text-sm text-slate-300 flex-grow">{act.text}</p>
-                                  <p className="text-xs text-slate-500 flex-shrink-0">{act.time}</p>
+                                  <p className="text-sm text-slate-700 flex-grow">{act.text}</p>
+                                  <p className="text-xs text-slate-400 flex-shrink-0">{act.time}</p>
                               </div>
                           ))}
                         </CardContent>
@@ -180,15 +186,15 @@ export function Dashboard() {
             <div className="space-y-8">
               {/* Notifications */}
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
-                  <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-sky-400"/>Notifications</CardTitle></CardHeader>
+                <Card className="bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Bell className="text-sky-500"/>Notifications</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     {notifications.map((n, i) => (
-                      <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${n.type === 'destructive' ? 'bg-red-500/10 border-red-500/30' : 'bg-green-500/10 border-green-500/30'}`}>
-                        <n.icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${n.type === 'destructive' ? 'text-red-400' : 'text-green-400'}`} />
+                      <div key={i} className={`p-3 rounded-lg border flex items-start gap-3 ${notificationStyles[n.type]?.bg || 'bg-slate-50 border-slate-200'}`}>
+                        <n.icon className={`h-5 w-5 mt-0.5 flex-shrink-0 ${notificationStyles[n.type]?.icon || 'text-slate-500'}`} />
                         <div>
-                            <p className="text-sm font-semibold text-slate-100">{n.title}</p>
-                            <p className="text-xs text-slate-400">{n.message}</p>
+                            <p className="text-sm font-semibold text-slate-800">{n.title}</p>
+                            <p className="text-xs text-slate-500">{n.message}</p>
                         </div>
                       </div>
                     ))}
@@ -198,13 +204,13 @@ export function Dashboard() {
               
               {/* Market Opportunities */}
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
-                  <CardHeader><CardTitle className="flex items-center gap-2"><Lightbulb className="text-yellow-400"/>Market Opportunities</CardTitle></CardHeader>
+                <Card className="bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><Lightbulb className="text-yellow-500"/>Market Opportunities</CardTitle></CardHeader>
                    <CardContent className="space-y-4">
                         {marketOpportunities.map((op, i) => (
-                          <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-800/50 transition-colors">
+                          <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-100 transition-colors">
                             <op.icon className={`h-6 w-6 flex-shrink-0 ${op.color}`} />
-                            <p className="text-sm text-slate-300 flex-grow">{op.title}</p>
+                            <p className="text-sm text-slate-700 flex-grow">{op.title}</p>
                             <Badge variant={op.priority === "High" ? "destructive" : "secondary"} className="flex-shrink-0">{op.priority}</Badge>
                           </div>
                         ))}
@@ -214,22 +220,22 @@ export function Dashboard() {
 
               {/* Business Growth Chart */}
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeIn}>
-                <Card className="bg-white/5 border-white/10 backdrop-blur-lg rounded-2xl shadow-lg">
-                  <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="text-sky-400"/>Business Growth (Revenue in ₹1000s)</CardTitle></CardHeader>
+                <Card className="bg-white/70 border-slate-200/80 backdrop-blur-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="text-sky-500"/>Business Growth (Revenue in ₹1000s)</CardTitle></CardHeader>
                   <CardContent className="h-64 pr-4">
                     <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={growthData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                         <defs>
                           <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#38bdf8" stopOpacity={0.4}/>
-                            <stop offset="95%" stopColor="#38bdf8" stopOpacity={0}/>
+                            <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.4}/>
+                            <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0}/>
                           </linearGradient>
                         </defs>
-                        <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-                        <XAxis dataKey="month" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}K`} />
-                        <Tooltip contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155', borderRadius: '0.5rem' }} labelStyle={{ color: '#e2e8f0' }} formatter={(value) => [`₹${Number(value) * 1000}`, 'Revenue']} />
-                        <Area type="monotone" dataKey="revenue" stroke="#38bdf8" strokeWidth={3} fill="url(#colorRevenue)" />
+                        <CartesianGrid stroke="#e2e8f0" strokeDasharray="3 3" />
+                        <XAxis dataKey="month" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} />
+                        <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value}K`} />
+                        <Tooltip contentStyle={{ backgroundColor: 'rgba(255,255,255,0.85)', backdropFilter: 'blur(4px)', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }} labelStyle={{ color: '#1e293b' }} formatter={(value) => [`₹${Number(value) * 1000}`, 'Revenue']} />
+                        <Area type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={3} fill="url(#colorRevenue)" />
                       </AreaChart>
                     </ResponsiveContainer>
                   </CardContent>
