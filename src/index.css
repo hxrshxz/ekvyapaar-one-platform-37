@@ -107,7 +107,7 @@
 
   .dark {
     /* Dark SBI Banking Theme */
---background: 220 30% 40%;   
+    --background: 199 16% 80%;   
     --foreground: 0 0% 98%;
 
     --card: 240 20% 12%;
@@ -132,7 +132,7 @@
     --muted: 240 15% 15%;
     --muted-foreground: 240 10% 70%;
 
-    --accent: 280 85% 60%;
+    --accent: 199 6% 70%;
     --accent-foreground: 240 25% 8%;
     --accent-light: 280 85% 70%;
     --accent-dark: 280 85% 50%;
@@ -358,7 +358,7 @@
     font-weight: 600;
   }
 
-  /* Enhanced Typography */
+  /* Enhanced Typography 
   .font-banking {
     font-family: var(--font-display);
     font-weight: 600;
