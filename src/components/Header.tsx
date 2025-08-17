@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Link as Scroll } from "react-scroll";
 import { toast } from "sonner";
 import ekvyapaarLogo from "@/assets/ekvyapaar-logo.png";
 import { LoginModal } from "@/pages/LoginModal";
+import { useState, useEffect } from "react";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,14 +51,14 @@ export function Header() {
   return (
     <>
       <header className="sticky top-4 z-50 w-full">
-        <div className="container flex items-center justify-between h-16">
+        {/* --- MODIFIED: Updated background to a visible gray glass effect, removed animation logic --- */}
+        <div className="container flex items-center justify-between h-16 bg-slate-100/60 backdrop-blur-2xl border border-slate-200/80 shadow-lg rounded-full px-4">
           <Link to="/" className="flex items-center space-x-2">
             <img src={ekvyapaarLogo} alt="EkVyapaar Logo" className="h-11 rounded w-auto" />
             <span className="font-bold text-xl text-slate-800">EkVyapaar</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 bg-gradient-to-b from-white/60 to-white/50 border border-slate-200/80 rounded-full p-1 shadow-lg backdrop-blur-xl">
+          <nav className="hidden md:flex items-center space-x-1 bg-white/50 rounded-full p-1">
             {navItems.map((item) =>
               item.scroll ? (
                 <Scroll
@@ -68,10 +69,11 @@ export function Header() {
                   duration={600}
                   offset={-80}
                   onSetActive={() => setActiveLink(item.href)}
+                  // --- MODIFIED: Added hover effect for non-active links ---
                   className={`cursor-pointer relative text-sm font-medium transition-colors duration-300 rounded-full px-4 py-2 ${
                     activeLink === item.href
                       ? "text-white"
-                      : "text-slate-500 hover:text-slate-900"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"
                   }`}
                   onClick={() => setIsOpen(false)}
                 >
@@ -89,10 +91,11 @@ export function Header() {
                 <Link
                   key={item.href}
                   to={item.href}
+                  // --- MODIFIED: Added hover effect for non-active links ---
                   className={`relative text-sm font-medium transition-colors duration-300 rounded-full px-4 py-2 ${
                     activeLink === item.href
                       ? "text-white"
-                      : "text-slate-500 hover:text-slate-900"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"
                   }`}
                 >
                   {activeLink === item.href && (
@@ -109,10 +112,8 @@ export function Header() {
             )}
           </nav>
 
-          {/* Right side buttons */}
           <div className="flex items-center space-x-2">
-            {/* Language Toggle */}
-            <div className="hidden sm:flex items-center rounded-full p-1 bg-gradient-to-b from-white/60 to-white/50 border border-slate-200/80 shadow-lg backdrop-blur-xl">
+            <div className="hidden sm:flex items-center rounded-full p-1 bg-white/50">
               <Button
                 variant={lang === "en" ? "secondary" : "ghost"}
                 size="sm"
@@ -135,7 +136,7 @@ export function Header() {
               <Button
                 variant="outline"
                 size="sm"
-                className="hidden md:inline-flex rounded-full bg-gradient-to-b from-white/60 to-white/50 border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900 shadow-lg backdrop-blur-xl"
+                className="hidden md:inline-flex rounded-full bg-white/50 border-slate-300/70 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900"
                 onClick={() => setShowLoginModal(true)}
               >
                 <User className="h-4 w-4 mr-2" />
@@ -148,7 +149,7 @@ export function Header() {
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="hidden md:inline-flex rounded-full bg-gradient-to-b from-white/60 to-white/50 border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900 shadow-lg backdrop-blur-xl"
+                className="hidden md:inline-flex rounded-full bg-white/50 border-slate-300/70 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900"
               >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
@@ -161,7 +162,7 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden h-10 w-10 rounded-full bg-gradient-to-b from-white/60 to-white/50 border border-slate-200/80 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900 shadow-lg backdrop-blur-xl"
+                  className="md:hidden h-10 w-10 rounded-full bg-white/50 border border-slate-300/70 text-slate-700 hover:bg-slate-100/70 hover:text-slate-900"
                 >
                   <Menu className="h-5 w-5" />
                 </Button>
