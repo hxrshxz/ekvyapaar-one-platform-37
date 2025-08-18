@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 
 
-// --- [NEW] AI-Powered Listing Manag er Component ---
+// --- [NEW] AI-Powered Listing Manager Component ---
 const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -71,6 +71,8 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
     };
   }
 
+// Marketplace.tsx
+
   const generateListingDetails = async (file) => {
     if (!file) return;
     setIsGenerating(true);
@@ -78,30 +80,40 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
     setError("");
 
     try {
-      // IMPORTANT: Replace with your actual Google Gemini API key
-      const API_KEY = "AIzaSyDNHmmsmvod1_WQfIAjh5Tq7lu4NyLfo7Q"; 
+      // It's highly recommended to move your API key to a .env.local file
+      // and access it via process.env.NEXT_PUBLIC_GEMINI_API_KEY
+      const API_KEY = "AIzaSyDNHmmsmvod1_WQfIAjh5Tq7lu4NyLfo7Q"; // Replace with your actual API key
       const genAI = new GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+      
+      // For guaranteed JSON output, configure the model to use JSON mode.
+      const model = genAI.getGenerativeModel({
+        model: "gemini-2.5-pro",
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      });
 
-      const prompt = `You are an expert B2B product cataloger. Based on the provided image, generate a product listing. Your response MUST be ONLY a valid JSON object with the following structure: { "name": "A concise, descriptive product title.", "price": "An estimated B2B price range in INR (e.g., '₹500 - ₹750 /unit').", "category": "A relevant category from this list: [Industrial Machinery, Consumer Electronics, Apparel, Health, Agriculture, Construction]", "description": "A brief, compelling 2-sentence description for a B2B marketplace." }`;
+      const prompt = `You are an expert B2B product cataloger. Based on the provided image, generate a product listing. Your response MUST follow this JSON schema: { "name": "A concise, descriptive product title.", "price": "An estimated B2B price range in INR (e.g., '₹500 - ₹750 /unit').", "category": "A relevant category from this list: [Industrial Machinery, Consumer Electronics, Apparel, Health, Agriculture, Construction]", "description": "A brief, compelling 2-sentence description for a B2B marketplace." }`;
       
       const imagePart = await fileToGenerativePart(file);
       
       const result = await model.generateContent([prompt, imagePart]);
       const response = await result.response;
-      let text = response.text();
       
-      // Clean the response to ensure it's valid JSON
-      const startIndex = text.indexOf("{");
-      const endIndex = text.lastIndexOf("}");
-      const jsonString = text.substring(startIndex, endIndex + 1);
-      
-      const aiData = JSON.parse(jsonString);
+      // Because we are using JSON mode, the response text is already a clean JSON string.
+      const text = response.text();
+      const aiData = JSON.parse(text);
+
       setGeneratedListing(aiData);
 
     } catch (err) {
       console.error("Error generating listing:", err);
-      setError("AI failed to generate details. Please try a different image.");
+      // Provide a more specific error message if parsing failed.
+      let errorMessage = "AI failed to generate details. Please try a different image.";
+      if (err instanceof SyntaxError) {
+        errorMessage = "The AI returned an invalid format. Please try again.";
+      }
+      setError(errorMessage);
     } finally {
       setIsGenerating(false);
     }
@@ -1139,7 +1151,7 @@ export const Marketplace = () => {
       const API_KEY = "AIzaSyDNHmmsmvod1_WQfIAjh5Tq7lu4NyLfo7Q";
       const genAI = new GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-pro-latest",
+        model: "gemini-2.5-pro",
       });
       const prompt = `
             You are a B2B product sourcing AI. The user is searching for "${inputValue}" within the category "${searchType}" on the "${searchNetwork}" network.

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const AIAccountant = () => {
   const [step, setStep] = useState('main');
@@ -6,12 +6,40 @@ const AIAccountant = () => {
   const [processingProgress, setProcessingProgress] = useState(0);
   const [automationProgress, setAutomationProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [processingSteps, setProcessingSteps] = useState([]);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const fileInputRef = useRef(null);
+  type ChatMessage = {
+    id: number;
+    text: string;
+    sender: string;
+    timestamp: Date;
+    actions?: string[];
+  };
+
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
+    { id: 1, text: "Hi there! I'm your AI Accountant. How can I help today?", sender: 'ai', timestamp: new Date() }
+  ]);
+  const [newMessage, setNewMessage] = useState('');
 
   // Simulate AI processing
   useEffect(() => {
     let timer;
     if (step === 'processing') {
       setProcessingProgress(0);
+      
+      // Set processing steps
+      setProcessingSteps([
+        "Receiving your bill...",
+        "Reading document content...",
+        "Identifying vendor information...",
+        "Extracting GSTIN details...",
+        "Analyzing tax components...",
+        "Verifying invoice totals...",
+        "Finalizing extraction..."
+      ]);
+      
       timer = setInterval(() => {
         setProcessingProgress(prev => {
           if (prev >= 100) {
@@ -21,10 +49,15 @@ const AIAccountant = () => {
           }
           return prev + 20;
         });
+        
+        // Move to next processing step every 1.5 seconds
+        if (processingProgress % 20 === 0 && processingProgress < 100) {
+          setCurrentStepIndex(prev => Math.min(prev + 1, processingSteps.length - 1));
+        }
       }, 200);
     }
     return () => clearInterval(timer);
-  }, [step]);
+  }, [step, processingProgress]);
 
   // Simulate automation progress
   useEffect(() => {
@@ -55,6 +88,73 @@ const AIAccountant = () => {
     setSelectedCategory('');
     setProcessingProgress(0);
     setAutomationProgress(0);
+    setUploadedFile(null);
+    setProcessingSteps([]);
+    setCurrentStepIndex(0);
+  };
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setUploadedFile(file);
+      setStep('processing');
+      
+      // Add chat message
+      setChatMessages(prev => [
+        ...prev,
+        { id: prev.length + 1, text: `Uploaded file: ${file.name}`, sender: 'user', timestamp: new Date() }
+      ]);
+    }
+  };
+
+  const handleCameraClick = () => {
+    setStep('processing');
+    
+    // Add chat message
+    setChatMessages(prev => [
+      ...prev,
+      { id: prev.length + 1, text: "Started camera to capture bill", sender: 'user', timestamp: new Date() }
+    ]);
+  };
+
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (newMessage.trim() === '') return;
+    
+    // Add user message
+    const userMessage = {
+      id: chatMessages.length + 1,
+      text: newMessage,
+      sender: 'user',
+      timestamp: new Date()
+    };
+    
+    setChatMessages(prev => [...prev, userMessage]);
+    setNewMessage('');
+    
+    // Simulate AI response after delay
+    setTimeout(() => {
+      let aiResponse = "I can help you scan and record bills. Would you like to scan a new bill?";
+      
+      if (newMessage.toLowerCase().includes('scan') || newMessage.toLowerCase().includes('bill')) {
+        aiResponse = "Sure! Please choose how you'd like to add your bill:";
+      } else if (newMessage.toLowerCase().includes('expense') || newMessage.toLowerCase().includes('record')) {
+        aiResponse = "I can help record expenses. Would you like to scan a bill?";
+      } else if (newMessage.toLowerCase().includes('gst') || newMessage.toLowerCase().includes('tax')) {
+        aiResponse = "I can extract GST details from bills. Upload a bill to get started.";
+      }
+      
+      setChatMessages(prev => [
+        ...prev,
+        { 
+          id: prev.length + 2, 
+          text: aiResponse, 
+          sender: 'ai', 
+          timestamp: new Date(),
+          actions: aiResponse.includes('choose') ? ['camera', 'upload'] : []
+        }
+      ]);
+    }, 1000);
   };
 
   const renderMainScreen = () => (
@@ -71,28 +171,6 @@ const AIAccountant = () => {
       >
         <h1 className="text-3xl font-bold text-white mb-2">AI Accountant</h1>
         <p className="text-blue-100 mb-6">Smart bill management for your business</p>
-        
-        {/* Search Bar */}
-        <div className="relative mb-8">
-          <div 
-            className="flex items-center rounded-xl px-4 py-3"
-            style={{
-              background: 'rgba(255, 255, 255, 0.12)',
-              border: '1px solid rgba(255, 255, 255, 0.08)'
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-300 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search bills or vendors..."
-              className="bg-transparent border-none text-white placeholder-blue-200 w-full focus:outline-none"
-            />
-          </div>
-        </div>
         
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-white">Recent Bills</h2>
@@ -137,19 +215,6 @@ const AIAccountant = () => {
             </div>
             <div className="text-blue-200">10 Aug</div>
           </div>
-        </div>
-        
-        <div className="flex justify-center">
-          <button 
-            onClick={() => setStep('modal')}
-            className="flex items-center justify-center px-6 py-3 rounded-xl text-white font-medium text-lg transform hover:scale-105 transition-transform duration-300"
-            style={{
-              background: 'linear-gradient(45deg, #6366F1, #8B5CF6)',
-              boxShadow: '0 4px 15px rgba(99, 102, 241, 0.3)'
-            }}
-          >
-            + Scan New Bill
-          </button>
         </div>
       </div>
       
@@ -207,13 +272,29 @@ const AIAccountant = () => {
           </div>
         </div>
       </div>
+      
+      {/* Chat-like interface */}
+      <div className="fixed bottom-6 right-6 z-10">
+        <div 
+          className="rounded-full w-16 h-16 flex items-center justify-center shadow-xl cursor-pointer transform hover:scale-110 transition-transform"
+          style={{
+            background: 'linear-gradient(45deg, #6366F1, #8B5CF6)',
+            boxShadow: '0 4px 15px rgba(99, 102, 241, 0.5)'
+          }}
+          onClick={() => setStep('chat')}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+          </svg>
+        </div>
+      </div>
     </div>
   );
 
-  const renderModal = () => (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+  const renderChatScreen = () => (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-end justify-end z-50 p-4 md:p-8">
       <div 
-        className="rounded-2xl w-full max-w-md p-8 transform transition-all duration-300 scale-95"
+        className="rounded-2xl w-full max-w-md h-5/6 flex flex-col"
         style={{
           background: 'rgba(255, 255, 255, 0.15)',
           backdropFilter: 'blur(12px)',
@@ -223,52 +304,103 @@ const AIAccountant = () => {
           animation: 'fadeIn 0.3s ease-out forwards'
         }}
       >
-        <h2 className="text-2xl font-bold text-white text-center mb-6">Add New Bill</h2>
-        <p className="text-blue-200 text-center mb-8">How would you like to add your bill?</p>
-        
-        <div className="space-y-4">
+        <div className="p-4 border-b border-slate-200/30 flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="bg-gradient-to-br from-purple-500 to-blue-600 w-10 h-10 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="font-semibold text-white">AI Accountant</h3>
+              <p className="text-xs text-blue-200">Online • Ready to help</p>
+            </div>
+          </div>
           <button 
-            onClick={() => setStep('processing')}
-            className="flex items-center justify-center w-full py-4 rounded-xl text-lg text-white"
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
-            }}
+            onClick={() => setStep('main')}
+            className="text-blue-200 hover:text-white"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
-            Use Camera
-          </button>
-          
-          <button 
-            onClick={() => setStep('processing')}
-            className="flex items-center justify-center w-full py-4 rounded-xl text-lg text-white"
-            style={{
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-            </svg>
-            Upload File
           </button>
         </div>
         
-        <button 
-          onClick={() => setStep('main')}
-          className="mt-6 text-blue-300 flex items-center justify-center w-full"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Back
-        </button>
+        <div className="flex-grow overflow-y-auto p-4 space-y-4">
+          {chatMessages.map((message) => (
+            <div 
+              key={message.id} 
+              className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div 
+                className={`max-w-xs md:max-w-md rounded-2xl px-4 py-3 ${message.sender === 'user' 
+                  ? 'bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-br-none' 
+                  : 'bg-slate-800 text-white rounded-bl-none'}`}
+              >
+                {message.text}
+                {message.actions && (
+                  <div className="mt-3 space-y-2">
+                    <div className="text-xs text-blue-100">Choose an option:</div>
+                    <div className="flex space-x-2">
+                      {message.actions.includes('camera') && (
+                        <button 
+                          onClick={handleCameraClick}
+                          className="flex items-center justify-center px-3 py-2 bg-white/20 rounded-lg text-sm hover:bg-white/30 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                          Camera
+                        </button>
+                      )}
+                      {message.actions.includes('upload') && (
+                        <button 
+                          onClick={() => fileInputRef.current.click()}
+                          className="flex items-center justify-center px-3 py-2 bg-white/20 rounded-lg text-sm hover:bg-white/30 transition-colors"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                          </svg>
+                          Upload
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        <div className="p-4 border-t border-slate-200/30">
+          <form onSubmit={handleSendMessage} className="flex items-center">
+            <input
+              type="text"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              placeholder="Ask me anything about bills, expenses, or taxes..."
+              className="flex-grow bg-slate-800 text-white rounded-l-xl px-4 py-3 focus:outline-none"
+            />
+            <button 
+              type="submit"
+              className="bg-gradient-to-br from-blue-500 to-purple-500 text-white px-4 py-3 rounded-r-xl hover:opacity-90 transition-opacity"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13a1 1 0 102 0V9.414l1.293 1.293a1 1 0 001.414-1.414z" clipRule="evenodd" />
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
+      
+      {/* Hidden file input */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept="image/*, .pdf"
+        onChange={handleFileUpload}
+      />
     </div>
   );
 
@@ -287,12 +419,45 @@ const AIAccountant = () => {
         <div className="relative mb-6">
           <div className="w-32 h-32 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #8B5CF6, #6366F1)' }}>
             <div className="absolute inset-0 rounded-full border-4 border-white border-opacity-20 animate-ping"></div>
-            <div className="text-5xl text-white">🤖</div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
           </div>
         </div>
         
-        <h2 className="text-2xl font-bold text-white mb-3">AI Accountant is reading your bill...</h2>
-        <p className="text-blue-200 mb-8 text-center">Extracting Vendor, GSTIN, and Tax Details...</p>
+        <h2 className="text-2xl font-bold text-white mb-3">Analyzing Your Bill</h2>
+        
+        <div className="w-full max-w-md space-y-4 mb-8">
+          {processingSteps.slice(0, currentStepIndex + 1).map((step, index) => (
+            <div 
+              key={index} 
+              className="flex items-start"
+            >
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                className={`h-5 w-5 mt-1 mr-3 ${index < currentStepIndex ? 'text-green-400' : 'text-blue-400'}`} 
+                viewBox="0 0 20 20" 
+                fill="currentColor"
+              >
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <div>
+                <p className="text-white">{step}</p>
+                {index === currentStepIndex && (
+                  <div className="w-48 h-1 bg-blue-800 rounded-full overflow-hidden mt-2">
+                    <div 
+                      className="h-full bg-gradient-to-r from-blue-400 to-purple-500 transition-all duration-300 ease-out"
+                      style={{ width: `${processingProgress % 20 * 5}%` }}
+                    ></div>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
         
         <div className="w-full max-w-md">
           <div 
@@ -311,7 +476,7 @@ const AIAccountant = () => {
             ></div>
           </div>
           <div className="flex justify-between mt-2 text-blue-200 text-sm">
-            <span>Scanning</span>
+            <span>Processing</span>
             <span>{processingProgress}%</span>
           </div>
         </div>
@@ -521,7 +686,12 @@ const AIAccountant = () => {
         <div className="relative mb-6">
           <div className="w-32 h-32 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #0EA5E9, #06B6D4)' }}>
             <div className="absolute inset-0 rounded-full border-4 border-white border-opacity-20 animate-ping"></div>
-            <div className="text-5xl text-white">🤖</div>
+            <div className="relative">
+              <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse"></div>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+            </div>
           </div>
         </div>
         
@@ -549,6 +719,33 @@ const AIAccountant = () => {
           <div className="flex justify-between mt-2 text-blue-200 text-sm">
             <span>Processing</span>
             <span>{automationProgress}%</span>
+          </div>
+        </div>
+        
+        <div className="mt-8 grid grid-cols-3 gap-4 w-full max-w-md">
+          <div className="flex flex-col items-center">
+            <div className="bg-slate-800/50 rounded-lg p-2 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span className="text-sm text-blue-200">Expense Recorded</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="bg-slate-800/50 rounded-lg p-2 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <span className="text-sm text-blue-200">GST Calculated</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="bg-slate-800/50 rounded-lg p-2 mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+              </svg>
+            </div>
+            <span className="text-sm text-blue-200">Sheet Updated</span>
           </div>
         </div>
       </div>
@@ -603,6 +800,21 @@ const AIAccountant = () => {
         >
           Done
         </button>
+        
+        <div className="mt-8 flex space-x-4">
+          <button className="flex items-center text-blue-300 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            View in Sheets
+          </button>
+          <button className="flex items-center text-blue-300 text-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+            </svg>
+            Download PDF
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -632,7 +844,7 @@ const AIAccountant = () => {
       </style>
       <div className="container mx-auto">
         {step === 'main' && renderMainScreen()}
-        {step === 'modal' && renderModal()}
+        {step === 'chat' && renderChatScreen()}
         {step === 'processing' && renderProcessingScreen()}
         {step === 'verification' && renderVerificationScreen()}
         {step === 'automation' && renderAutomationScreen()}
