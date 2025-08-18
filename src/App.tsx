@@ -13,10 +13,13 @@ import { BusinessTools } from "./pages/BusinessTools";
 import { Support } from "./pages/Support";
 import { Dashboard } from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
-import {LoginModal} from "./pages/LoginModal";
+// Removed LoginModal as it's not used in routing
 import { AuthProvider } from "./contexts/AuthContext";
 import RequireAuth from "./components/RequireAuth";
 import PublicOnly from "./components/PublicOnly";
+
+// **** IMPORT THE NEW COMPONENT ****
+import AIAccountant from "./pages/AIAccountant";
 
 const queryClient = new QueryClient();
 
@@ -32,13 +35,15 @@ const App = () => (
               <Header />
               <Routes>
                 <Route path="/" element={<PublicOnly><Homepage /></PublicOnly>} />
-                {/* <Route path="/login" element={<Login />} /> */}
                 <Route path="/finance" element={<RequireAuth><FinanceHub /></RequireAuth>} />
                 <Route path="/marketplace" element={<RequireAuth><Marketplace /></RequireAuth>} />
                 <Route path="/tools" element={<RequireAuth><BusinessTools /></RequireAuth>} />
+                
+                {/* **** ADD THE NEW ROUTE FOR THE TOOL **** */}
+                <Route path="/tools/ai" element={<RequireAuth><AIAccountant/></RequireAuth>} />
+                
                 <Route path="/support" element={<RequireAuth><Support /></RequireAuth>} />
                 <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
