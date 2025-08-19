@@ -1,13 +1,41 @@
 // src/components/marketplace/UiComponents.tsx
 
 "use client"
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Check, ChevronRight, Loader2, ShieldCheck, Clock, MessageSquare } from 'lucide-react';
-import { categories } from '@/data/marketplaceData';
-import type { Product } from '@/data/marketplaceData';
+import { Check, ChevronRight, Loader2, ShieldCheck, Clock, MessageSquare, Aperture } from 'lucide-react';
+
+// --- MOCK DATA (to resolve import error) ---
+const MockIcon = (props: React.SVGProps<SVGSVGElement>) => (
+  <Aperture {...props} />
+);
+
+const categories = [
+  { name: 'Electronics', icon: MockIcon, sub: ['Laptops', 'Smartphones', 'Cameras'] },
+  { name: 'Apparel', icon: MockIcon, sub: ['T-Shirts', 'Jeans', 'Jackets'] },
+  { name: 'Home Goods', icon: MockIcon, sub: ['Furniture', 'Lighting', 'Decor'] },
+  { name: 'Industrial', icon: MockIcon, sub: ['Machinery', 'Safety Gear', 'Tools'] },
+  { name: 'Beauty & Health', icon: MockIcon, sub: ['Skincare', 'Makeup', 'Supplements'] },
+];
+
+type Product = {
+  image: string;
+  name: string;
+  price: string;
+  seller: string;
+  certified: boolean;
+};
+
+const mockProduct: Product = {
+    image: 'https://placehold.co/400x400/e2e8f0/64748b?text=Product',
+    name: 'High-Quality Industrial Widget',
+    price: '$199.99',
+    seller: 'Global Exports LLC',
+    certified: true,
+};
+// --- END MOCK DATA ---
 
 
 // --- Animation Variants ---
@@ -128,48 +156,179 @@ export const SimpleProductCard = ({ item }: { item: Product }) => (
   </Card>
 );
 
-export const SearchProgress = ({ currentState }: { currentState: string }) => {
+const ShimmerStyle = () => (
+    <style>{`
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+        @keyframes spin-pulse {
+            0% { transform: scale(0.95) rotate(0deg); opacity: 0.7; }
+            50% { transform: scale(1.05) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0.95) rotate(360deg); opacity: 0.7; }
+        }
+        .shimmer-effect {
+            position: relative;
+            overflow: hidden;
+            background-color: #e2e8f0; /* Base color for the skeleton */
+        }
+        .shimmer-effect::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 80%);
+            animation: shimmer 1.5s infinite;
+        }
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            height: 1.1em;
+            background-color: #0ea5e9; /* sky-500 */
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+            vertical-align: bottom;
+        }
+        .gemini-svg {
+            animation: spin-pulse 4s infinite linear;
+        }
+    `}</style>
+);
+
+const AnimatedStatusText = ({ text }: { text: string }) => {
+    const [status, setStatus] = useState('shimmering');
+    const [displayedText, setDisplayedText] = useState('');
+
+    useEffect(() => {
+        setStatus('shimmering');
+        const shimmerTimer = setTimeout(() => {
+            setStatus('typing');
+        }, 600); // Duration of the shimmer before typing starts
+
+        return () => clearTimeout(shimmerTimer);
+    }, [text]);
+
+    useEffect(() => {
+        if (status === 'typing') {
+            setDisplayedText('');
+            let i = 0;
+            const typingTimer = setInterval(() => {
+                if (i < text.length) {
+                    setDisplayedText(prev => prev + text.charAt(i));
+                    i++;
+                } else {
+                    clearInterval(typingTimer);
+                }
+            }, 30); // Typing speed
+            return () => clearInterval(typingTimer);
+        }
+    }, [status, text]);
+
+    if (status === 'shimmering') {
+        return (
+            <div className="w-64 h-6 rounded shimmer-effect"></div>
+        );
+    }
+
+    return (
+        <span className="text-slate-900 font-semibold">
+            {displayedText}
+            <span className="typing-cursor"></span>
+        </span>
+    );
+};
+
+const ProductCardSkeleton = () => (
+    <div className="bg-white/80 border border-slate-200/80 rounded-xl overflow-hidden h-full flex flex-col">
+        <div className="w-full h-32 md:h-40 shimmer-effect"></div>
+        <div className="p-4 space-y-3 flex-grow">
+            <div className="w-3/4 h-5 rounded shimmer-effect"></div>
+            <div className="w-full h-4 rounded shimmer-effect"></div>
+            <div className="w-1/2 h-4 rounded shimmer-effect"></div>
+        </div>
+    </div>
+);
+
+// --- UPDATED SearchProgress Component ---
+export const SearchProgress = () => {
+  const [stepIndex, setStepIndex] = useState(0);
+
   const searchSteps = [
-    { key: "thinking", text: "Analyzing your query..." },
-    { key: "contacting_ai", text: "Contacting sourcing AI..." },
-    { key: "generating", text: "Generating product matches..." },
+    { text: "Analyzing your query...", skeletons: 0 },
+    { text: "Contacting sourcing AI...", skeletons: 2 },
+    { text: "Scanning global suppliers...", skeletons: 3 },
+    { text: "Generating product matches...", skeletons: 4 },
+    { text: "Fetching supplier details...", skeletons: 6 },
+    { text: "Compiling results...", skeletons: 7 },
+    { text: "Finalizing search results...", skeletons: 8 },
+    { text: "Search complete! Displaying results...", skeletons: 8 },
   ];
-  const currentIndex = searchSteps.findIndex((step) => step.key === currentState);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStepIndex((prevIndex) => {
+        if (prevIndex >= searchSteps.length - 1) {
+          clearInterval(interval);
+          return prevIndex;
+        }
+        return prevIndex + 1;
+      });
+    }, 2200); // Increased time to allow for shimmer + typing
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const currentStep = searchSteps[stepIndex];
+  const allSkeletons = Array.from({ length: 8 });
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="p-6 bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg text-left"
-    >
-      <h3 className="font-semibold text-lg text-slate-900 mb-4">Deep Search in Progress</h3>
-      <div className="space-y-3">
-        {searchSteps.map((step, index) => {
-          const isCompleted = currentIndex > index;
-          const isActive = currentIndex === index;
-          return (
-            <div key={step.key} className="flex items-center space-x-3 text-slate-600">
-              <div className={`flex items-center justify-center h-5 w-5 rounded-full transition-colors duration-300 ${isCompleted ? "bg-green-500" : isActive ? "bg-sky-500/20" : "bg-slate-200"}`}>
-                {isCompleted ? (
-                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-                    <Check className="h-4 w-4 text-white" />
-                  </motion.div>
-                ) : isActive ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-sky-500" />
-                ) : (
-                  <div className="h-2 w-2 bg-slate-400 rounded-full"></div>
-                )}
-              </div>
-              <span className={`transition-colors duration-300 ${isCompleted ? "text-slate-400 line-through" : isActive ? "text-slate-900 font-medium" : "text-slate-500"}`}>
-                {step.text}
-              </span>
-            </div>
-          );
-        })}
-      </div>
-    </motion.div>
+    <>
+      <ShimmerStyle />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+        className="p-6 bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg text-left w-full"
+      >
+        <div className="flex items-center gap-3 mb-4 h-7">
+          <svg className="gemini-svg h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="url(#gemini-gradient)"/>
+            <defs>
+              <linearGradient id="gemini-gradient" x1="2" y1="12" x2="22" y2="12" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#4f46e5"/>
+                <stop offset="1" stopColor="#0ea5e9"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <AnimatedStatusText text={currentStep.text} />
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 min-h-[320px]">
+          <AnimatePresence>
+            {allSkeletons.slice(0, currentStep.skeletons).map((_, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                <ProductCardSkeleton />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </>
   );
 };
+
 
 export const ManufacturerCard = ({ manufacturer }: { manufacturer: any }) => (
     <motion.div variants={itemVariants}>
@@ -179,7 +338,7 @@ export const ManufacturerCard = ({ manufacturer }: { manufacturer: any }) => (
                 <div className="w-full md:w-1/3 space-y-4 flex flex-col">
                     <div className="flex items-start gap-4">
                         <div className="p-3 bg-white rounded-lg shadow-inner">
-                            <manufacturer.logo className="h-8 w-8 text-slate-700" />
+                            <MockIcon className="h-8 w-8 text-slate-700" />
                         </div>
                         <div>
                             <h3 className="font-bold text-xl text-slate-900">{manufacturer.name}</h3>
