@@ -1,4 +1,6 @@
 "use client";
+// import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -14,13 +16,39 @@ import {
 } from "@/components/ui/hover-card";
 import { GoogleGenerativeAI, Part } from "@google/generative-ai";
 import {
-  Search, Star, Factory, Smartphone, Truck, Wand2, Camera, Info,
-  Loader2, X as XIcon, Check, ChevronRight, Shirt, Building, HeartPulse,
-  Leaf, Droplets, Globe, Store, Gem, Watch, HardHat, Package, Paintbrush,
-  ToyBrick, Dog, ShieldCheck, Clock, MessageSquare, Edit, PlusCircle,
-  UploadCloud // Added for AI modal
+  Search,
+  Star,
+  Factory,
+  Smartphone,
+  Truck,
+  Wand2,
+  Camera,
+  Info,
+  Loader2,
+  X as XIcon,
+  Check,
+  ChevronRight,
+  Shirt,
+  Building,
+  HeartPulse,
+  Leaf,
+  Droplets,
+  Globe,
+  Store,
+  Gem,
+  Watch,
+  HardHat,
+  Package,
+  Paintbrush,
+  ToyBrick,
+  Dog,
+  ShieldCheck,
+  Clock,
+  MessageSquare,
+  Edit,
+  PlusCircle,
+  UploadCloud, // Added for AI modal
 } from "lucide-react";
-
 
 // --- [NEW] AI-Powered Listing Manager Component ---
 const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
@@ -30,7 +58,7 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
   const [generatedListing, setGeneratedListing] = useState(null);
   const [error, setError] = useState("");
   const fileInputRef = useRef(null);
-
+  const navigate = useNavigate();
   const resetState = () => {
     setImageFile(null);
     setImagePreview("");
@@ -58,12 +86,12 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
       generateListingDetails(file); // Trigger AI generation on file selection
     }
   };
-  
+
   // Function to convert a File object to a GoogleGenerativeAI.Part object.
   async function fileToGenerativePart(file) {
     const base64EncodedDataPromise = new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result.split(',')[1]);
+      reader.onloadend = () => resolve(reader.result.split(",")[1]);
       reader.readAsDataURL(file);
     });
     return {
@@ -71,7 +99,7 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
     };
   }
 
-// Marketplace.tsx
+  // Marketplace.tsx
 
   const generateListingDetails = async (file) => {
     if (!file) return;
@@ -84,7 +112,7 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
       // and access it via process.env.NEXT_PUBLIC_GEMINI_API_KEY
       const API_KEY = "AIzaSyDNHmmsmvod1_WQfIAjh5Tq7lu4NyLfo7Q"; // Replace with your actual API key
       const genAI = new GoogleGenerativeAI(API_KEY);
-      
+
       // For guaranteed JSON output, configure the model to use JSON mode.
       const model = genAI.getGenerativeModel({
         model: "gemini-2.5-pro",
@@ -94,22 +122,22 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
       });
 
       const prompt = `You are an expert B2B product cataloger. Based on the provided image, generate a product listing. Your response MUST follow this JSON schema: { "name": "A concise, descriptive product title.", "price": "An estimated B2B price range in INR (e.g., '₹500 - ₹750 /unit').", "category": "A relevant category from this list: [Industrial Machinery, Consumer Electronics, Apparel, Health, Agriculture, Construction]", "description": "A brief, compelling 2-sentence description for a B2B marketplace." }`;
-      
+
       const imagePart = await fileToGenerativePart(file);
-      
+
       const result = await model.generateContent([prompt, imagePart]);
       const response = await result.response;
-      
+
       // Because we are using JSON mode, the response text is already a clean JSON string.
       const text = response.text();
       const aiData = JSON.parse(text);
 
       setGeneratedListing(aiData);
-
     } catch (err) {
       console.error("Error generating listing:", err);
       // Provide a more specific error message if parsing failed.
-      let errorMessage = "AI failed to generate details. Please try a different image.";
+      let errorMessage =
+        "AI failed to generate details. Please try a different image.";
       if (err instanceof SyntaxError) {
         errorMessage = "The AI returned an invalid format. Please try again.";
       }
@@ -144,21 +172,32 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="p-6 border-b border-slate-200/80 flex justify-between items-center sticky top-0 bg-white/80 z-10">
-              <h2 className="text-2xl font-bold text-slate-800">Create New Listing with AI</h2>
-              <Button variant="ghost" size="icon" onClick={handleClose} className="rounded-full">
+              <h2 className="text-2xl font-bold text-slate-800">
+                Create New Listing with AI
+              </h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleClose}
+                className="rounded-full"
+              >
                 <XIcon className="h-5 w-5" />
               </Button>
             </div>
 
             <div className="p-8 flex-grow">
               {!imagePreview ? (
-                <div 
+                <div
                   className="border-2 border-dashed border-slate-300 rounded-xl p-12 text-center cursor-pointer hover:border-sky-500 hover:bg-sky-50/50 transition-colors"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <UploadCloud className="mx-auto h-12 w-12 text-slate-400" />
-                  <h3 className="mt-4 text-lg font-semibold text-slate-700">Click to upload an image</h3>
-                  <p className="mt-1 text-sm text-slate-500">PNG, JPG, or WEBP. Our AI will do the rest.</p>
+                  <h3 className="mt-4 text-lg font-semibold text-slate-700">
+                    Click to upload an image
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    PNG, JPG, or WEBP. Our AI will do the rest.
+                  </p>
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -170,68 +209,123 @@ const ListingManager = ({ isOpen, onClose, onAddProduct }) => {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-4">
-                     <h3 className="font-bold text-lg text-slate-800">Product Image</h3>
-                     <div className="relative">
-                        <img src={imagePreview} alt="Product preview" className="rounded-xl w-full object-cover aspect-square" />
-                        <Button variant="outline" size="sm" className="absolute top-3 right-3 bg-white/50" onClick={() => fileInputRef.current?.click()}>
-                           <Edit className="h-4 w-4 mr-2" /> Change Image
-                        </Button>
-                         <input
-                            type="file"
-                            ref={fileInputRef}
-                            onChange={handleFileChange}
-                            className="hidden"
-                            accept="image/*"
-                         />
-                     </div>
+                    <h3 className="font-bold text-lg text-slate-800">
+                      Product Image
+                    </h3>
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Product preview"
+                        className="rounded-xl w-full object-cover aspect-square"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="absolute top-3 right-3 bg-white/50"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <Edit className="h-4 w-4 mr-2" /> Change Image
+                      </Button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept="image/*"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-6">
                     <div className="flex justify-between items-center">
-                       <h3 className="font-bold text-lg text-slate-800">AI Generated Details</h3>
-                       {isGenerating && <Loader2 className="h-5 w-5 animate-spin text-sky-500" />}
+                      <h3 className="font-bold text-lg text-slate-800">
+                        AI Generated Details
+                      </h3>
+                      {isGenerating && (
+                        <Loader2 className="h-5 w-5 animate-spin text-sky-500" />
+                      )}
                     </div>
                     {error && (
-                        <p className="text-red-600 bg-red-100 p-3 rounded-lg">{error}</p>
+                      <p className="text-red-600 bg-red-100 p-3 rounded-lg">
+                        {error}
+                      </p>
                     )}
                     <AnimatePresence>
-                    {generatedListing && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="space-y-4"
-                      >
-                        <div>
-                          <label className="font-medium text-slate-700">Product Name</label>
-                          <Input defaultValue={generatedListing.name} className="mt-1" readOnly />
-                        </div>
-                        <div>
-                          <label className="font-medium text-slate-700">Price Range (INR)</label>
-                          <Input defaultValue={generatedListing.price} className="mt-1" readOnly />
-                        </div>
-                        <div>
-                          <label className="font-medium text-slate-700">Category</label>
-                          <Input defaultValue={generatedListing.category} className="mt-1" readOnly />
-                        </div>
-                        <div>
-                          <label className="font-medium text-slate-700">Description</label>
-                          <Textarea defaultValue={generatedListing.description} className="mt-1" rows={4} readOnly />
-                        </div>
-                      </motion.div>
-                    )}
+                      {generatedListing && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="space-y-4"
+                        >
+                          <div>
+                            <label className="font-medium text-slate-700">
+                              Product Name
+                            </label>
+                            <Input
+                              defaultValue={generatedListing.name}
+                              className="mt-1"
+                              readOnly
+                            />
+                          </div>
+                          <div>
+                            <label className="font-medium text-slate-700">
+                              Price Range (INR)
+                            </label>
+                            <Input
+                              defaultValue={generatedListing.price}
+                              className="mt-1"
+                              readOnly
+                            />
+                          </div>
+                          <div>
+                            <label className="font-medium text-slate-700">
+                              Category
+                            </label>
+                            <Input
+                              defaultValue={generatedListing.category}
+                              className="mt-1"
+                              readOnly
+                            />
+                          </div>
+                          <div>
+                            <label className="font-medium text-slate-700">
+                              Description
+                            </label>
+                            <Textarea
+                              defaultValue={generatedListing.description}
+                              className="mt-1"
+                              rows={4}
+                              readOnly
+                            />
+                          </div>
+                        </motion.div>
+                      )}
                     </AnimatePresence>
                   </div>
                 </div>
               )}
             </div>
             <div className="p-6 border-t border-slate-200/80 flex justify-end gap-4 sticky bottom-0 bg-white/80 z-10">
-                <Button variant="outline" onClick={handleClose} className="bg-white/50">Cancel</Button>
-                <Button 
-                  onClick={handleAddToListings}
-                  className="bg-sky-500 hover:bg-sky-600 text-white" 
-                  disabled={!generatedListing || isGenerating}
-                >
-                   {isGenerating ? <><Loader2 className="mr-2 h-4 w-4 animate-spin"/> Generating...</> : 'Add to Listings'}
-                </Button>
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                className="bg-white/50"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddToListings}
+                className="bg-sky-500 hover:bg-sky-600 text-white"
+                disabled={!generatedListing || isGenerating}
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                    Generating...
+                  </>
+                ) : (
+                  "Add to Listings"
+                )}
+              </Button>
             </div>
           </motion.div>
         </motion.div>
@@ -705,10 +799,7 @@ const PromoCard = ({ title, subtitle, buttonText, image }) => (
         </div>
       </div>
       <CardContent className="p-4">
-        <motion.div
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-        >
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold">
             {buttonText}
           </Button>
@@ -719,10 +810,7 @@ const PromoCard = ({ title, subtitle, buttonText, image }) => (
 );
 
 const ProductCard = ({ product }) => (
-  <motion.div
-    variants={itemVariants}
-    className="group h-full flex flex-col"
-  >
+  <motion.div variants={itemVariants} className="group h-full flex flex-col">
     <Card className="h-full flex flex-col bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
       <div className="overflow-hidden">
         <img
@@ -736,9 +824,7 @@ const ProductCard = ({ product }) => (
         <p className="text-lg font-bold text-sky-600">{product.price}</p>
         <div className="text-sm text-slate-500">
           Sold by{" "}
-          <span className="text-slate-700 font-medium">
-            {product.seller}
-          </span>{" "}
+          <span className="text-slate-700 font-medium">{product.seller}</span>{" "}
           {product.certified && (
             <Check className="inline-block h-4 w-4 ml-1 text-green-500" />
           )}{" "}
@@ -874,7 +960,11 @@ const HeroSearch = ({
                     <motion.div
                       layoutId="searchNetworkPill"
                       className="absolute inset-0 bg-purple-500 rounded-full"
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
                     />
                   )}
                   <span
@@ -1017,101 +1107,110 @@ const SearchProgress = ({ currentState }) => {
   );
 };
 
-const ManufacturerCard = ({ manufacturer }) => (
-    <motion.div variants={itemVariants}>
-        <Card className="bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
-            <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-1/3 space-y-4 flex flex-col">
-                <div className="flex items-start gap-4">
-                    <div className="p-3 bg-white rounded-lg shadow-inner">
-                    <manufacturer.logo className="h-8 w-8 text-slate-700" />
-                    </div>
-                    <div>
-                    <h3 className="font-bold text-xl text-slate-900">
-                        {manufacturer.name}
-                    </h3>
-                    <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 mt-1">
-                        {manufacturer.verified && (
-                        <span className="flex items-center gap-1">
-                            <ShieldCheck className="h-3 w-3 text-sky-500" /> Verified
-                        </span>
-                        )}
-                        <span>{manufacturer.years} yrs</span>
-                        <span>{manufacturer.staff} staff</span>
-                        <span>{manufacturer.revenue}</span>
-                    </div>
-                    </div>
+const ManufacturerCard = ({ manufacturer }) => {
+  const navigate = useNavigate();
+  return (
+  <motion.div variants={itemVariants}>
+    <Card className="bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
+      <CardContent className="p-6">
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="w-full md:w-1/3 space-y-4 flex flex-col">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-white rounded-lg shadow-inner">
+                <manufacturer.logo className="h-8 w-8 text-slate-700" />
+              </div>
+              <div>
+                <h3 className="font-bold text-xl text-slate-900">
+                  {manufacturer.name}
+                </h3>
+                <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 mt-1">
+                  {manufacturer.verified && (
+                    <span className="flex items-center gap-1">
+                      <ShieldCheck className="h-3 w-3 text-sky-500" /> Verified
+                    </span>
+                  )}
+                  <span>{manufacturer.years} yrs</span>
+                  <span>{manufacturer.staff} staff</span>
+                  <span>{manufacturer.revenue}</span>
                 </div>
-                <div>
-                    <a
-                    href="#"
-                    className="text-sm font-medium text-sky-600 hover:underline"
-                    >
-                    {manufacturer.rating} ★ ({manufacturer.reviews}+ reviews)
-                    </a>
-                </div>
-                <div>
-                    <h4 className="font-semibold text-slate-600 mb-2">
-                    Factory Capabilities
-                    </h4>
-                    <ul className="space-y-1 text-sm text-slate-500">
-                    <li className="flex items-center gap-2">
-                        <Check className="h-4 w-4 text-green-500" /> On-time delivery:{" "}
-                        <span className="font-bold text-slate-700">
-                        {manufacturer.capabilities.onTimeDelivery}
-                        </span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-green-500" /> Response time:{" "}
-                        <span className="font-bold text-slate-700">
-                        {manufacturer.capabilities.responseTime}
-                        </span>
-                    </li>
-                    </ul>
-                </div>
-                <div className="flex items-center gap-2 pt-2 mt-auto">
-                    <Button variant="outline" className="w-full bg-white/50">
-                    <MessageSquare className="h-4 w-4 mr-2" />
-                    Chat now
-                    </Button>
-                    <Button className="w-full">Contact us</Button>
-                </div>
-                </div>
-                <div className="w-full md:w-2/3 grid grid-cols-2 grid-rows-2 gap-4">
-                <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden group aspect-video">
-                    <motion.img
-                    whileHover={{ scale: 1.05 }}
-                    src={manufacturer.factoryImage}
-                    alt="Factory"
-                    className="w-full h-full object-cover transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/20"></div>
-                </div>
-                {manufacturer.products.map((product) => (
-                    <a
-                    href="#"
-                    key={product.name}
-                    className="relative rounded-lg overflow-hidden group aspect-video"
-                    >
-                    <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
-                        <p className="text-white text-xs font-bold">
-                        {product.name} <br /> {product.price}
-                        </p>
-                    </div>
-                    </a>
-                ))}
-                </div>
+              </div>
             </div>
-            </CardContent>
-        </Card>
-    </motion.div>
-);
+            <div>
+              <a
+                href="#"
+                className="text-sm font-medium text-sky-600 hover:underline"
+              >
+                {manufacturer.rating} ★ ({manufacturer.reviews}+ reviews)
+              </a>
+            </div>
+            <div>
+              <h4 className="font-semibold text-slate-600 mb-2">
+                Factory Capabilities
+              </h4>
+              <ul className="space-y-1 text-sm text-slate-500">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-500" /> On-time delivery:{" "}
+                  <span className="font-bold text-slate-700">
+                    {manufacturer.capabilities.onTimeDelivery}
+                  </span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-green-500" /> Response time:{" "}
+                  <span className="font-bold text-slate-700">
+                    {manufacturer.capabilities.responseTime}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div className="flex items-center gap-2 pt-2 mt-auto">
+              <Button
+                variant="outline"
+                className="w-full text-black bg-white/50"
+                onClick={() => {
+                  navigate("/chat");
+                }}
+              >
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Chat now
+              </Button>
+              <Button className="w-full">Contact us</Button>
+            </div>
+          </div>
+          <div className="w-full md:w-2/3 grid grid-cols-2 grid-rows-2 gap-4">
+            <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden group aspect-video">
+              <motion.img
+                whileHover={{ scale: 1.05 }}
+                src={manufacturer.factoryImage}
+                alt="Factory"
+                className="w-full h-full object-cover transition-transform duration-300"
+              />
+              <div className="absolute inset-0 bg-black/20"></div>
+            </div>
+            {manufacturer.products.map((product) => (
+              <a
+                href="#"
+                key={product.name}
+                className="relative rounded-lg overflow-hidden group aspect-video"
+              >
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2">
+                  <p className="text-white text-xs font-bold">
+                    {product.name} <br /> {product.price}
+                  </p>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  </motion.div>
+  );
+};
 
 export const Marketplace = () => {
   const [inputValue, setInputValue] = useState("");
@@ -1128,15 +1227,15 @@ export const Marketplace = () => {
   const [userProducts, setUserProducts] = useState(initialUserListedProducts);
 
   const handleAddProduct = (productData, imageUrl) => {
-      const newProduct = {
-        id: Math.max(0, ...userProducts.map(p => p.id)) + 101, // Ensure unique ID
-        name: productData.name,
-        price: productData.price,
-        seller: "Your Storefront",
-        image: imageUrl,
-        certified: true, // Default to certified
-      };
-      setUserProducts([newProduct, ...userProducts]);
+    const newProduct = {
+      id: Math.max(0, ...userProducts.map((p) => p.id)) + 101, // Ensure unique ID
+      name: productData.name,
+      price: productData.price,
+      seller: "Your Storefront",
+      image: imageUrl,
+      certified: true, // Default to certified
+    };
+    setUserProducts([newProduct, ...userProducts]);
   };
 
   const handleSearch = async () => {
@@ -1190,8 +1289,7 @@ export const Marketplace = () => {
         };
       });
       setParsedProducts(productsWithImages);
-    } catch (err)
-    {
+    } catch (err) {
       console.error("Error with AI Search:", err);
       setError("The AI failed to generate a response. Please try again.");
     } finally {
@@ -1201,6 +1299,7 @@ export const Marketplace = () => {
   };
 
   const searchTypes = ["Products", "MSMEs", "Suppliers"];
+  const [selectedType, setSelectedType] = useState();
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 isolate">
@@ -1210,9 +1309,9 @@ export const Marketplace = () => {
         <div className="absolute -bottom-1/4 left-1/3 h-[600px] w-[600px] bg-pink-200/50 rounded-full blur-3xl filter animate-blob animation-delay-4000"></div>
       </div>
 
-      <ListingManager 
-        isOpen={isListingManagerOpen} 
-        onClose={() => setIsListingManagerOpen(false)} 
+      <ListingManager
+        isOpen={isListingManagerOpen}
+        onClose={() => setIsListingManagerOpen(false)}
         onAddProduct={handleAddProduct}
       />
 
@@ -1260,7 +1359,11 @@ export const Marketplace = () => {
                     <motion.div
                       className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full"
                       layoutId="searchTypeUnderline"
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
                     />
                   )}
                 </button>
@@ -1297,10 +1400,11 @@ export const Marketplace = () => {
                   )}
                   {!isLoading && parsedProducts.length > 0 && (
                     <div>
-                      <motion.div 
+                      <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="p-6 mb-8 bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg">
+                        className="p-6 mb-8 bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg"
+                      >
                         <h3 className="font-semibold text-lg text-slate-800 mb-2">
                           AI Search Results
                         </h3>
@@ -1330,49 +1434,52 @@ export const Marketplace = () => {
               ) : null}
             </AnimatePresence>
           </div>
-
-          <motion.section 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            variants={containerVariants}
-            className="p-8 rounded-2xl bg-gradient-to-br from-teal-100 to-cyan-100">
-            <div className="flex justify-between items-center mb-6">
-              <motion.div variants={itemVariants}>
-                <h2 className="text-3xl font-bold text-teal-900">
-                  Your Listed Products
-                </h2>
-                <p className="text-teal-800/70 mt-1">
-                  Manage your catalog and view your public listings.
-                </p>
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <Button
-                  variant="outline"
-                  className="bg-white/50 border-teal-200 hover:bg-white/80"
-                  onClick={() => setIsListingManagerOpen(true)}
-                >
-                  <Edit className="mr-2 h-4 w-4" /> Manage Listings
-                </Button>
-              </motion.div>
-            </div>
-            <motion.div
-              variants={containerVariants}
-              className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
-            >
-              {userProducts.map((product) => (
-                <ProductCard key={`user-${product.id}`} product={product} />
-              ))}
-            </motion.div>
-          </motion.section>
-
-          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-12">
-            <motion.div 
+          {searchType !== "MSMEs" && (
+            <motion.section
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.2 }}
               variants={containerVariants}
-              className="space-y-8 fit-content">
+              className="p-8 rounded-2xl bg-gradient-to-br from-teal-100 to-cyan-100"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <motion.div variants={itemVariants}>
+                  <h2 className="text-3xl font-bold text-teal-900">
+                    Your Listed Products
+                  </h2>
+                  <p className="text-teal-800/70 mt-1">
+                    Manage your catalog and view your public listings.
+                  </p>
+                </motion.div>
+                <motion.div variants={itemVariants}>
+                  <Button
+                    variant="outline"
+                    className="bg-white/50 border-teal-200 hover:bg-white/80"
+                    onClick={() => setIsListingManagerOpen(true)}
+                  >
+                    <Edit className="mr-2 h-4 w-4" /> Manage Listings
+                  </Button>
+                </motion.div>
+              </div>
+              <motion.div
+                variants={containerVariants}
+                className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6"
+              >
+                {userProducts.map((product) => (
+                  <ProductCard key={`user-${product.id}`} product={product} />
+                ))}
+              </motion.div>
+            </motion.section>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 mt-12">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+              variants={containerVariants}
+              className="space-y-8 fit-content"
+            >
               <CategorySidebar />
               <PromoCard
                 title="Savings Booster"
@@ -1381,28 +1488,32 @@ export const Marketplace = () => {
                 image="https://images.pexels.com/photos/4033322/pexels-photo-4033322.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
               />
             </motion.div>
+
             <main className="w-full overflow-hidden">
-              <motion.div 
+              <motion.div
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.2 }}
                 variants={containerVariants}
-                className="space-y-16">
-                <section className="p-8 rounded-2xl bg-gradient-to-br from-rose-200 to-orange-100">
-                  <h2 className="text-3xl font-bold mb-6 text-black">
-                    Recommended For You
-                  </h2>
-                  <div className="flex space-x-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent scrollbar-thumb-rounded-full">
-                    {marketplaceProducts.slice(0, 8).map((product) => (
-                      <div
-                        key={`rec-${product.id}`}
-                        className="w-64 flex-shrink-0"
-                      >
-                        <ProductCard product={product} />
-                      </div>
-                    ))}
-                  </div>
-                </section>
+                className="space-y-16"
+              >
+                {searchType !== "MSMEs" && (
+                  <section className="p-8 rounded-2xl bg-gradient-to-br from-rose-200 to-orange-100">
+                    <h2 className="text-3xl font-bold mb-6 text-black">
+                      Recommended For You
+                    </h2>
+                    <div className="flex space-x-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent scrollbar-thumb-rounded-full">
+                      {marketplaceProducts.slice(0, 8).map((product) => (
+                        <div
+                          key={`rec-${product.id}`}
+                          className="w-64 flex-shrink-0"
+                        >
+                          <ProductCard product={product} />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
                 {searchType === "Products" && (
                   <motion.div
@@ -1425,8 +1536,7 @@ export const Marketplace = () => {
                     </section>
                   </motion.div>
                 )}
-                {(searchType === "MSMEs" ||
-                  searchType === "Suppliers") && (
+                {(searchType === "MSMEs" || searchType === "Suppliers") && (
                   <motion.div
                     initial="hidden"
                     animate="visible"
@@ -1446,12 +1556,13 @@ export const Marketplace = () => {
               </motion.div>
             </main>
           </div>
-          <motion.section 
+          <motion.section
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
             variants={containerVariants}
-            className="mt-12 p-8 rounded-2xl bg-gradient-to-br from-indigo-300 to-slate-300 ">
+            className="mt-12 p-8 rounded-2xl bg-gradient-to-br from-indigo-300 to-slate-300 "
+          >
             <h2 className="text-3xl font-bold mb-8 text-white">
               More Products to Explore
             </h2>

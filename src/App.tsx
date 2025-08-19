@@ -17,6 +17,7 @@ import NotFound from "./pages/NotFound";
 import { AuthProvider } from "./contexts/AuthContext";
 import RequireAuth from "./components/RequireAuth";
 import PublicOnly from "./components/PublicOnly";
+import { ChatWithSuggestions } from "./pages/Chat";
 
 // **** IMPORT THE NEW COMPONENT ****
 import AIAccountant from "./pages/AIAccountant";
@@ -44,6 +45,7 @@ const App = () => (
                 
                 <Route path="/support" element={<RequireAuth><Support /></RequireAuth>} />
                 <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+                <Route path="/chat" element={<RequireAuth><ChatWithSuggestions /></RequireAuth>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
