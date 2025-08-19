@@ -8,7 +8,7 @@ import { LanguageProvider } from "./components/contexts/LanguageContext";
 import { Header } from "./components/Header";
 import { Homepage } from "./pages/Homepage";
 import { FinanceHub } from "./pages/FinanceHub";
-import { Marketplace } from "./pages/Marketplace";
+import MarketplacePage from "./pages/MarketPlace";
 import { BusinessTools } from "./pages/BusinessTools";
 import { Support } from "./pages/Support";
 import { Dashboard } from "./pages/Dashboard";
@@ -36,7 +36,7 @@ const App = () => (
               <Routes>
                 <Route path="/" element={<PublicOnly><Homepage /></PublicOnly>} />
                 <Route path="/finance" element={<RequireAuth><FinanceHub /></RequireAuth>} />
-                <Route path="/marketplace" element={<RequireAuth><Marketplace /></RequireAuth>} />
+                <Route path="/marketplace" element={<RequireAuth><MarketplacePage /></RequireAuth>} />
                 <Route path="/tools" element={<RequireAuth><BusinessTools /></RequireAuth>} />
                 
                 {/* **** ADD THE NEW ROUTE FOR THE TOOL **** */}
