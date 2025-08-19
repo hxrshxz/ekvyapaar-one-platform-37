@@ -1,5 +1,3 @@
-// src/components/marketplace/ListingManager.tsx
-
 "use client";
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";

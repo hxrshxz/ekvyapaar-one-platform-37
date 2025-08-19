@@ -276,20 +276,20 @@ export const MSMEsData = [
       {
         name: "Hand-Blocked Silk",
         image:
-          "https://images.pexels.com/photos/8459275/pexels-photo-8459275.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&dpr=2",
+          "https://imgs.search.brave.com/6HJuEACLZWpQhz7sdFE83MNPUuAt06MtqOW2ok9Vu3o/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tLm1l/ZGlhLWFtYXpvbi5j/b20vaW1hZ2VzL0kv/ODFDb1B5dXlHOEwu/anBn",
         price: "₹450-600/m",
         minOrder: "50 meters",
       },
       {
         name: "Organic Cotton",
         image:
-          "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&dpr=2",
+          "https://imgs.search.brave.com/7RpbBwDk9MExO-pYoVkiVuSXr4igMrdHkP1skbkieIg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93YXpv/b2RsZS5jb20vY2Ru/L3Nob3AvcHJvZHVj/dHMvYmVkYTlkYzdf/NWZmNDA2ZGYtZGJk/OC00ZGVkLThhNzMt/YzZjZjVjZTNkMWNi/XzUxMng1MTIuanBn/P3Y9MTY3MTU0MzE2/NQ",
         price: "₹120-150/m",
         minOrder: "100 meters",
       },
     ],
     factoryImage:
-      "https://images.pexels.com/photos/257736/pexels-photo-257736.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&dpr=2",
+      "https://imgs.search.brave.com/V8FULBtqYZJkPktbrRDfrjigiPOVHsENJJcCtNuCgv4/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9wbHVz/LnVuc3BsYXNoLmNv/bS9wcmVtaXVtX3Bo/b3RvLTE2NjMwNDU3/MTU1ODUtNmM2ZThi/NTZkMWNiP2ZtPWpw/ZyZxPTYwJnc9MzAw/MCZpeGxpYj1yYi00/LjEuMCZpeGlkPU0z/d3hNakEzZkRCOE1I/eHpaV0Z5WTJoOE1U/TjhmRzlzWkNVeU1H/WmhZM1J2Y25sOFpX/NThNSHg4TUh4OGZE/QT0",
   },
   {
     id: 2,
@@ -311,20 +311,20 @@ export const MSMEsData = [
       {
         name: "Hydraulic Pumps",
         image:
-          "https://images.pexels.com/photos/6754395/pexels-photo-6754395.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&dpr=2",
+          "https://imgs.search.brave.com/k14e-gO8HNsGcmRC1eAfY0jqcBjb8dhtvEaW_1Vhf9Y/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9tZWRp/YS5pc3RvY2twaG90/by5jb20vaWQvMTQy/MTAxNjkwMS9waG90/by9oeWRyYXVsaWMt/cHVtcHMtb24tZXho/aWJpdGlvbi5qcGc_/cz02MTJ4NjEyJnc9/MCZrPTIwJmM9M09S/UTdCYTBacmhNdlVV/TW14VDlfZGlhUkdP/eEVCLXNfbG1laWdj/VmppST0",
         price: "₹35,000/unit",
         minOrder: "10 units",
       },
       {
         name: "Ball Valves",
         image:
-          "https://images.pexels.com/photos/4178885/pexels-photo-4178885.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&dpr=2",
+          "https://imgs.search.brave.com/72_vjrLRIkNv03gpdcFZAHtb-BcpMUD2-EqSCFXCZ3A/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9iYWxs/LXZhbHZlcy5uZXQv/d3AtY29udGVudC91/cGxvYWRzLzIwMTkv/MTIvYmFsbF9tYWlu/LmpwZw",
         price: "₹8,500/unit",
         minOrder: "50 units",
       },
     ],
     factoryImage:
-      "https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&dpr=2",
+      "https://imgs.search.brave.com/92fbd56x5veT-yv_leVdqtQfJaC4Ha0ePfbL3QuU3SQ/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9pbWcu/ZnJlZXBpay5jb20v/cHJlbWl1bS1waG90/by9pcm9uLXN0ZWVs/LWZhY3RvcnktcGlw/ZS1taWxsLWxvY2F0/ZWQtdGFnYW5yb2ct/c291dGgtcnVzc2lh/XzIxNTI3NC03NjUu/anBnP3NlbXQ9YWlz/X2h5YnJpZCZ3PTc0/MCZxPTgw",
   },
   {
     id: 3,
@@ -346,20 +346,20 @@ export const MSMEsData = [
       {
         name: "TWS Earbuds",
         image:
-          "https://images.pexels.com/photos/7156881/pexels-photo-7156881.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&dpr=2",
+          "https://imgs.search.brave.com/3fEsGfesy5LrSbXicuv8hqDrIk2ks0onfFQOwhh5LfM/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/amJsLmNvbS9kdy9p/bWFnZS92Mi9CRk5E/X1BSRC9vbi9kZW1h/bmR3YXJlLnN0YXRp/Yy8tL1NpdGVzLW1h/c3RlckNhdGFsb2df/SGFybWFuL2RlZmF1/bHQvZHdjMTFlYzBi/YS9KQkxfUXVhbnR1/bSUyMFRXU19Qcm9k/dWN0JTIwSW1hZ2Vf/T3Blbi5wbmc_c3c9/NTM1JnNoPTUzNQ",
         price: "₹800-1,200/pc",
         minOrder: "100 pieces",
       },
       {
         name: "Smart Watches",
         image:
-          "https://images.pexels.com/photos/267394/pexels-photo-267394.jpeg?auto=compress&cs=tinysrgb&w=600&h=300&dpr=2",
+          "https://imgs.search.brave.com/3ybUazezltGKBmP_uH87jHyhskzJ1GCsvnKjs3k-svA/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/Z3N0YXRpYy5jb20v/bWFya2V0aW5nLWNt/cy9hc3NldHMvaW1h/Z2VzL2UzLzNmLzBk/NjBmMjA3NGZmZWE1/ZDYyMjVkZjY0NjEy/YjUvY2FsbS0yeC5w/bmc9bi13NTYyLWg0/MDctZmNyb3A2ND0x/LDA0NWUwMDAwZmJh/MmZmZmYtcnc",
         price: "₹1,800-2,500/pc",
         minOrder: "50 pieces",
       },
     ],
     factoryImage:
-      "https://images.pexels.com/photos/4484078/pexels-photo-4484078.jpeg?auto=compress&cs=tinysrgb&w=600&h=600&dpr=2",
+      "https://imgs.search.brave.com/RcDWVpdtjnvhbUycZBX2XVhwPktsi0Hm3piLodfM8jg/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9zdGF0/aWMudmVjdGVlenku/Y29tL3N5c3RlbS9y/ZXNvdXJjZXMvdGh1/bWJuYWlscy8wNTAv/NjgwLzkzNy9zbWFs/bC93b3JrZXJzLWFz/c2VtYmxlLWVsZWN0/cm9uaWMtY29tcG9u/ZW50cy1vbi1hLXBy/b2R1Y3Rpb24tbGlu/ZS1pbi1hLWZhY3Rv/cnktZHVyaW5nLWV2/ZW5pbmctaG91cnMt/aW4tYS1idXN0bGlu/Zy1pbmR1c3RyaWFs/LXNldHRpbmctcGhv/dG8uanBn",
   },
 ];
 
