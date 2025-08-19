@@ -83,7 +83,7 @@ export default function MarketplacePage() {
             You MUST respond with ONLY a valid JSON object. Do not include any text, backticks, or 'json' specifiers before or after the JSON.
             The JSON object must have this exact structure:
             { "summary": "A brief, one-sentence summary of the market for the user's query.", "products": [ { "name": "A specific, descriptive product name.", "price": "An estimated price range in INR (e.g., '₹12,000 - ₹18,000').", "seller": "A plausible Indian or international supplier name.", "image_query": "A simple, 2-3 word search term to find an image for this product (e.g., 'ergonomic gaming chair')." } ] }
-            Generate 10 product objects in the 'products' array.
+            Generate 8 product objects in the 'products' array.
         `;
       await new Promise((r) => setTimeout(r, 1000));
       setSearchState("contacting_ai");
@@ -208,7 +208,6 @@ export default function MarketplacePage() {
               <PromoCard title="Savings Booster" subtitle="First order, FREE shipping" buttonText="Explore now" image="https://images.pexels.com/photos/4033322/pexels-photo-4033322.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" />
             </motion.div>
             <main className="w-full overflow-hidden">
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="space-y-16">
                 <section className="p-8 rounded-2xl bg-gradient-to-br from-rose-200 to-orange-100">
                   <h2 className="text-3xl font-bold mb-6 text-black">Recommended For You</h2>
                   <div className="flex space-x-6 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent scrollbar-thumb-rounded-full">
@@ -217,6 +216,9 @@ export default function MarketplacePage() {
                     ))}
                   </div>
                 </section>
+            </main>
+          </div>
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="space-y-16">
                 {searchType === "Products" && (
                   <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl bg-gradient-to-r from-pink-400/60 to-red-200/60 backdrop-blur-sm p-6">
                     <h2 className="text-3xl font-bold mb-6">Frequently Searched</h2>
@@ -234,8 +236,6 @@ export default function MarketplacePage() {
                   </motion.div>
                 )}
               </motion.div>
-            </main>
-          </div>
           <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="mt-12 p-8 rounded-2xl bg-gradient-to-br from-indigo-300 to-slate-300 ">
             <h2 className="text-3xl font-bold mb-8 text-white">More Products to Explore</h2>
             <motion.div variants={containerVariants} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
