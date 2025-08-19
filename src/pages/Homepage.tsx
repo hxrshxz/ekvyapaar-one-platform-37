@@ -67,7 +67,7 @@ const ContainerScrollAnimation = ({
       ref={containerRef}
     >
       <div
-        className="py-20 md:py-40 w-full relative mt-20" // Increased vertical padding for more whitespace
+        className="py-20 md:py-40 w-full relative mt-20"
         style={{ perspective: "1000px" }}
       >
         <ScrollHeader translate={translate} titleComponent={titleComponent} />
@@ -149,7 +149,7 @@ export const Homepage = () => {
   ], []);
 
   const testimonials = useMemo(() => [
-    { name: "Rajesh Kumar", business: "Kumar Auto Parts, Mayapuri", text: "Got a ₹5 lakh loan in 48 hours. My business has grown 3x since then.", rating: 5, },
+    { name: "Rajesh Kumar", business: "Kumar Auto Parts, Mayapuri", text: "Got a ₹5 lakh loan through the govt scheme guidance on ekVyapaar. My business has grown 3x since then.", rating: 5, },
     { name: "Sunita Devi", business: "Devi Textiles, Gurgaon", text: "Getting ₹2 lakh orders every month through GeM tenders. The process is so simple now.", rating: 5, },
     { name: "Amit Sharma", business: "Sharma Engineering, Faridabad", text: "GST filing now takes just 10 minutes. The AI Accountant has been a game changer.", rating: 5, },
   ], []);
@@ -158,25 +158,36 @@ export const Homepage = () => {
     { name: "Govt. of India", icon: Landmark }, { name: "State Bank of India", icon: Landmark }, { name: "GeM Portal", icon: Gem }, { name: "ONDC Network", icon: Globe }, { name: "Account Aggregator", icon: Banknote }, { name: "SIDBI", icon: Landmark },
   ], []);
 
+  // --- NEW: Enhanced Animation Variants ---
+  const titleAnimation = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.2 } },
+  };
+
+  const wordAnimation = {
+    hidden: { y: 50, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+  };
+  
+  const slideUp = { 
+    hidden: { y: 50, opacity: 0 }, 
+    visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } }, 
+  } as const;
+  
+  const staggerContainer = { 
+    hidden: { opacity: 0 }, 
+    visible: { opacity: 1, transition: { staggerChildren: 0.15 } }, 
+  } as const;
+  
   const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" }, }, } as const;
-  const staggerContainer = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.15 } }, } as const;
 
   return (
     <>
       <div className="min-h-screen w-full bg-black text-white mt-[-80px] overflow-x-hidden">
-        
-        {/* --- NEW GRID BACKGROUND --- */}
         <div className="absolute top-0 left-0 h-full w-full">
-            <div
-                className={cn(
-                "absolute inset-0 h-full",
-                "[background-size:40px_40px]",
-                "[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]",
-                )}
-            />
+            <div className={cn("absolute inset-0 h-full", "[background-size:40px_40px]", "[background-image:linear-gradient(to_right,#262626_1px,transparent_1px),linear-gradient(to_bottom,#262626_1px,transparent_1px)]")}/>
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
         </div>
-
 
         <div className="relative z-10">
           
@@ -185,21 +196,27 @@ export const Homepage = () => {
               <motion.div
                 initial="hidden"
                 animate="visible"
-                variants={staggerContainer}
                 className="flex flex-col items-center text-center"
               >
-                <Spotlight className="-top-40 left-0 md:left-60 md:-top-20" fill="white" />
+                {/* --- FIX: Spotlight is now positioned in the top-left corner --- */}
+                <Spotlight className="top-0 left-0 -translate-x-1/2 -translate-y-1/2" fill="white" />
+                
+                {/* --- FIX: Headline now animates word-by-word --- */}
                 <motion.h1
-                  variants={fadeIn}
+                  variants={titleAnimation}
                   className="text-5xl mt-20 md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-white to-slate-400 leading-tight"
                 >
-                  Unlock your Business Potential with <br />
-                  <span className="bg-clip-text text-transparent bg-gradient-to-br from-sky-400 to-sky-500">
+                  {"Unlock your Business Potential with".split(" ").map((word, i) => (
+                    <motion.span key={i} variants={wordAnimation} className="inline-block mr-3">{word}</motion.span>
+                  ))}
+                  <br />
+                  <motion.span variants={wordAnimation} className="inline-block bg-clip-text text-transparent bg-gradient-to-br from-sky-400 to-sky-500">
                     EkVyapaar
-                  </span>
+                  </motion.span>
                 </motion.h1>
+
                 <motion.p
-                  variants={fadeIn}
+                  variants={slideUp}
                   className="mt-12 max-w-3xl text-xl text-slate-300"
                 >
                   The all-in-one platform for MSMEs. Effortlessly manage your
@@ -214,8 +231,8 @@ export const Homepage = () => {
                   designed to help your business grow faster and smarter.
                 </motion.p>
                 <motion.div
-                  variants={fadeIn}
-                  className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4" // Increased top margin for more whitespace
+                  variants={slideUp}
+                  className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
                 >
                   <Button size="lg" className="bg-sky-600 hover:bg-sky-500 h-12 px-8 text-base w-full sm:w-auto" onClick={() => setShowLoginModal(true)}>
                     Login
@@ -235,6 +252,7 @@ export const Homepage = () => {
           </ContainerScrollAnimation>
           
           <div className="container mx-auto px-4 space-y-56 md:space-y-64 pb-48 mt-20" id="features">
+            {/* All other sections remain the same */}
             <section className="space-y-16">
               <SectionHeader
                 pill="Core Features"
