@@ -29,7 +29,7 @@ const itemVariants = {
     y: 0,
     scale: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
       damping: 12,
     },
@@ -118,6 +118,44 @@ const RadialProgress = ({ progress, colorClass, label }) => {
     );
 };
 
+// --- Base Dashboard Card Component ---
+const DashboardCard = ({ children, className }) => (
+  <Card className={`bg-white/90 border-slate-200/60 backdrop-blur-2xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
+      {children}
+  </Card>
+);
+
+// --- FIX: Memoized Stat Card to prevent re-renders ---
+type StatType = {
+  title: string;
+  value: number;
+  prefix?: string;
+  suffix?: string;
+  icon: React.ElementType;
+  iconColor: string;
+  change: string;
+};
+
+const MemoizedStatCard = React.memo(({ stat }: { stat: StatType }) => {
+  return (
+    <DashboardCard className="">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.iconColor.replace('text-', 'from-').replace('-500', '-400/20')} ${stat.iconColor.replace('text-', 'to-').replace('-500', '-500/20')}`}>
+            <stat.icon className={`h-7 w-7 ${stat.iconColor}`} />
+          </div>
+          <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 font-semibold">{stat.change}</Badge>
+        </div>
+        <p className="text-4xl font-bold text-slate-800">
+            <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
+        </p>
+        <p className="text-sm text-slate-600 font-medium mt-1">{stat.title}</p>
+      </CardContent>
+    </DashboardCard>
+  );
+});
+MemoizedStatCard.displayName = 'MemoizedStatCard';
+
 
 export const Dashboard = () => {
   const [greeting, setGreeting] = useState('');
@@ -129,6 +167,13 @@ export const Dashboard = () => {
     else if (hours < 18) setGreeting('Good Afternoon');
     else setGreeting('Good Evening');
   }, []);
+
+  const stats = useMemo(() => [
+    { title: "Today's Revenue", value: 45230, prefix: "₹", icon: IndianRupee, iconColor: "text-green-500", change: "+12.5%" },
+    { title: "New Orders", value: 28, icon: ShoppingCart, iconColor: "text-blue-500", change: "+8.2%" },
+    { title: "Customers", value: 1247, icon: Users, iconColor: "text-purple-500", change: "+15.3%" },
+    { title: "Growth Rate", value: 23.5, suffix: "%", icon: Target, iconColor: "text-orange-500", change: "+3.1%" },
+  ], []);
 
   const quickActions = useMemo(() => [
     { label: "New Order", icon: ShoppingCart, link: "/marketplace/products" },
@@ -168,12 +213,6 @@ export const Dashboard = () => {
     info: { bg: 'bg-sky-500/10 border-sky-500/20', icon: 'text-sky-500' }
   };
   
-  const DashboardCard = ({ children, className }) => (
-    <Card className={`bg-white/90 border-slate-200/60 backdrop-blur-2xl rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>
-        {children}
-    </Card>
-  );
-
   const greetingText = `${greeting}, EkVyapar`;
 
   return (
@@ -202,27 +241,9 @@ export const Dashboard = () => {
 
         <div className="container mx-auto px-4 pb-16">
           <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {[
-              { title: "Today's Revenue", value: 45230, prefix: "₹", icon: IndianRupee, iconColor: "text-green-500", change: "+12.5%" },
-              { title: "New Orders", value: 28, icon: ShoppingCart, iconColor: "text-blue-500", change: "+8.2%" },
-              { title: "Customers", value: 1247, icon: Users, iconColor: "text-purple-500", change: "+15.3%" },
-              { title: "Growth Rate", value: 23.5, suffix: "%", icon: Target, iconColor: "text-orange-500", change: "+3.1%" },
-            ].map((stat, i) => (
+            {stats.map((stat, i) => (
               <motion.div key={i} variants={itemVariants} whileHover={{ y: -5, transition: { type: 'spring', stiffness: 300 }}}>
-                <DashboardCard>
-                  <CardContent className="p-6">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`p-2 rounded-lg bg-gradient-to-br ${stat.iconColor.replace('text-', 'from-').replace('-500', '-400/20')} ${stat.iconColor.replace('text-', 'to-').replace('-500', '-500/20')}`}>
-                        <stat.icon className={`h-7 w-7 ${stat.iconColor}`} />
-                      </div>
-                      <Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 font-semibold">{stat.change}</Badge>
-                    </div>
-                    <p className="text-4xl font-bold text-slate-800">
-                        <AnimatedCounter value={stat.value} prefix={stat.prefix} suffix={stat.suffix} />
-                    </p>
-                    <p className="text-sm text-slate-600 font-medium mt-1">{stat.title}</p>
-                  </CardContent>
-                </DashboardCard>
+                <MemoizedStatCard stat={stat} />
               </motion.div>
             ))}
           </motion.div>
@@ -230,7 +251,7 @@ export const Dashboard = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-8">
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={itemVariants}>
-                <DashboardCard>
+                <DashboardCard className="">
                   <CardHeader><CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-800"><Zap className="text-yellow-500"/>Quick Actions</CardTitle></CardHeader>
                   <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4" onMouseLeave={() => setHoveredAction(null)}>
                     {quickActions.map((action, i) => (
@@ -292,7 +313,7 @@ export const Dashboard = () => {
               </motion.div>
 
                <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.3 }} variants={itemVariants}>
-                    <DashboardCard>
+                    <DashboardCard className="">
                         <CardHeader><CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-800"><Activity className="text-sky-500"/>Recent Activity</CardTitle></CardHeader>
                         <CardContent className="space-y-2">
                           {activities.map((act, i) => (
@@ -309,7 +330,7 @@ export const Dashboard = () => {
 
             <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="space-y-8">
               <motion.div variants={itemVariants}>
-                <DashboardCard>
+                <DashboardCard className="">
                   <CardHeader><CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-800"><Bell className="text-sky-500"/>Notifications</CardTitle></CardHeader>
                   <CardContent className="space-y-3">
                     {notifications.map((n, i) => (
@@ -326,7 +347,7 @@ export const Dashboard = () => {
               </motion.div>
               
               <motion.div variants={itemVariants}>
-                <DashboardCard>
+                <DashboardCard className="">
                   <CardHeader><CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-800"><Lightbulb className="text-yellow-500"/>Market Opportunities</CardTitle></CardHeader>
                    <CardContent className="space-y-4">
                         {marketOpportunities.map((op, i) => (
@@ -341,7 +362,7 @@ export const Dashboard = () => {
               </motion.div>
 
               <motion.div variants={itemVariants}>
-                <DashboardCard>
+                <DashboardCard className="">
                   <CardHeader><CardTitle className="flex items-center gap-3 text-xl font-bold text-slate-800"><TrendingUp className="text-sky-500"/>Business Growth</CardTitle></CardHeader>
                   <CardContent className="h-64 pr-4">
                     <ResponsiveContainer width="100%" height="100%">
