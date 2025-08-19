@@ -74,7 +74,7 @@ export default function MarketplacePage() {
     setError("");
     setSearchState("thinking");
     try { 
-      const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY || "AIzaSyAHDq0R6ZwrEJpXtZ_tg3GmvxRTCvHvT_U";
+      const API_KEY = "AIzaSyAHDq0R6ZwrEJpXtZ_tg3GmvxRTCvHvT_U";
       const genAI = new GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
       const prompt = `
