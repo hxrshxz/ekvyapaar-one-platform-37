@@ -68,7 +68,7 @@
       setError("");
 
       try {
-        const API_KEY = "AIzaSyDNHmmsmvod1_WQfIAjh5Tq7lu4NyLfo7Q"; // Replace with your actual API key
+        const API_KEY = "AIzaSyAHDq0R6ZwrEJpXtZ_tg3GmvxRTCvHvT_U"; // Replace with your actual API key
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
