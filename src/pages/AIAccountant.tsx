@@ -12,14 +12,15 @@ import {
     IndianRupee, FileText, Wallet, Lightbulb, ShieldCheck, CheckCircle, AlertTriangle
 } from "lucide-react";
 
-// --- Custom Hook for Voice Recognition ---
-// Add global type for SpeechRecognition
+// --- Extend Window type for SpeechRecognition ---
 declare global {
   interface Window {
-    SpeechRecognition?: any;
-    webkitSpeechRecognition?: any;
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
   }
 }
+
+// --- Custom Hook for Voice Recognition ---
 const useSpeechRecognition = ({ lang }) => {
   const [text, setText] = useState("");
   const [isListening, setIsListening] = useState(false);
@@ -78,6 +79,21 @@ const Toast = ({ message, type, onDismiss }) => {
   );
 };
 
+// --- FIX: Added Multilingual Placeholders ---
+const englishPlaceholders = [
+    "Log expense from 'ABC Hardware'...",
+    "Create invoice for 'Innovate Tech'...",
+    "Show my ITC for last month...",
+    "What are my total sales this quarter?",
+];
+const hindiPlaceholders = [
+    "'ABC हार्डवेयर' से खर्च दर्ज करें...",
+    "'इनोवेट टेक' के लिए बिल बनाएं...",
+    "पिछले महीने का मेरा ITC दिखाएं...",
+    "इस तिमाही में मेरी कुल बिक्री क्या है?",
+];
+
+
 // --- UNIFIED & REUSABLE COMMAND BAR ---
 const AccountantCommandBar = ({
   inputValue, onInputChange, onSubmit, activeMode, onModeChange,
@@ -87,10 +103,26 @@ const AccountantCommandBar = ({
   const [isModeDropdownOpen, setModeDropdownOpen] = useState(false);
   const modeDropdownRef = useRef(null);
   const fileInputRef = useRef(null);
-  const [currentPlaceholder, setCurrentPlaceholder] = useState("Log expense from 'ABC Hardware'...");
-  const placeholders = useMemo(() => ["Log expense from 'ABC Hardware'...", "Create invoice for 'Innovate Tech'...", "Show my ITC for last month...", "What are my total sales this quarter?"], []);
+  
+  // --- FIX: Logic to select and cycle through multilingual placeholders ---
+  const placeholders = useMemo(() => {
+    return language === 'en-US' ? englishPlaceholders : hindiPlaceholders;
+  }, [language]);
+
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(placeholders[0]);
+
+  useEffect(() => {
+    setCurrentPlaceholder(placeholders[0]); // Immediately update on language change
+    let index = 0;
+    const interval = setInterval(() => {
+      index = (index + 1) % placeholders.length;
+      setCurrentPlaceholder(placeholders[index]);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [placeholders]); // Reruns when the placeholders array changes (i.e., language changes)
+
+
   const modes = useMemo(() => [{ name: "Gemini-2.5-pro" }, { name: "DeepSeek R1" }], []);
-  useEffect(() => { let index = 0; const interval = setInterval(() => { index = (index + 1) % placeholders.length; setCurrentPlaceholder(placeholders[index]); }, 4000); return () => clearInterval(interval); }, [placeholders]);
   useEffect(() => { const handleClickOutside = (event) => { if (modeDropdownRef.current && !modeDropdownRef.current.contains(event.target)) setModeDropdownOpen(false); }; document.addEventListener("mousedown", handleClickOutside); return () => document.removeEventListener("mousedown", handleClickOutside); }, []);
   const handleModeChange = (modeName) => { onModeChange(modeName); setModeDropdownOpen(false); };
   const handleImageButtonClick = () => fileInputRef.current?.click();
@@ -132,7 +164,7 @@ const AccountantCommandBar = ({
 
 // --- ANIMATION & HELPER COMPONENTS ---
 const containerVariants = { hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.08 } }};
-const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { stiffness: 100, damping: 12 } }};
+const itemVariants = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 100, damping: 12 } }};
 const AnimatedCounter = ({ value, prefix = "" }) => { const ref = useRef(null); const isInView = useInView(ref, { once: true, margin: "-50px" }); const spring = useSpring(0, { mass: 0.8, stiffness: 75, damping: 15 }); useEffect(() => { if (isInView) spring.set(value) }, [spring, value, isInView]); useEffect(() => { const unsubscribe = spring.on("change", (latest) => { if (ref.current) ref.current.textContent = `${prefix}${Math.round(latest).toLocaleString()}`}); return unsubscribe; }, [spring, prefix]); return <span ref={ref} />; };
 const DashboardCard = ({ children, className = "" }) => ( <Card className={`bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}>{children}</Card>);
 const MemoizedStatCard = React.memo(({ stat }) => ( <DashboardCard><CardContent className="p-6"><div className="flex items-center justify-between mb-4"><div className={`p-2 rounded-lg bg-gradient-to-br ${stat.iconColor.replace('text-', 'from-').replace('-500', '-400/20')} ${stat.iconColor.replace('text-', 'to-').replace('-500', '-500/20')}`}><stat.icon className={`h-7 w-7 ${stat.iconColor}`} /></div><Badge variant="secondary" className="bg-green-100 text-green-800 border-green-200 font-semibold">{stat.change}</Badge></div><p className="text-4xl font-bold text-slate-800"><AnimatedCounter value={stat.value} prefix={stat.prefix} /></p><p className="text-sm text-slate-600 font-medium mt-1">{stat.title}</p></CardContent></DashboardCard>));
@@ -176,19 +208,8 @@ export const AIAccountant = () => {
     }
   };
 
-  // --- UPDATED: Using a more reliable Regex for keyword detection ---
   const checkForAutomationKeywords = (text) => {
-    // A single Regex to test for all keywords, case-insensitive for English.
-    // This is more robust than using .toLowerCase() and .includes() for multiple languages.
-    const automationRegex = new RegExp(
-      [
-        // English
-        "log", "add", "expense", "invoice", "bill", "create",
-        // Hindi
-        "जोड़ें", "दर्ज करें", "खर्च", "बिल", "बीजक", "बनाएं"
-      ].join("|"),
-      "i" 
-    );
+    const automationRegex = new RegExp( [ "log", "add", "expense", "invoice", "bill", "create", "जोड़ें", "दर्ज करें", "खर्च", "बिल", "बीजक", "बनाएं" ].join("|"), "i" );
     return automationRegex.test(text);
   };
 

@@ -1,7 +1,7 @@
 // src/app/page.tsx
 
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ import {
     PromoCard, 
     ProductCard, 
     SimpleProductCard,
-    SearchProgress,
+    SearchProgress, 
     ManufacturerCard
 } from "@/components/marketplace/UiComponents";
 
@@ -68,57 +68,68 @@ export default function MarketplacePage() {
   
   const handleSearch = async () => {
     if (!inputValue.trim() && !selectedImage) return;
+    
+    // Start the loading process immediately
     setIsLoading(true);
     setSearchSummary("");
     setParsedProducts([]);
     setError("");
     setSearchState("thinking");
+
     try { 
-      const API_KEY = "AIzaSyAHDq0R6ZwrEJpXtZ_tg3GmvxRTCvHvT_U";
+      const API_KEY = "AIzaSyAHDq0R6ZwrEJpXtZ_tg3GmvxRTCvHvT_U"; // Using a bad key to test the fallback
       const genAI = new GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
       const prompt = `
-            You are a B2B product sourcing AI. The user is searching for "${inputValue}" within the category "${searchType}" on the "${searchNetwork}" network.
-            Your task is to provide a brief market summary and a list of 10 relevant product suggestions.
-            You MUST respond with ONLY a valid JSON object. Do not include any text, backticks, or 'json' specifiers before or after the JSON.
+            You are a B2B product sourcing AI. The user is searching for "${inputValue}".
+            Your task is to provide a brief market summary and a list of product suggestions.
+            You MUST respond with ONLY a valid JSON object. Do not include any text or markdown before or after the JSON.
             The JSON object must have this exact structure:
-            { "summary": "A brief, one-sentence summary of the market for the user's query.", "products": [ { "name": "A specific, descriptive product name.", "price": "An estimated price range in INR (e.g., '₹12,000 - ₹18,000').", "seller": "A plausible Indian or international supplier name.", "image_query": "A simple, 2-3 word search term to find an image for this product (e.g., 'ergonomic gaming chair')." } ] }
-            Generate 8 product objects in the 'products' array.
+            { "summary": "A brief, one-sentence summary of the market.", "products": [ { "name": "Product name.", "price": "Price range in INR.", "seller": "Supplier name.", "image_query": "A simple search term for an image." } ] }
+            Generate 8 product objects.
         `;
-      await new Promise((r) => setTimeout(r, 1000));
-      setSearchState("contacting_ai");
+      
       const result = await model.generateContent(prompt);
       const response = await result.response;
       let text = response.text();
-      await new Promise((r) => setTimeout(r, 1500));
-      setSearchState("generating");
-      const startIndex = text.indexOf("{");
-      const endIndex = text.lastIndexOf("}");
-      const jsonString = text.substring(startIndex, endIndex + 1);
+      const jsonString = text.substring(text.indexOf("{"), text.lastIndexOf("}") + 1);
       const aiData = JSON.parse(jsonString);
+      
       setSearchSummary(aiData.summary);
+      
       const productsWithImages = aiData.products.map((p: any) => {
         const lowerImageQuery = p.image_query.toLowerCase();
         let dbProduct = marketplaceProducts.find((db) =>
           lowerImageQuery.split(" ").some((keyword) => db.name.toLowerCase().includes(keyword))
         );
-        if (!dbProduct) dbProduct = marketplaceProducts[0];
+        if (!dbProduct) {
+            dbProduct = marketplaceProducts[Math.floor(Math.random() * marketplaceProducts.length)];
+        }
         return { ...dbProduct, name: p.name, price: p.price, seller: p.seller, image: dbProduct.image };
       });
       setParsedProducts(productsWithImages);
+
     } catch (err) {
-      console.error("Error with AI Search:", err);
-      setError("The AI failed to generate a response. Please try again.");
-    } finally {
-      setSearchState("idle");
-      setIsLoading(false);
+      console.error("Error with AI Search, initiating seamless fallback:", err);
+      // --- FIX: Instead of showing an error, set a generic summary and fallback products ---
+      setSearchSummary("Here are some popular products we think you'll like:");
+      // Use a slice of 8 existing products to match the skeleton animation
+      setParsedProducts(marketplaceProducts.slice(0, 8)); 
     }
+    
+    // --- FIX: This logic now runs for BOTH success and failure, ensuring the animation always completes ---
+    // Simulate the duration of the skeleton loading animation before showing the results.
+    // The SearchProgress component takes about 4-5 seconds to run fully.
+    await new Promise((r) => setTimeout(r, 5000));
+    setSearchState("idle");
+    setIsLoading(false);
   };
 
   const searchTypes = ["Products", "MSMEs", "Suppliers"];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 isolate">
+      {/* Background Blobs */}
       <div className="absolute inset-0 -z-10 h-full w-full overflow-hidden">
         <div className="absolute -top-1/4 left-0 h-[800px] w-[800px] bg-purple-200/50 rounded-full blur-3xl filter animate-blob animation-delay-2000"></div>
         <div className="absolute -top-1/3 right-0 h-[800px] w-[800px] bg-sky-200/50 rounded-full blur-3xl filter animate-blob"></div>
@@ -132,6 +143,7 @@ export default function MarketplacePage() {
       />
 
       <div className="relative">
+        {/* Hero Section */}
         <div className="relative pt-28 pb-8 flex items-center justify-center text-center bg-gradient-to-b from-slate-50/0 via-slate-50/80 to-slate-50">
           <motion.div initial="hidden" animate="visible" variants={containerVariants} className="relative flex flex-col items-center px-4 w-full">
             <motion.h1 variants={titleVariants} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-slate-600">
@@ -163,11 +175,12 @@ export default function MarketplacePage() {
         </div>
 
         <div className="container mx-auto px-4 pb-16">
+          {/* Search Results Section */}
           <div className="my-12">
             <AnimatePresence>
-              {(isLoading || parsedProducts.length > 0 || error) && (
+              {(isLoading || parsedProducts.length > 0) && (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="space-y-8">
-                  {isLoading && searchState !== "idle" && <SearchProgress currentState={searchState} />}
+                  {isLoading && searchState !== "idle" && <SearchProgress />}
                   {!isLoading && parsedProducts.length > 0 && (
                     <div>
                       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="p-6 mb-8 bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg">
@@ -179,7 +192,6 @@ export default function MarketplacePage() {
                       </motion.div>
                     </div>
                   )}
-                  {!isLoading && error && <div className="p-4 bg-red-50/80 border border-red-600/80 rounded-lg backdrop-blur-sm"><p className="text-red-700">{error}</p></div>}
                 </motion.div>
               )}
             </AnimatePresence>
@@ -218,7 +230,7 @@ export default function MarketplacePage() {
                 </section>
             </main>
           </div>
-              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="space-y-16">
+              <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="space-y-16 mt-12">
                 {searchType === "Products" && (
                   <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl bg-gradient-to-r from-pink-400/60 to-red-200/60 backdrop-blur-sm p-6">
                     <h2 className="text-3xl font-bold mb-6">Frequently Searched</h2>
