@@ -33,7 +33,7 @@ const mockAiResponse = {
 };
 
 // --- Animation Variants ---
-const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ["easeInOut"] } } };
+const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } } };
 const staggerContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 
 // --- Main Component ---
