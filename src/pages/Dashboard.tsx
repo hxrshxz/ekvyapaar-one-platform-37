@@ -302,7 +302,7 @@ export const Dashboard = () => {
                                 <AnimatedCounter value={742} />
                             </div>
                             <div className="text-md font-semibold text-green-600 mb-4">Excellent</div>
-                            <Button variant="outline" size="sm" className="rounded-full bg-white/80 hover:bg-white">View Full Report</Button>
+                            <Button variant="outline" size="sm" className="rounded-full text-gray-500  bg-white/80 hover:bg-white">View Full Report</Button>
                         </CardContent>
                     </DashboardCard>
                 </motion.div>

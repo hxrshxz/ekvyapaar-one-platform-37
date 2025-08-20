@@ -33,7 +33,7 @@ const mockAiResponse = {
 };
 
 // --- Animation Variants ---
-const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } } };
+const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ["easeInOut"] } } };
 const staggerContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 
 // --- Main Component ---
@@ -86,11 +86,11 @@ export const AIProductLister = () => {
     setAiResults(null);
   };
 
-  const renderContent = () => {chat 
+  const renderContent = () => {
     switch (step) {
       case 'upload':
         return (
-          <motion.div variants={fadeIn}>
+          <motion.div >
             <CardHeader className="text-center">
               <Sparkles className="mx-auto h-12 w-12 text-purple-500 mb-2" />
               <CardTitle className="text-3xl font-bold">AI Product Manager</CardTitle>
@@ -110,7 +110,7 @@ export const AIProductLister = () => {
         );
       case 'analyzing':
         return (
-          <motion.div variants={fadeIn} className="flex flex-col items-center justify-center text-center p-8 min-h-[30rem]">
+          <motion.div  className="flex flex-col items-center justify-center text-center p-8 min-h-[30rem]">
             <Loader2 className="h-16 w-16 text-sky-500 animate-spin" />
             <h3 className="text-2xl font-bold text-slate-800 mt-6">AI is analyzing your product...</h3>
             <p className="text-slate-500 mt-2">Identifying features, analyzing market data, and writing copy.</p>
@@ -118,7 +118,7 @@ export const AIProductLister = () => {
         );
       case 'results':
         return (
-          <motion.div variants={fadeIn}>
+          <motion.div>
             <CardHeader className="text-center">
                 <Sparkles className="mx-auto h-12 w-12 text-purple-500 mb-2" />
                 <CardTitle className="text-3xl font-bold">Generated Listing Details</CardTitle>
@@ -127,8 +127,8 @@ export const AIProductLister = () => {
             <CardContent className="mt-4 grid lg:grid-cols-2 gap-8">
               {/* Left Column: Images */}
               <motion.div variants={staggerContainer} initial="hidden" animate="visible" className="space-y-4">
-                <motion.h3 variants={fadeIn} className="text-xl font-bold text-slate-800">Uploaded Images</motion.h3>
-                <motion.div variants={fadeIn} className="grid grid-cols-2 gap-4">
+                <motion.h3  className="text-xl font-bold text-slate-800">Uploaded Images</motion.h3>
+                <motion.div  className="grid grid-cols-2 gap-4">
                   {imagePreviews.map((src, index) => (
                     <img key={index} src={src} alt={`Product preview ${index + 1}`} className="rounded-lg object-cover aspect-square" />
                   ))}
