@@ -233,52 +233,38 @@ export default async function runAutomation() {
   }
 
 
-  // --- 🚀 AUTOMATION LOGIC ---
+  // --- 🚀 AUTOMATION LOGIC (FIXED) ---
   await triggerPowerUp();
   await triggerDataFlicker();
   await typeLikeHuman(page.locator('#cell_A9').first(), 'Sale');
   await visualPress('Enter');
   
-  await triggerPowerUp();
-  await triggerDataFlicker();
-  await visualPress('ArrowUp');
-  await visualPress('ArrowRight');
-  await typeLikeHuman(page.getByRole('textbox').first(), '20-Aug-2025');
-  await visualPress('ArrowRight');
-  await typeLikeHuman(page.getByRole('textbox').first(), 'Cybernetic Implants');
+  await typeLikeHuman(page.locator('#cell_B9').first(), '20-Aug-2025');
   await visualPress('Enter');
 
-  await triggerPowerUp();
-  await triggerDataFlicker();
-  await visualPress('ArrowRight');
-  await visualPress('ArrowUp');
-  await typeLikeHuman(page.getByRole('textbox').first(), 'Kiroshi Optics x5');
+  await typeLikeHuman(page.locator('#cell_C9').first(), 'Cybernetic Implants');
   await visualPress('Enter');
 
+  await typeLikeHuman(page.locator('#cell_D9').first(), 'Kiroshi Optics x5');
+  await visualPress('Enter');
+  
   await triggerPowerUp();
+  await triggerDataFlicker();
   await typeLikeHuman(page.locator('#cell_E9').first(), '75000');
   await visualPress('Enter');
 
   await typeLikeHuman(page.locator('#cell_F9').first(), '18');
   await visualPress('Enter');
-
-  await triggerPowerUp();
-  await triggerDataFlicker();
-  await visualPress('ArrowRight');
-  await visualPress('ArrowUp');
-  await typeLikeHuman(page.getByRole('textbox').first(), 'False');
-  await visualPress('Enter');
-
-  await visualPress('ArrowRight');
-  await visualPress('ArrowUp');
-  await typeLikeHuman(page.getByRole('textbox').first(), '13500');
+  
+  await typeLikeHuman(page.locator('#cell_G9').first(), 'False');
   await visualPress('Enter');
 
   await triggerPowerUp();
   await triggerDataFlicker();
-  await visualPress('ArrowRight');
-  await visualPress('ArrowUp');
-  await typeLikeHuman(page.getByRole('textbox').first(), 'CRITICAL: Send payment request to Arasaka Corp.');
+  await typeLikeHuman(page.locator('#cell_H9').first(), '13500');
+  await visualPress('Enter');
+
+  await typeLikeHuman(page.locator('#cell_I9').first(), 'CRITICAL: Send payment request to Arasaka Corp.');
   await visualPress('Enter');
   
   await showCompletionMessage(5);
