@@ -1,11 +1,10 @@
-// src/app/page.tsx
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { Edit, Building, Target, Zap, ShieldCheck, Rocket } from "lucide-react";
 
 // --- Import Refactored Components ---
@@ -18,7 +17,7 @@ import {
     SimpleProductCard,
     SearchProgress, 
     ManufacturerCard,
-    ChatPanel // <-- 1. Import the ChatPanel component
+    ChatPanel
 } from "@/components/marketplace/UiComponents";
 
 // --- Import Data ---
@@ -123,7 +122,7 @@ export default function MarketplacePage() {
   const [isListingManagerOpen, setIsListingManagerOpen] = useState(false);
   const [userProducts, setUserProducts] = useState<Product[]>(initialUserListedProducts);
 
-  // --- 2. ADD STATE AND HANDLERS FOR CHAT PANEL ---
+  // FIX 1: Re-added state and handlers for the chat panel.
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedManufacturer, setSelectedManufacturer] = useState<any | null>(null);
 
@@ -134,8 +133,8 @@ export default function MarketplacePage() {
 
   const handleCloseChat = () => {
     setIsChatOpen(false);
+    setSelectedManufacturer(null);
   };
-  // ---------------------------------------------------
 
   const handleAddProduct = (productData: any, imageUrl: string) => {
       const newProduct: Product = {
@@ -210,13 +209,12 @@ export default function MarketplacePage() {
         onAddProduct={handleAddProduct}
       />
 
-      {/* --- 3. RENDER THE CHAT PANEL (IT WILL BE INVISIBLE UNTIL ACTIVATED) --- */}
+      {/* FIX 2: Added the ChatPanel component so it can be opened. */}
       <ChatPanel
         isOpen={isChatOpen}
         onClose={handleCloseChat}
         manufacturer={selectedManufacturer}
       />
-      {/* ------------------------------------------------------------------------ */}
 
       <div className="relative">
         <div className="relative pt-28 pb-8 flex items-center justify-center text-center bg-gradient-to-b from-slate-50/0 via-slate-50/80 to-slate-50">
@@ -307,15 +305,14 @@ export default function MarketplacePage() {
                     <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8">
                         <h2 className="text-3xl font-bold">Featured {searchType}</h2>
                         <div className="space-y-6">
-                          {/* --- 4. PASS THE HANDLER TO EACH MANUFACTURER CARD --- */}
                           {MSMEsData.map((mfg) => (
+                            // FIX 3: Connected the "Chat Now" button by passing the handler.
                             <ManufacturerCard 
                               key={mfg.id} 
                               manufacturer={mfg}
                               onChatNowClick={handleOpenChat}
                             />
                           ))}
-                          {/* -------------------------------------------------------- */}
                         </div>
                     </motion.div>
                 </div>
