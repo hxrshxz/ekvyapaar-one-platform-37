@@ -5,8 +5,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Edit, Building, Target, Zap, ShieldCheck, Rocket } from "lucide-react";
 
 // --- Import Refactored Components ---
@@ -18,7 +17,8 @@ import {
     ProductCard, 
     SimpleProductCard,
     SearchProgress, 
-    ManufacturerCard
+    ManufacturerCard,
+    ChatPanel // <-- 1. Import the ChatPanel component
 } from "@/components/marketplace/UiComponents";
 
 // --- Import Data ---
@@ -123,6 +123,20 @@ export default function MarketplacePage() {
   const [isListingManagerOpen, setIsListingManagerOpen] = useState(false);
   const [userProducts, setUserProducts] = useState<Product[]>(initialUserListedProducts);
 
+  // --- 2. ADD STATE AND HANDLERS FOR CHAT PANEL ---
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [selectedManufacturer, setSelectedManufacturer] = useState<any | null>(null);
+
+  const handleOpenChat = (manufacturer: any) => {
+    setSelectedManufacturer(manufacturer);
+    setIsChatOpen(true);
+  };
+
+  const handleCloseChat = () => {
+    setIsChatOpen(false);
+  };
+  // ---------------------------------------------------
+
   const handleAddProduct = (productData: any, imageUrl: string) => {
       const newProduct: Product = {
         id: Math.max(0, ...userProducts.map(p => p.id), ...marketplaceProducts.map(p => p.id)) + 1,
@@ -168,11 +182,10 @@ export default function MarketplacePage() {
     } catch (err) {
       console.error("Error with AI Search, initiating seamless fallback:", err);
       
-      // --- FIX: This block now provides a realistic, laptop-specific fallback for your demo ---
       setSearchSummary("Screening the market for high-performance laptops shows strong availability from top suppliers. Here are 10 top-rated models that match your query.");
       const fallbackLaptops = marketplaceProducts.filter(product => 
         product.name.toLowerCase().includes('laptop')
-      ).slice(0, 10); // Show up to 10 laptops
+      ).slice(0, 10);
       setParsedProducts(fallbackLaptops); 
     }
     
@@ -196,6 +209,14 @@ export default function MarketplacePage() {
         onClose={() => setIsListingManagerOpen(false)} 
         onAddProduct={handleAddProduct}
       />
+
+      {/* --- 3. RENDER THE CHAT PANEL (IT WILL BE INVISIBLE UNTIL ACTIVATED) --- */}
+      <ChatPanel
+        isOpen={isChatOpen}
+        onClose={handleCloseChat}
+        manufacturer={selectedManufacturer}
+      />
+      {/* ------------------------------------------------------------------------ */}
 
       <div className="relative">
         <div className="relative pt-28 pb-8 flex items-center justify-center text-center bg-gradient-to-b from-slate-50/0 via-slate-50/80 to-slate-50">
@@ -285,7 +306,17 @@ export default function MarketplacePage() {
                     </motion.div>
                     <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8">
                         <h2 className="text-3xl font-bold">Featured {searchType}</h2>
-                        <div className="space-y-6">{MSMEsData.map((mfg) => <ManufacturerCard key={mfg.id} manufacturer={mfg} />)}</div>
+                        <div className="space-y-6">
+                          {/* --- 4. PASS THE HANDLER TO EACH MANUFACTURER CARD --- */}
+                          {MSMEsData.map((mfg) => (
+                            <ManufacturerCard 
+                              key={mfg.id} 
+                              manufacturer={mfg}
+                              onChatNowClick={handleOpenChat}
+                            />
+                          ))}
+                          {/* -------------------------------------------------------- */}
+                        </div>
                     </motion.div>
                 </div>
               )}
