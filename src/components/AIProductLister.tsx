@@ -11,7 +11,6 @@ import {
   UploadCloud, ArrowRight, Sparkles, CheckCircle, Image as ImageIcon, Tags, Layers, DollarSign, Edit, ClipboardCopy, Loader2
 } from "lucide-react";
 
-// MOCK AI RESULTS - In a real app, this would come from a backend API call
 const mockAiResponse = {
   title: "Men's Classic Blue Denim Jacket - Regular Fit",
   description: "Crafted from premium, durable denim, this classic blue jacket is a timeless wardrobe essential. Featuring a regular fit, button-front closure, and two chest pockets, it offers both style and functionality. Perfect for layering over a t-shirt for a casual look or a sweater in cooler weather. The versatile design ensures it will be your go-to jacket for years to come.",
@@ -34,7 +33,7 @@ const mockAiResponse = {
 };
 
 // --- Animation Variants ---
-const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeInOut" } } };
+const fadeIn = { hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: ["easeInOut"] } } };
 const staggerContainer = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } } };
 
 // --- Main Component ---
@@ -142,7 +141,7 @@ export const AIProductLister = () => {
                 <EditableField label="Description" value={aiResults?.description} type="textarea" />
                 
                 <div>
-                  <Label className="text-base font-semibold">Key Features (Bullet Points)</Label>
+                  <Label className="text-base font-semibold">Key Features</Label>
                   <ul className="mt-2 space-y-2">
                     {aiResults?.keyFeatures.map((feature: string, index: number) => (
                       <li key={index} className="flex items-start">
@@ -153,6 +152,19 @@ export const AIProductLister = () => {
                   </ul>
                 </div>
                 
+                {/* --- FIX: Added Product Attributes Section --- */}
+                <div>
+                  <Label className="text-base font-semibold">Product Attributes</Label>
+                  <div className="grid grid-cols-2 gap-3 mt-2">
+                    {Object.entries(aiResults?.attributes || {}).map(([key, value]) => (
+                      <div key={key} className="p-3 bg-slate-50/50 rounded-lg border border-slate-200/80">
+                        <p className="text-xs text-slate-500 font-medium">{key}</p>
+                        <p className="font-semibold text-slate-800">{String(value)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
                 <InfoCard icon={Layers} title="Suggested Category" value={aiResults?.category} />
                 <InfoCard icon={DollarSign} title="Suggested Price Range" value={aiResults?.priceRange} />
 

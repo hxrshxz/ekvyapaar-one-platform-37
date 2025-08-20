@@ -24,7 +24,7 @@
     const resetState = () => {
       setImageFile(null);
       setImagePreview("");
-      setIsGenerating(false);
+      setIsGenerating(false); 
       setGeneratedListing(null);
       setError("");
     };

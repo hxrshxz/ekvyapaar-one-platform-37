@@ -11,7 +11,6 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
 } from 'recharts';
 
-// --- ANIMATION VARIANTS (Refined for better impact) ---
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -36,7 +35,6 @@ const itemVariants = {
   },
 };
 
-// --- NEW Letter-by-Letter Animation for Heading ---
 const sentence = {
   hidden: { opacity: 1 },
   visible: {
@@ -55,8 +53,6 @@ const letter = {
   },
 };
 
-
-// --- Animated Counter Hook ---
 const AnimatedCounter = ({ value, prefix = "", suffix = "" }) => {
     const ref = useRef(null);
     const isInView = useInView(ref, { once: true, margin: "-50px" });
@@ -213,7 +209,7 @@ export const Dashboard = () => {
     info: { bg: 'bg-sky-500/10 border-sky-500/20', icon: 'text-sky-500' }
   };
   
-  const greetingText = `${greeting}, EkVyapar`;
+  const greetingText = `${greeting}, EkVyapar User`;
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans isolate">
