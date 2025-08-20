@@ -359,7 +359,7 @@ export const ManufacturerCard = ({ manufacturer }: { manufacturer: any }) => (
                         </ul>
                     </div>
                     <div className="flex items-center gap-2 pt-2 mt-auto">
-                        <Button variant="outline" className="w-full bg-white/50"><MessageSquare className="h-4 w-4 mr-2" />Chat now</Button>
+                        <Button variant="outline" className="w-full text-gray-500 bg-white/50"><MessageSquare className="h-4 w-4 mr-2" />Chat now</Button>
                         <Button className="w-full">Contact us</Button>
                     </div>
                 </div>

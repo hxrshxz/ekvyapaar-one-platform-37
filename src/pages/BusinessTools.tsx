@@ -108,7 +108,7 @@ export const BusinessTools = () => {
 
   const tools = useMemo(() => [
     { id: 'accountant', label: 'AI Accountant', icon: Bot },
-    { id: 'productLister', label: 'AI Product Lister', icon: Sparkles }
+    { id: 'productLister', label: 'AI Product Manager', icon: Sparkles }
   ], []);
   
   const successStories = useMemo(() => [

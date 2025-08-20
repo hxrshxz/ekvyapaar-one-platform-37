@@ -86,14 +86,14 @@ export const AIProductLister = () => {
     setAiResults(null);
   };
 
-  const renderContent = () => {
+  const renderContent = () => {chat 
     switch (step) {
       case 'upload':
         return (
           <motion.div variants={fadeIn}>
             <CardHeader className="text-center">
               <Sparkles className="mx-auto h-12 w-12 text-purple-500 mb-2" />
-              <CardTitle className="text-3xl font-bold">AI Product Lister</CardTitle>
+              <CardTitle className="text-3xl font-bold">AI Product Manager</CardTitle>
               <CardDescription className="text-lg text-slate-600">Upload your product images to get started.</CardDescription>
             </CardHeader>
             <CardContent className="mt-4">
