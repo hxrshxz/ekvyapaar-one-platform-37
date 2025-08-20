@@ -125,7 +125,7 @@ export default function MarketplacePage() {
     setIsLoading(false);
   };
 
-  const searchTypes = ["Products", "MSMEs", "Suppliers"];
+  const searchTypes = ["Products", "MSMEs", "Gem Portal"];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 isolate">
