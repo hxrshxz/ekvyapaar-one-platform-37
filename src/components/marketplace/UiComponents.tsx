@@ -36,7 +36,6 @@ const mockProduct: Product = {
     certified: true,
 };
 
-// **MODIFIED**: Added 'export' to make this data available to other files.
 export const jaipurTextiles = {
     name: "Jaipur Textiles & Co.",
     logo: MockIcon,
@@ -242,40 +241,53 @@ export const SearchProgress = () => {
   );
 };
 
-export const ManufacturerCard = ({ manufacturer, onChatNowClick }: { manufacturer: any, onChatNowClick: (m: any) => void }) => (
-    <motion.div variants={itemVariants}>
+export const ManufacturerCard = ({ manufacturer, onChatNowClick, onCardClick }: { manufacturer: any, onChatNowClick: (m: any) => void, onCardClick: (m: any) => void }) => (
+    <motion.div
+      variants={itemVariants}
+      onClick={() => onCardClick(manufacturer)}
+      className="cursor-pointer"
+    >
         <Card className="bg-white/60 border-slate-200/60 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300">
             <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-6">
-                <div className="w-full md:w-1/3 space-y-4 flex flex-col">
-                    <div className="flex items-start gap-4">
-                        <div className="p-3 bg-white rounded-lg shadow-inner"><manufacturer.logo className="h-8 w-8 text-slate-700" /></div>
-                        <div>
-                            <h3 className="font-bold text-xl text-slate-900">{manufacturer.name}</h3>
-                            <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 mt-1">
-                                {manufacturer.verified && <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3 text-sky-500" /> Verified</span>}
-                                <span>{manufacturer.years} yrs</span><span>{manufacturer.staff} staff</span><span>{manufacturer.revenue}</span>
+                <div className="flex flex-col md:flex-row gap-6">
+                    <div className="w-full md:w-1/3 space-y-4 flex flex-col">
+                        <div className="flex items-start gap-4">
+                            <div className="p-3 bg-white rounded-lg shadow-inner"><manufacturer.logo className="h-8 w-8 text-slate-700" /></div>
+                            <div>
+                                <h3 className="font-bold text-xl text-slate-900">{manufacturer.name}</h3>
+                                <div className="flex items-center flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 mt-1">
+                                    {manufacturer.verified && <span className="flex items-center gap-1"><ShieldCheck className="h-3 w-3 text-sky-500" /> Verified</span>}
+                                    <span>{manufacturer.years} yrs</span><span>{manufacturer.staff} staff</span><span>{manufacturer.revenue}</span>
+                                </div>
                             </div>
                         </div>
+                        <div><a href="#" className="text-sm font-medium text-sky-600 hover:underline">{manufacturer.rating} ★ ({manufacturer.reviews}+ reviews)</a></div>
+                        <div>
+                            <h4 className="font-semibold text-slate-600 mb-2">Factory Capabilities</h4>
+                            <ul className="space-y-1 text-sm text-slate-500">
+                                <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> On-time delivery: <span className="font-bold text-slate-700">{manufacturer.capabilities.onTimeDelivery}</span></li>
+                                <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-green-500" /> Response time: <span className="font-bold text-slate-700">{manufacturer.capabilities.responseTime}</span></li>
+                            </ul>
+                        </div>
+                        <div className="flex items-center gap-2 pt-2 mt-auto">
+                            <Button
+                              variant="outline"
+                              className="w-full text-slate-600 bg-white/50 hover:bg-slate-100"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                onChatNowClick(manufacturer);
+                              }}
+                            >
+                              <MessageSquare className="h-4 w-4 mr-2" />Chat now
+                            </Button>
+                            <Button className="w-full">Contact us</Button>
+                        </div>
                     </div>
-                    <div><a href="#" className="text-sm font-medium text-sky-600 hover:underline">{manufacturer.rating} ★ ({manufacturer.reviews}+ reviews)</a></div>
-                    <div>
-                        <h4 className="font-semibold text-slate-600 mb-2">Factory Capabilities</h4>
-                        <ul className="space-y-1 text-sm text-slate-500">
-                            <li className="flex items-center gap-2"><Check className="h-4 w-4 text-green-500" /> On-time delivery: <span className="font-bold text-slate-700">{manufacturer.capabilities.onTimeDelivery}</span></li>
-                            <li className="flex items-center gap-2"><Clock className="h-4 w-4 text-green-500" /> Response time: <span className="font-bold text-slate-700">{manufacturer.capabilities.responseTime}</span></li>
-                        </ul>
-                    </div>
-                    <div className="flex items-center gap-2 pt-2 mt-auto">
-                        <Button variant="outline" className="w-full text-slate-600 bg-white/50 hover:bg-slate-100" onClick={() => onChatNowClick(manufacturer)}><MessageSquare className="h-4 w-4 mr-2" />Chat now</Button>
-                        <Button className="w-full">Contact us</Button>
+                    <div className="w-full md:w-2/3 grid grid-cols-2 grid-rows-2 gap-4">
+                        <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden group aspect-video"><motion.img whileHover={{ scale: 1.05 }} src={manufacturer.factoryImage} alt="Factory" className="w-full h-full object-cover transition-transform duration-300" /><div className="absolute inset-0 bg-black/20"></div></div>
+                        {manufacturer.products.map((product: any) => (<a href="#" key={product.name} className="relative rounded-lg overflow-hidden group aspect-video"><img src={product.image} alt={product.name} className="w-full h-full object-cover" /><div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2"><p className="text-white text-xs font-bold">{product.name} <br /> {product.price}</p></div></a>))}
                     </div>
                 </div>
-                <div className="w-full md:w-2/3 grid grid-cols-2 grid-rows-2 gap-4">
-                    <div className="col-span-1 row-span-2 relative rounded-lg overflow-hidden group aspect-video"><motion.img whileHover={{ scale: 1.05 }} src={manufacturer.factoryImage} alt="Factory" className="w-full h-full object-cover transition-transform duration-300" /><div className="absolute inset-0 bg-black/20"></div></div>
-                    {manufacturer.products.map((product: any) => (<a href="#" key={product.name} className="relative rounded-lg overflow-hidden group aspect-video"><img src={product.image} alt={product.name} className="w-full h-full object-cover" /><div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-2"><p className="text-white text-xs font-bold">{product.name} <br /> {product.price}</p></div></a>))}
-                </div>
-            </div>
             </CardContent>
         </Card>
     </motion.div>

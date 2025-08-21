@@ -10,6 +10,7 @@ import { Edit, Building, Target, Zap, ShieldCheck, Rocket } from "lucide-react";
 // --- Import Refactored Components ---
 import { ListingManager } from "@/components/marketplace/ListingManager";
 import { HeroSearch } from "@/components/marketplace/HeroSearch";
+import { SupplierShowcaseModal } from "@/components/marketplace/SupplierShowcaseModal";
 import { 
     CategorySidebar, 
     PromoCard, 
@@ -121,10 +122,20 @@ export default function MarketplacePage() {
   const [searchNetwork, setSearchNetwork] = useState("ONDC Network");
   const [isListingManagerOpen, setIsListingManagerOpen] = useState(false);
   const [userProducts, setUserProducts] = useState<Product[]>(initialUserListedProducts);
-
-  // FIX 1: Re-added state and handlers for the chat panel.
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [selectedManufacturer, setSelectedManufacturer] = useState<any | null>(null);
+  
+  const [isSupplierModalOpen, setIsSupplierModalOpen] = useState(false);
+  const [selectedSupplier, setSelectedSupplier] = useState<any | null>(null);
+
+  const handleOpenSupplierModal = (supplier: any) => {
+    setSelectedSupplier(supplier);
+    setIsSupplierModalOpen(true);
+  };
+
+  const handleCloseSupplierModal = () => {
+    setIsSupplierModalOpen(false);
+  };
 
   const handleOpenChat = (manufacturer: any) => {
     setSelectedManufacturer(manufacturer);
@@ -209,11 +220,16 @@ export default function MarketplacePage() {
         onAddProduct={handleAddProduct}
       />
 
-      {/* FIX 2: Added the ChatPanel component so it can be opened. */}
       <ChatPanel
         isOpen={isChatOpen}
         onClose={handleCloseChat}
         manufacturer={selectedManufacturer}
+      />
+
+      <SupplierShowcaseModal
+        isOpen={isSupplierModalOpen}
+        onClose={handleCloseSupplierModal}
+        supplier={selectedSupplier}
       />
 
       <div className="relative">
@@ -292,7 +308,10 @@ export default function MarketplacePage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">{marketplaceProducts.slice(8, 12).map((item) => <SimpleProductCard key={`freq-${item.id}`} item={item} />)}</div>
                   </motion.section>
 
-                  <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="p-8 rounded-2xl bg-gradient-to-br from-indigo-300 to-slate-300 "><h2 className="text-3xl font-bold mb-8 text-white">More Products to Explore</h2><motion.div variants={containerVariants} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">{marketplaceProducts.map((product) => <ProductCard key={`feat-${product.id}`} product={product} />)}</motion.div></motion.section>
+                  <motion.section initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={containerVariants} className="p-8 rounded-2xl bg-gradient-to-br from-indigo-300 to-slate-300 ">
+                    <h2 className="text-3xl font-bold mb-8 text-white">More Products to Explore</h2>
+                    <motion.div variants={containerVariants} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">{marketplaceProducts.map((product) => <ProductCard key={`feat-${product.id}`} product={product} />)}</motion.div>
+                  </motion.section>
                 </div>
               )}
 
@@ -306,11 +325,11 @@ export default function MarketplacePage() {
                         <h2 className="text-3xl font-bold">Featured {searchType}</h2>
                         <div className="space-y-6">
                           {MSMEsData.map((mfg) => (
-                            // FIX 3: Connected the "Chat Now" button by passing the handler.
                             <ManufacturerCard 
                               key={mfg.id} 
                               manufacturer={mfg}
                               onChatNowClick={handleOpenChat}
+                              onCardClick={handleOpenSupplierModal}
                             />
                           ))}
                         </div>
