@@ -197,35 +197,119 @@ const ExtractedDataTable = ({ data, activeLedger }) => {
 };
 
 // --- NEW: Monthly Report Visual Component ---
+import { FileDown, TrendingUp, DollarSign, ShoppingCart, BarChart2 } from 'lucide-react';
+
 const MonthlyReportCard = () => {
-  const augustSales = 120000; // Sample data for the report
+  // --- Expanded Sample Data ---
+  const reportMonth = "August 2025";
+  const augustSales = 120000;
   const transactionCount = 6;
+  const averageSaleValue = augustSales / transactionCount;
+  const highestTransaction = {
+    customer: 'XYZ Corp',
+    amount: 45000
+  };
+  const topTransactions = [
+    { id: 'INV-08-001', customer: 'XYZ Corp', amount: 45000, date: '17/08/2025' },
+    { id: 'INV-08-002', customer: 'ABC Retail', amount: 35000, date: '18/08/2025' },
+    { id: 'INV-08-003', customer: 'Innovate LLC', amount: 25000, date: '21/08/2025' },
+  ];
+
+  // --- Data for the Bar Chart ---
+  const chartData = [
+    { month: 'May', sales: 65000 },
+    { month: 'Jun', sales: 78000 },
+    { month: 'Jul', sales: 92000 },
+    { month: 'Aug', sales: 120000 }, // Current month is the highest
+  ];
+  const maxSales = Math.max(...chartData.map(d => d.sales));
 
   return (
-    <div className="bg-white p-4 rounded-xl border border-slate-200/80 w-full max-w-md text-slate-800 shadow-lg">
-      <h3 className="font-bold text-lg mb-2 text-slate-900">August 2025 Sales Report</h3>
-      <p className="text-sm text-slate-600 mb-4">
-        Here is the summary of sales activities for August. This report has been automatically generated and sent to <code className="text-xs bg-slate-100 p-1 rounded">reports@example.com</code>.
-      </p>
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/80 w-full max-w-2xl text-slate-800 shadow-xl font-sans">
       
-      <div className="my-4 p-3 bg-slate-50 rounded-lg">
-        <img 
-          src= {graphMonthly}
-          alt="Bar chart showing monthly sales" 
-          className="w-full h-auto rounded-md border border-slate-200"
-        />
+      {/* --- Report Header --- */}
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h3 className="font-bold text-2xl text-slate-900">Monthly Sales Report</h3>
+          <p className="text-sm text-slate-500">{reportMonth} • Generated on {new Date().toLocaleDateString()}</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">Sent</span>
+          <button className="p-2 rounded-lg hover:bg-slate-100 transition-colors">
+            <FileDown className="h-4 w-4 text-slate-600" />
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 text-sm">
-        <div className="bg-sky-50 p-3 rounded-lg">
-          <p className="text-slate-500 font-semibold">Total Sales</p>
-          <p className="text-sky-700 font-bold text-xl">₹{augustSales.toLocaleString('en-IN')}</p>
+      {/* --- Key Performance Indicators (KPIs) --- */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6 text-sm">
+        <div className="bg-sky-50 p-4 rounded-lg border border-sky-100">
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
+            <DollarSign className="h-4 w-4 text-sky-600" /> Total Sales
+          </div>
+          <p className="text-sky-800 font-bold text-2xl">₹{augustSales.toLocaleString('en-IN')}</p>
         </div>
-        <div className="bg-purple-50 p-3 rounded-lg">
-          <p className="text-slate-500 font-semibold">Transactions</p>
-          <p className="text-purple-700 font-bold text-xl">{transactionCount}</p>
+        <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
+            <ShoppingCart className="h-4 w-4 text-purple-600" /> Transactions
+          </div>
+          <p className="text-purple-800 font-bold text-2xl">{transactionCount}</p>
+        </div>
+        <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
+            <BarChart2 className="h-4 w-4 text-green-600" /> Avg. Sale Value
+          </div>
+          <p className="text-green-800 font-bold text-2xl">₹{averageSaleValue.toLocaleString('en-IN')}</p>
+        </div>
+        <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
+            <TrendingUp className="h-4 w-4 text-orange-600" /> Highest Sale
+          </div>
+          <p className="text-orange-800 font-bold text-2xl">₹{highestTransaction.amount.toLocaleString('en-IN')}</p>
         </div>
       </div>
+      
+      {/* --- Bar Chart Visualization --- */}
+      <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
+        <h4 className="font-semibold text-slate-700 mb-4">Sales Trend (Quarterly)
+        </h4>
+        {/* --- MODIFIED SECTION --- */}
+        <div className="my-4 p-3 bg-slate-50 rounded-lg">
+          <img 
+            src={graphMonthly} // This now correctly refers to the imported image
+            alt="Bar chart showing monthly sales" 
+            className="w-full h-auto rounded-md border border-slate-200"
+          />
+        </div>
+      </div>
+
+      {/* --- Top Transactions Table --- */}
+      <div className="mt-6">
+        <h4 className="font-semibold text-slate-700 mb-2">Top Transactions This Month</h4>
+        <div className="overflow-x-auto rounded-lg border border-slate-200/80">
+          <table className="min-w-full text-sm">
+            <thead className="bg-slate-100">
+              <tr>
+                <th className="p-3 text-left font-semibold text-slate-600">Invoice ID</th>
+                <th className="p-3 text-left font-semibold text-slate-600">Customer</th>
+                <th className="p-3 text-left font-semibold text-slate-600">Date</th>
+                <th className="p-3 text-right font-semibold text-slate-600">Amount</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white">
+              {topTransactions.map((tx, index) => (
+                <tr key={tx.id} className={`border-t border-slate-200 ${index === topTransactions.length - 1 ? '' : ''}`}>
+                  <td className="p-3 text-slate-500 font-mono text-xs">{tx.id}</td>
+                  <td className="p-3 font-medium text-slate-800">{tx.customer}</td>
+                  <td className="p-3 text-slate-500">{tx.date}</td>
+                  <td className="p-3 text-right font-semibold text-slate-800">₹{tx.amount.toLocaleString('en-IN')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   );
 };
