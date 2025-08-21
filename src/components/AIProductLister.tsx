@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
-  UploadCloud, ArrowRight, Sparkles, CheckCircle, Tags, Layers, Lightbulb, Target, Zap, ClipboardCopy, Loader2, Check, ChevronLeft
+  UploadCloud, ArrowRight, Sparkles, CheckCircle, Tags, Layers, Lightbulb, Target, Zap, ClipboardCopy, Check, ChevronLeft
 } from "lucide-react";
 
 // --- Mock AI Data ---
@@ -96,7 +96,7 @@ const StrategicCoPilot = ({ productDetails, onOptimizationApplied }) => {
 
   useEffect(() => {
     const analyzeProduct = async () => {
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      await new Promise(resolve => setTimeout(resolve, 2500)); // Shortened for better UX
       const simulatedResponse = {
         mvs_analysis: "The target Minimum Viable Segment (MVS) is young adults (18-30) seeking timeless, versatile fashion staples that offer high value and durability for everyday wear.",
         capability_gaps: [{ suggestion: "Introduce Sustainable Materials", reasoning: "This demographic shows a strong preference for eco-friendly products. A version using recycled cotton could open a new market segment." }],
@@ -135,6 +135,108 @@ const StrategicCoPilot = ({ productDetails, onOptimizationApplied }) => {
   );
 };
 
+// --- MODIFIED: Editable Field now accepts a className for the input ---
+const EditableField = ({ label, value, type = "input", className = "" }: { label: string, value: string, type?: "input" | "textarea", className?: string }) => {
+    const [fieldValue, setFieldValue] = useState(value);
+    const [copied, setCopied] = useState(false);
+    
+    useEffect(() => { setFieldValue(value); }, [value]);
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText(fieldValue);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    }
+
+    const InputComponent = type === 'input' ? Input : Textarea;
+    return (
+        <div>
+            <div className="flex justify-between items-center mb-2">
+                <Label htmlFor={label} className="text-sm font-semibold text-zinc-600">{label}</Label>
+                <Button variant="ghost" size="sm" className="rounded-full h-7 text-xs text-slate-500 hover:text-slate-800" onClick={handleCopy}>
+                    {copied ? <Check className="h-3 w-3 mr-1.5 text-green-500"/> : <ClipboardCopy className="h-3 w-3 mr-1.5"/>}
+                    {copied ? 'Copied' : 'Copy'}
+                </Button>
+            </div>
+            <InputComponent id={label} value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className={`bg-slate-50 border-slate-200 rounded-xl p-3 w-full focus-visible:ring-violet-400 ${className}`} rows={type === 'textarea' ? 8 : undefined}/>
+        </div>
+    );
+};
+
+// --- NEW: Amazon-Style Product Display Component ---
+const AmazonStyleProductDisplay = ({ aiResults }) => (
+  <div className="space-y-8">
+    <EditableField 
+      label="Product Title" 
+      value={aiResults?.title} 
+      className="text-3xl font-bold text-zinc-800 p-2 border-0 bg-transparent -ml-2" 
+    />
+
+    <div className="text-3xl font-medium text-red-600 flex items-center">
+      <span className="text-xl mt-1 mr-1">₹</span>
+      {aiResults?.priceRange.split(' - ')[0].replace('₹','')}
+    </div>
+    
+    <div className="space-y-4">
+      <h3 className="font-semibold text-zinc-800">Variants</h3>
+      <div className="flex flex-wrap gap-3">
+        {Object.entries(aiResults?.attributes).map(([key, val]) => (
+          <div key={key}>
+            <span className="text-sm font-bold text-zinc-700">{key}:</span>
+            <Badge variant="outline" className="ml-2 text-base border-2 border-slate-800 text-slate-800 bg-white rounded-lg px-3 py-1">{val as string}</Badge>
+          </div>
+        ))}
+      </div>
+    </div>
+    
+    <div className="border-t border-slate-200 pt-6">
+      <h3 className="font-semibold text-zinc-800 text-lg mb-3">About this item</h3>
+      <ul className="space-y-2.5">
+        {aiResults?.keyFeatures.map((f: string, i: number) => (
+          <li key={i} className="flex items-start text-slate-700">
+            <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-0.5 shrink-0" />
+            <span>{f}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+    
+    <div className="border-t border-slate-200 pt-6">
+      <EditableField 
+        label="Product Description" 
+        value={aiResults?.description} 
+        type="textarea" 
+        className="text-red-500" // <-- THE FIX IS HERE
+      />
+    </div>
+
+    <Card className="bg-slate-50/80 border-slate-200/80 rounded-2xl">
+        <CardHeader><CardTitle className="text-lg">Listing & SEO Details</CardTitle></CardHeader>
+        <CardContent className="space-y-4">
+            <div className="flex items-start gap-3">
+                <Layers className="h-5 w-5 text-violet-600 flex-shrink-0 mt-1" />
+                <div>
+                    <h4 className="font-semibold text-zinc-800">Suggested Category</h4>
+                    <p className="text-slate-600">{aiResults?.category}</p>
+                </div>
+            </div>
+             <div className="flex items-start gap-3">
+                <Tags className="h-5 w-5 text-violet-600 flex-shrink-0 mt-1" />
+                <div>
+                    <h4 className="font-semibold text-zinc-800">SEO Keywords</h4>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {aiResults?.seoKeywords.map((k: string) => (
+                        <Badge key={k} className="rounded-full py-1 px-3 text-violet-700 bg-violet-100 border-violet-200">{k}</Badge>
+                      ))}
+                    </div>
+                </div>
+            </div>
+        </CardContent>
+    </Card>
+  </div>
+);
+
+
 // --- Main Component ---
 export const AIProductLister = () => {
   const [step, setStep] = useState('upload');
@@ -144,10 +246,7 @@ export const AIProductLister = () => {
   const [showStrategicAnalysis, setShowStrategicAnalysis] = useState(false);
 
   useEffect(() => {
-    if (productImages.length === 0) {
-      setImagePreviews([]);
-      return;
-    }
+    if (productImages.length === 0) { setImagePreviews([]); return; }
     const newImageUrls = productImages.map(file => URL.createObjectURL(file));
     setImagePreviews(newImageUrls);
     return () => newImageUrls.forEach(url => URL.revokeObjectURL(url));
@@ -158,7 +257,7 @@ export const AIProductLister = () => {
       const timer = setTimeout(() => {
         setAiResults(mockAiResponse);
         setStep('results');
-      }, 4000);
+      }, 5000); // Shortened for better UX
       return () => clearTimeout(timer);
     }
   }, [step]);
@@ -185,46 +284,7 @@ export const AIProductLister = () => {
     }));
     setShowStrategicAnalysis(false);
   };
-
-  const EditableField = ({ label, value, type = "input" }: { label: string, value: string, type?: "input" | "textarea" }) => {
-    const [fieldValue, setFieldValue] = useState(value);
-    const [copied, setCopied] = useState(false);
-    
-    useEffect(() => {
-        setFieldValue(value);
-    }, [value]);
-
-    const handleCopy = () => {
-        navigator.clipboard.writeText(fieldValue);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    }
-
-    const InputComponent = type === 'input' ? Input : Textarea;
-    return (
-        <div className="space-y-3">
-            <div className="flex justify-between items-center">
-                <Label htmlFor={label} className="text-base font-semibold text-zinc-800">{label}</Label>
-                <Button variant="ghost" size="sm" className="rounded-full h-8 text-slate-500 hover:text-slate-800" onClick={handleCopy}>
-                    {copied ? <Check className="h-4 w-4 mr-2 text-green-500"/> : <ClipboardCopy className="h-4 w-4 mr-2"/>}
-                    {copied ? 'Copied!' : 'Copy'}
-                </Button>
-            </div>
-            <InputComponent id={label} value={fieldValue} onChange={(e) => setFieldValue(e.target.value)} className="bg-slate-50 border-slate-200 rounded-xl text-base p-4 focus-visible:ring-violet-400" rows={type === 'textarea' ? 6 : undefined}/>
-        </div>
-    );
-  };
-
-  const InfoCard = ({ icon: Icon, title, value }: { icon: React.ElementType, title: string, value: string }) => (
-    <div className="flex items-start gap-4 p-5 bg-violet-50/70 rounded-2xl border border-violet-100">
-        <Icon className="h-6 w-6 text-violet-600 flex-shrink-0 mt-1" />
-        <div>
-            <h4 className="font-semibold text-zinc-800">{title}</h4>
-            <p className="text-slate-600">{value}</p>
-        </div>
-    </div>
-  );
-
+  
   const renderContent = () => {
     switch (step) {
       case 'upload':
@@ -250,42 +310,19 @@ export const AIProductLister = () => {
       case 'results':
         return (<>
           <CardHeader className="text-center py-8 border-b border-slate-200">
-            <CardTitle className="text-3xl font-bold text-zinc-800">Generated Listing Details</CardTitle>
-            <CardDescription className="text-md text-slate-600 mt-2">Review, edit, and optimize your AI-generated content.</CardDescription>
+            <CardTitle className="text-3xl font-bold text-zinc-800">Generated Listing Preview</CardTitle>
+            <CardDescription className="text-md text-slate-600 mt-2">This is how your product will look to customers. Edit fields directly.</CardDescription>
           </CardHeader>
-          <CardContent className="mt-8 p-8 grid lg:grid-cols-[1fr,1.8fr] gap-12">
+          <CardContent className="mt-8 p-8 grid lg:grid-cols-[1fr,1.5fr] gap-12">
             <div className="space-y-6">
-                <h3 className="text-xl font-bold text-zinc-800">Uploaded Images</h3>
-                <div className="grid grid-cols-2 gap-5">{imagePreviews.map((src, i) => (<img key={i} src={src} alt={`Preview ${i + 1}`} className="rounded-2xl object-cover aspect-square shadow-lg shadow-slate-200/50" />))}</div>
+                <h3 className="text-xl font-bold text-zinc-800">Product Gallery</h3>
+                <div className="grid gap-5">{imagePreviews.map((src, i) => (<div key={i} className="aspect-square overflow-hidden rounded-2xl shadow-lg shadow-slate-200/50 border border-slate-200/50"><img src={src} alt={`Preview ${i + 1}`} className="w-full h-full object-cover" /></div>))}</div>
             </div>
             <div className="flex flex-col">
               <AnimatePresence mode="wait">
                 <motion.div key={showStrategicAnalysis ? 'analysis' : 'details'} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.3 }} className="flex-grow">
                   {!showStrategicAnalysis ? (
-                    <div className="space-y-8 text-red-500">
-                      <EditableField label="Product Title" value={aiResults?.title} />
-                      <EditableField label="Description" value={aiResults?.description} type="textarea" />
-                      <div>
-                        <Label className="text-base font-semibold text-zinc-800">Key Features</Label>
-                        <ul className="mt-3 space-y-2.5">
-                          {aiResults?.keyFeatures.map((f: string, i: number) => (
-                            <li key={i} className="flex items-start">
-                              <CheckCircle className="h-5 w-5 text-green-500 mr-3 mt-1 shrink-0" />
-                              <span>{f}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                      <InfoCard icon={Layers} title="Suggested Category" value={aiResults?.category} />
-                      <div>
-                        <Label className="text-base font-semibold text-zinc-800">SEO Keywords</Label>
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          {aiResults?.seoKeywords.map((k: string) => (
-                            <Badge key={k} className="rounded-full py-1 px-3 text-violet-700 bg-violet-100 border-violet-200">{k}</Badge>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                    <AmazonStyleProductDisplay aiResults={aiResults} />
                   ) : (
                     <div>
                         <div className="flex justify-between items-center mb-6">
@@ -333,4 +370,4 @@ export const AIProductLister = () => {
       </div>
     </div>
   );
-};
+};  

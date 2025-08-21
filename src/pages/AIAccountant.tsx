@@ -8,13 +8,13 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { 
+import {
     Search, Wand2, Camera, Info, ChevronDown, Bot, User, X, Mic, Languages, Bell,
     IndianRupee, FileText, Wallet, Lightbulb, ShieldCheck, CheckCircle, AlertTriangle,
-    Sheet, Database 
+    Sheet, Database, FileDown, TrendingUp, DollarSign, ShoppingCart, BarChart2
 } from "lucide-react";
 
-import graphMonthly from '@/assets/graph-monthly.png'
+import graphMonthly from '@/assets/graph-monthly.png';
 
 // --- Custom Hook for Voice Recognition ---
 const useSpeechRecognition = ({ lang }) => {
@@ -58,8 +58,8 @@ const Toast = ({ message, type, onDismiss }) => {
   return (<motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className={`fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 p-4 rounded-lg shadow-2xl text-white ${bgColor}`}><Icon className="h-6 w-6" /><span className="text-lg font-medium">{message}</span></motion.div>);
 };
 
-// --- Notification Bell Component ---
-const NotificationBell = ({ onSendSummary }) => {
+// --- MODIFIED: Notification Bell Component ---
+const NotificationBell = ({ onSendSummary, onGenerateInvoice }) => { // MODIFICATION: Added onGenerateInvoice prop
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -73,8 +73,14 @@ const NotificationBell = ({ onSendSummary }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handlePromptClick = () => {
+  const handleSummaryClick = () => {
     onSendSummary();
+    setIsOpen(false);
+  };
+
+  // MODIFICATION: New handler for the invoice action
+  const handleInvoiceClick = () => {
+    onGenerateInvoice();
     setIsOpen(false);
   };
 
@@ -98,11 +104,18 @@ const NotificationBell = ({ onSendSummary }) => {
           >
             <div className="font-semibold text-sm text-slate-800 p-2">Notifications</div>
             <button
-              onClick={handlePromptClick}
+              onClick={handleSummaryClick}
               className="w-full text-left p-3 rounded-lg hover:bg-slate-100 transition-colors"
             >
               <p className="font-medium text-slate-700 text-sm">Action Required: Send Monthly Report</p>
               <p className="text-xs text-slate-500">Click here to email the August sales summary.</p>
+            </button>
+             <button
+              onClick={handleInvoiceClick} // MODIFICATION: Changed onClick handler
+              className="w-full text-left p-3 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              <p className="font-medium text-slate-700 text-sm">Create invoice for the Last transaction</p>
+              <p className="text-xs text-slate-500">Click here to generate the invoice</p>
             </button>
           </motion.div>
         )}
@@ -115,55 +128,103 @@ const NotificationBell = ({ onSendSummary }) => {
 const englishPlaceholders = [ "Log expense from 'ABC Hardware'...", "Create invoice for 'Innovate Tech'...", "Show my ITC for last month...", "What are my total sales this quarter?", ];
 const hindiPlaceholders = [ "'ABC हार्डवेयर' से खर्च दर्ज करें...", "'इनोवेट टेक' के लिए बिल बनाएं...", " पिछले महीने का मेरा ITC दिखाएं...", "इस तिमाही में मेरी कुल बिक्री क्या है?", ];
 
-// --- Generative Shimmer and Skeleton Components ---
+// --- Upgraded Shimmer/Generative Style Component ---
 const GenerativeShimmerStyle = () => (
     <style>{`
-        @keyframes shimmer {
-            0% { transform: translateX(-100%) skewX(-15deg); }
-            100% { transform: translateX(100%) skewX(-15deg); }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        @keyframes generative-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes blink { 50% { opacity: 0; } }
+
+        .generative-bg {
+            background: linear-gradient(110deg, #fde2ff, #e0f2fe, #fde2ff);
+            background-size: 200% 200%;
+            animation: generative-gradient 3s ease infinite;
         }
-        .shimmer-effect {
-            position: relative;
-            overflow: hidden;
+        .shimmer-effect { 
+            position: relative; 
+            overflow: hidden; 
             background-color: #e2e8f0;
         }
-        .shimmer-effect::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent 20%,
-                rgba(165, 180, 252, 0.3) 40%,
-                rgba(103, 232, 249, 0.4) 50%,
-                rgba(165, 180, 252, 0.3) 60%,
-                transparent 80%
-            );
-            animation: shimmer 2s infinite;
+        .shimmer-effect::after { 
+            content: ''; 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(90deg, rgba(255,255,255,0) 20%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0) 80%); 
+            animation: shimmer 1.5s infinite; 
+        }
+        .typing-cursor { 
+            display: inline-block; 
+            width: 3px; 
+            height: 1em; 
+            background-color: #3b82f6; 
+            margin-left: 4px; 
+            animation: blink 1s step-end infinite; 
+            vertical-align: bottom; 
         }
     `}</style>
 );
 
-const InvoiceSkeleton = () => (
-    <div className="bg-white/80 p-4 rounded-xl border border-slate-200/80 w-full max-w-md">
-        <div className="flex justify-between items-start mb-6">
-            <div className="shimmer-effect w-16 h-8 rounded-md"></div>
-            <div className="shimmer-effect w-28 h-5 rounded-md"></div>
-        </div>
-        <div className="space-y-3">
-            <div className="shimmer-effect w-3/4 h-4 rounded-md"></div>
-            <div className="shimmer-effect w-1/2 h-4 rounded-md"></div>
-        </div>
-        <div className="mt-8 space-y-3">
-            <div className="shimmer-effect w-full h-5 rounded-md"></div>
-            <div className="shimmer-effect w-full h-5 rounded-md opacity-80"></div>
-            <div className="shimmer-effect w-full h-5 rounded-md opacity-60"></div>
-        </div>
-    </div>
-);
+// --- HELPER for new Invoice Skeleton ---
+const generateRandomSkeletons = () => {
+    const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    return {
+        header: [
+            { width: `${random(20, 30)}%`, height: '32px' },
+            { width: `${random(40, 50)}%`, height: '20px' }
+        ],
+        body: Array.from({ length: 2 }).map(() => ({
+            width: `${random(60, 90)}%`, height: '16px'
+        })),
+        footer: Array.from({ length: 3 }).map((_, i) => ({
+            width: `${random(70 - i * 10, 95 - i * 10)}%`,
+            height: '20px',
+            opacity: 1 - i * 0.2
+        }))
+    };
+};
+
+// --- MODIFIED: Upgraded Invoice Skeleton with Staggered Animation & Random Dimensions ---
+const InvoiceSkeleton = () => {
+    const [skeletonConfig] = useState(generateRandomSkeletons);
+
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.07 } }
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, x: -20 },
+        visible: { opacity: 1, x: 0, transition: { type: 'spring', stiffness: 100 } }
+    };
+
+    return (
+        <motion.div
+            className="bg-white/80 p-4 rounded-xl border border-slate-200/80 w-full max-w-md"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            <div className="flex justify-between items-start mb-6">
+                {skeletonConfig.header.map((skel, i) => (
+                    <motion.div key={`header-${i}`} className="generative-bg rounded-md" variants={itemVariants} style={{ width: skel.width, height: skel.height }} />
+                ))}
+            </div>
+            <div className="space-y-3">
+                {skeletonConfig.body.map((skel, i) => (
+                     <motion.div key={`body-${i}`} className="generative-bg rounded-md" variants={itemVariants} style={{ width: skel.width, height: skel.height }} />
+                ))}
+            </div>
+            <div className="mt-8 space-y-3">
+                {skeletonConfig.footer.map((skel, i) => (
+                    <motion.div key={`footer-${i}`} className="generative-bg rounded-md" variants={itemVariants} style={{ width: skel.width, height: skel.height, opacity: skel.opacity }} />
+                ))}
+            </div>
+        </motion.div>
+    );
+};
 
 const ExtractedDataTable = ({ data, activeLedger }) => {
     const headers = ["Type", "Date", "Vendor/Customer", "Details", "Amount", "GST (%)", "ITC", "GST Payable"];
@@ -196,11 +257,8 @@ const ExtractedDataTable = ({ data, activeLedger }) => {
     );
 };
 
-// --- NEW: Monthly Report Visual Component ---
-import { FileDown, TrendingUp, DollarSign, ShoppingCart, BarChart2 } from 'lucide-react';
-
+// --- Monthly Report Visual Component ---
 const MonthlyReportCard = () => {
-  // --- Expanded Sample Data ---
   const reportMonth = "August 2025";
   const augustSales = 120000;
   const transactionCount = 6;
@@ -215,19 +273,8 @@ const MonthlyReportCard = () => {
     { id: 'INV-08-003', customer: 'Innovate LLC', amount: 25000, date: '21/08/2025' },
   ];
 
-  // --- Data for the Bar Chart ---
-  const chartData = [
-    { month: 'May', sales: 65000 },
-    { month: 'Jun', sales: 78000 },
-    { month: 'Jul', sales: 92000 },
-    { month: 'Aug', sales: 120000 }, // Current month is the highest
-  ];
-  const maxSales = Math.max(...chartData.map(d => d.sales));
-
   return (
     <div className="bg-white p-6 rounded-2xl border border-slate-200/80 w-full max-w-2xl text-slate-800 shadow-xl font-sans">
-      
-      {/* --- Report Header --- */}
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-bold text-2xl text-slate-900">Monthly Sales Report</h3>
@@ -240,50 +287,30 @@ const MonthlyReportCard = () => {
           </button>
         </div>
       </div>
-
-      {/* --- Key Performance Indicators (KPIs) --- */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6 text-sm">
         <div className="bg-sky-50 p-4 rounded-lg border border-sky-100">
-          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
-            <DollarSign className="h-4 w-4 text-sky-600" /> Total Sales
-          </div>
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1"><DollarSign className="h-4 w-4 text-sky-600" /> Total Sales</div>
           <p className="text-sky-800 font-bold text-2xl">₹{augustSales.toLocaleString('en-IN')}</p>
         </div>
         <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
-          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
-            <ShoppingCart className="h-4 w-4 text-purple-600" /> Transactions
-          </div>
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1"><ShoppingCart className="h-4 w-4 text-purple-600" /> Transactions</div>
           <p className="text-purple-800 font-bold text-2xl">{transactionCount}</p>
         </div>
         <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
-            <BarChart2 className="h-4 w-4 text-green-600" /> Avg. Sale Value
-          </div>
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1"><BarChart2 className="h-4 w-4 text-green-600" /> Avg. Sale Value</div>
           <p className="text-green-800 font-bold text-2xl">₹{averageSaleValue.toLocaleString('en-IN')}</p>
         </div>
         <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
-          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1">
-            <TrendingUp className="h-4 w-4 text-orange-600" /> Highest Sale
-          </div>
+          <div className="flex items-center gap-2 text-slate-500 font-semibold mb-1"><TrendingUp className="h-4 w-4 text-orange-600" /> Highest Sale</div>
           <p className="text-orange-800 font-bold text-2xl">₹{highestTransaction.amount.toLocaleString('en-IN')}</p>
         </div>
       </div>
-      
-      {/* --- Bar Chart Visualization --- */}
       <div className="p-4 bg-slate-50 rounded-lg border border-slate-100">
-        <h4 className="font-semibold text-slate-700 mb-4">Sales Trend (Quarterly)
-        </h4>
-        {/* --- MODIFIED SECTION --- */}
+        <h4 className="font-semibold text-slate-700 mb-4">Sales Trend (Quarterly)</h4>
         <div className="my-4 p-3 bg-slate-50 rounded-lg">
-          <img 
-            src={graphMonthly} // This now correctly refers to the imported image
-            alt="Bar chart showing monthly sales" 
-            className="w-full h-auto rounded-md border border-slate-200"
-          />
+          <img src={graphMonthly} alt="Bar chart showing monthly sales" className="w-full h-auto rounded-md border border-slate-200"/>
         </div>
       </div>
-
-      {/* --- Top Transactions Table --- */}
       <div className="mt-6">
         <h4 className="font-semibold text-slate-700 mb-2">Top Transactions This Month</h4>
         <div className="overflow-x-auto rounded-lg border border-slate-200/80">
@@ -297,8 +324,8 @@ const MonthlyReportCard = () => {
               </tr>
             </thead>
             <tbody className="bg-white">
-              {topTransactions.map((tx, index) => (
-                <tr key={tx.id} className={`border-t border-slate-200 ${index === topTransactions.length - 1 ? '' : ''}`}>
+              {topTransactions.map((tx) => (
+                <tr key={tx.id} className="border-t border-slate-200">
                   <td className="p-3 text-slate-500 font-mono text-xs">{tx.id}</td>
                   <td className="p-3 font-medium text-slate-800">{tx.customer}</td>
                   <td className="p-3 text-slate-500">{tx.date}</td>
@@ -309,7 +336,6 @@ const MonthlyReportCard = () => {
           </table>
         </div>
       </div>
-
     </div>
   );
 };
@@ -372,7 +398,7 @@ export const AIAccountant = () => {
   const handleSendSummaryReport = async () => {
     showToast('Sending summary report...', 'info');
     
-    const N8N_WEBHOOK_URL = "https://hxrshxz.app.n8n.cloud/webhook-test/d87121a6-d5bd-49bd-83b6-405da818ad5c";
+    const N8N_WEBHOOK_URL = "https://hxrshxz.app.n8n.cloud/webhook/b783d68a-1898-4385-98ef-b087054aa7a1";
 
     const augustSales = transactionData.filter(t => t.type === 'Sale' && t.date.includes('/08/2025'));
     const totalAugustSales = augustSales.reduce((sum, t) => sum + t.amount, 0);
@@ -406,6 +432,7 @@ export const AIAccountant = () => {
   const triggerPlaywrightAutomation = async () => {
     showToast('Starting automation...', 'info');
     try {
+      // NOTE: Ensure your Playwright server is running on localhost:3000
       const response = await fetch('http://localhost:3000/run-automation');
       if (!response.ok) throw new Error(`Server responded with ${response.status}`);
       const result = await response.text();
@@ -448,17 +475,16 @@ export const AIAccountant = () => {
     return "I can answer questions about total sales, ITC, and transactions from the sample data. Please try one of the suggested prompts!";
   };
 
-  const stats = useMemo(() => [ { title: "Expenses (This Month)", value: 42500, prefix: "₹", icon: Wallet, iconColor: "text-orange-500", change: "+5.2%" }, { title: "ITC Claimable", value: 8600, prefix: "₹", icon: ShieldCheck, iconColor: "text-green-500", change: "+18.1%" }, { title: "Bills Processed", value: 3, icon: FileText, iconColor: "text-blue-500", change: "+1 this week" }, { title: "Total Sales", value: 150000, prefix: "₹", icon: IndianRupee, iconColor: "text-purple-500", change: "This Month" }], []);
+  const stats = useMemo(() => [ { title: "Expenses (This Month)", value: 42500, prefix: "₹", icon: Wallet, iconColor: "text-orange-500", change: "+5.2%" }, { title: "ITC Claimable", value: 8600, prefix: "₹", icon: ShieldCheck, iconColor: "text-green-500", change: "+18.1%" }, { title: "Bills Processed", value: 4, icon: FileText, iconColor: "text-blue-500", change: "+1 this week" }, { title: "Total Sales", value: 150000, prefix: "₹", icon: IndianRupee, iconColor: "text-purple-500", change: "This Month" }], []);
   
   const handleChatSubmit = async (text) => {
     setView('chat');
     setChatHistory(prev => [...prev, { id: Date.now(), type: 'user', text }]);
     setInputValue('');
 
-    // --- START: Report Generation Logic ---
     if (checkForReportKeywords(text)) {
       setIsThinking(true);
-      await handleSendSummaryReport(); // Trigger the n8n workflow
+      await handleSendSummaryReport();
       
       setTimeout(() => {
         setChatHistory(prev => [
@@ -466,11 +492,10 @@ export const AIAccountant = () => {
           { id: Date.now(), type: 'ai', component: <MonthlyReportCard /> }
         ]);
         setIsThinking(false);
-      }, 2500); // Simulate AI thinking time
+      }, 3000);
       
-      return; // Stop the function here to prevent calling Gemini
+      return;
     }
-    // --- END: Report Generation Logic ---
 
     let automationWasTriggered = false;
     if (checkForAutomationKeywords(text)) {
@@ -483,7 +508,6 @@ export const AIAccountant = () => {
     const API_KEY = "YOUR_GOOGLE_AI_API_KEY_HERE";
     
     if (API_KEY && API_KEY !== "YOUR_GOOGLE_AI_API_KEY_HERE") {
-        // ... (rest of the Gemini API logic remains the same)
         try {
           const genAI = new GoogleGenerativeAI(API_KEY);
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -559,7 +583,8 @@ export const AIAccountant = () => {
   const renderDashboard = () => (
     <div className="container mx-auto px-4 py-8">
         <div className="relative w-full h-16 flex justify-end items-center">
-             <NotificationBell onSendSummary={handleSendSummaryReport} />
+             {/* MODIFICATION: Pass the automation trigger function to the bell */}
+             <NotificationBell onSendSummary={handleSendSummaryReport} onGenerateInvoice={triggerPlaywrightAutomation} />
         </div>
         <div className="text-center"><h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-slate-600">AI Accountant</h1><p className="text-xl text-slate-600 max-w-2xl mt-4 mx-auto">Your intelligent command center for automated bookkeeping.</p></div>
         <div className="mt-12"><AccountantCommandBar {...commonCommandBarProps} /></div>
@@ -575,7 +600,8 @@ export const AIAccountant = () => {
             <CardHeader className="flex flex-row items-center justify-between border-b border-slate-200/80">
                 <div className="flex items-center gap-3"><Bot className="h-6 w-6 text-purple-600"/><CardTitle className="text-xl">AI Accountant</CardTitle></div>
                 <div className="flex items-center gap-2">
-                    <NotificationBell onSendSummary={handleSendSummaryReport} />
+                    {/* MODIFICATION: Pass the automation trigger function to the bell */}
+                    <NotificationBell onSendSummary={handleSendSummaryReport} onGenerateInvoice={triggerPlaywrightAutomation} />
                     <Button variant="ghost" onClick={() => { setView('dashboard'); setChatHistory([]); }}><X className="h-4 w-4 mr-2"/> End Chat</Button>
                 </div>
             </CardHeader>
@@ -618,7 +644,12 @@ export const AIAccountant = () => {
                         {msg.type === 'user' && <div className="flex-shrink-0 w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center"><User className="w-5 h-5 text-slate-600"/></div>}
                     </motion.div>
                   ))}
-                  {isThinking && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-3"><div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-sky-100 to-purple-100 flex items-center justify-center"><Bot className="w-5 h-5 text-sky-600"/></div><div className="p-3 rounded-2xl bg-white rounded-bl-lg border border-slate-200"><div className="flex items-center gap-2"><span className="h-2 w-2 bg-sky-500 rounded-full animate-bounce"></span><span className="h-2 w-2 bg-sky-500 rounded-full animate-bounce [animation-delay:0.1s]"></span><span className="h-2 w-2 bg-sky-500 rounded-full animate-bounce [animation-delay:0.2s]"></span></div></div></motion.div>)}
+                  {isThinking && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-start gap-3"><div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-sky-100 to-purple-100 flex items-center justify-center"><Bot className="w-5 h-5 text-sky-600"/></div>
+                    <div className="p-3 rounded-2xl bg-white rounded-bl-lg border border-slate-200 space-y-2">
+                       <div className="generative-bg h-4 w-48 rounded"></div>
+                       <div className="generative-bg h-4 w-32 rounded"></div>
+                    </div>
+                  </motion.div>)}
                 </AnimatePresence>
             </CardContent>
             <CardContent className="border-t border-slate-200/80 pt-4">
@@ -628,7 +659,7 @@ export const AIAccountant = () => {
      </div>
   );
 
-  return (
+  return (  
     <div className="min-h-screen bg-slate-100 text-slate-900 font-sans isolate">
       <GenerativeShimmerStyle />
       <div className="absolute inset-0 -z-10 h-full w-full overflow-hidden">
