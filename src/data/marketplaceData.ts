@@ -5,6 +5,8 @@ import {
   HardHat, Leaf, Droplets, Paintbrush, ToyBrick, Dog
 } from "lucide-react";
 
+import shirtImage from "@/assets/shirt.png";
+
 // You can define a type for your products for better type safety
 export interface Product {
   id: number;
@@ -141,11 +143,11 @@ export const marketplaceProducts = [
 export const initialUserListedProducts = [
   {
     id: 101,
-    name: "Bulk Bubble Wrap Roll (50 meters)",
+    name: "Women's Classic Blue Denim Jacket - Regular Fit ( first copy)",
     price: "₹1,800",
     seller: "Your Storefront",
-    image:
-      "https://imgs.search.brave.com/vPBNxU2dS1tFy6m1ZoEU3jELuBNdkAvrqJRUUT8O-vs/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly93d3cu/dXBhY2suaW4vbWVk/aWEvY2F0YWxvZy9w/cm9kdWN0L2NhY2hl/LzJlNzQ3YjE1ZDJi/ZDBjOWFiN2E0YjA4/MjY3MzAwMDNkL3Uv/cC91cGJ3XzQuanBn",
+    image:shirtImage,
+      
     certified: true,
   },
   {
