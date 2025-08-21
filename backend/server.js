@@ -1,8 +1,11 @@
 // server.js
 import express from 'express';
 import runAutomation from './spreadsheetTest.spec.js';
+const cors = require('cors'); 
 const app = express();
 const port = 3000;
+
+app.use(cors()); // Enable CORS for all routes
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');

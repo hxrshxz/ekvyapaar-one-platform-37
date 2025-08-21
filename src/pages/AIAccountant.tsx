@@ -9,10 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { 
-    Search, Wand2, Camera, Info, ChevronDown, Bot, User, X, Mic, Languages,
+    Search, Wand2, Camera, Info, ChevronDown, Bot, User, X, Mic, Languages, Bell,
     IndianRupee, FileText, Wallet, Lightbulb, ShieldCheck, CheckCircle, AlertTriangle,
     Sheet, Database 
 } from "lucide-react";
+
+import graphMonthly from '@/assets/graph-monthly.png'
 
 // --- Custom Hook for Voice Recognition ---
 const useSpeechRecognition = ({ lang }) => {
@@ -56,10 +58,62 @@ const Toast = ({ message, type, onDismiss }) => {
   return (<motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className={`fixed bottom-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 p-4 rounded-lg shadow-2xl text-white ${bgColor}`}><Icon className="h-6 w-6" /><span className="text-lg font-medium">{message}</span></motion.div>);
 };
 
+// --- Notification Bell Component ---
+const NotificationBell = ({ onSendSummary }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handlePromptClick = () => {
+    onSendSummary();
+    setIsOpen(false);
+  };
+
+  return (
+    <div ref={dropdownRef} className="relative">
+      <Button variant="ghost" size="icon" onClick={() => setIsOpen(prev => !prev)} className="rounded-full hover:bg-slate-200/70 relative">
+        <Bell className="h-5 w-5 text-slate-600" />
+        <span className="absolute top-1 right-1.5 flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+        </span>
+      </Button>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 25 }}
+            className="absolute top-full z-20 mt-2 w-72 right-0 origin-top-right rounded-xl border border-slate-200 bg-white/90 p-2 shadow-xl backdrop-blur-sm"
+          >
+            <div className="font-semibold text-sm text-slate-800 p-2">Notifications</div>
+            <button
+              onClick={handlePromptClick}
+              className="w-full text-left p-3 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              <p className="font-medium text-slate-700 text-sm">Action Required: Send Monthly Report</p>
+              <p className="text-xs text-slate-500">Click here to email the August sales summary.</p>
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
 // --- Multilingual Placeholders ---
 const englishPlaceholders = [ "Log expense from 'ABC Hardware'...", "Create invoice for 'Innovate Tech'...", "Show my ITC for last month...", "What are my total sales this quarter?", ];
 const hindiPlaceholders = [ "'ABC हार्डवेयर' से खर्च दर्ज करें...", "'इनोवेट टेक' के लिए बिल बनाएं...", " पिछले महीने का मेरा ITC दिखाएं...", "इस तिमाही में मेरी कुल बिक्री क्या है?", ];
-
 
 // --- Generative Shimmer and Skeleton Components ---
 const GenerativeShimmerStyle = () => (
@@ -142,6 +196,39 @@ const ExtractedDataTable = ({ data, activeLedger }) => {
     );
 };
 
+// --- NEW: Monthly Report Visual Component ---
+const MonthlyReportCard = () => {
+  const augustSales = 120000; // Sample data for the report
+  const transactionCount = 6;
+
+  return (
+    <div className="bg-white p-4 rounded-xl border border-slate-200/80 w-full max-w-md text-slate-800 shadow-lg">
+      <h3 className="font-bold text-lg mb-2 text-slate-900">August 2025 Sales Report</h3>
+      <p className="text-sm text-slate-600 mb-4">
+        Here is the summary of sales activities for August. This report has been automatically generated and sent to <code className="text-xs bg-slate-100 p-1 rounded">reports@example.com</code>.
+      </p>
+      
+      <div className="my-4 p-3 bg-slate-50 rounded-lg">
+        <img 
+          src= {graphMonthly}
+          alt="Bar chart showing monthly sales" 
+          className="w-full h-auto rounded-md border border-slate-200"
+        />
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="bg-sky-50 p-3 rounded-lg">
+          <p className="text-slate-500 font-semibold">Total Sales</p>
+          <p className="text-sky-700 font-bold text-xl">₹{augustSales.toLocaleString('en-IN')}</p>
+        </div>
+        <div className="bg-purple-50 p-3 rounded-lg">
+          <p className="text-slate-500 font-semibold">Transactions</p>
+          <p className="text-purple-700 font-bold text-xl">{transactionCount}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- UNIFIED & REUSABLE COMMAND BAR ---
 const AccountantCommandBar = ({ inputValue, onInputChange, onSubmit, activeMode, onModeChange, aiAssist, onAiAssistChange, handleScanCommand, isListening, onMicClick, hasSpeechSupport, language, onLanguageChange, activeLedger, onLedgerChange }) => {
@@ -195,7 +282,42 @@ export const AIAccountant = () => {
   const handleMicClick = () => isListening ? stopListening() : startListening();
   const handleLanguageChange = () => setLanguage(prev => prev === 'en-US' ? 'hi-IN' : 'en-US');
   useEffect(() => { if (chatContainerRef.current) chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight; }, [chatHistory, isThinking]);
+  
   const showToast = (message, type = 'info') => { setToast({ message, type, visible: true }); };
+
+  const handleSendSummaryReport = async () => {
+    showToast('Sending summary report...', 'info');
+    
+    const N8N_WEBHOOK_URL = "https://hxrshxz.app.n8n.cloud/webhook-test/d87121a6-d5bd-49bd-83b6-405da818ad5c";
+
+    const augustSales = transactionData.filter(t => t.type === 'Sale' && t.date.includes('/08/2025'));
+    const totalAugustSales = augustSales.reduce((sum, t) => sum + t.amount, 0);
+    
+    const summaryData = {
+      reportType: "August Sales Summary",
+      totalSales: `₹${totalAugustSales.toLocaleString('en-IN')}`,
+      transactionCount: augustSales.length,
+      generatedOn: new Date().toISOString(),
+      recipientEmail: "reports@example.com"
+    };
+
+    try {
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(summaryData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`n8n workflow failed with status: ${response.status}`);
+      }
+      
+      showToast('Summary report sent successfully!', 'success');
+    } catch (error) {
+      console.error('n8n trigger error:', error);
+      showToast('Could not send the report.', 'error');
+    }
+  };
 
   const triggerPlaywrightAutomation = async () => {
     showToast('Starting automation...', 'info');
@@ -213,6 +335,14 @@ export const AIAccountant = () => {
   const checkForAutomationKeywords = (text) => {
     const automationRegex = new RegExp( [ "log", "add", "expense", "invoice", "bill", "create", "scan", "automate", "receipt", "जोड़ें", "दर्ज करें", "खर्च", "बिल", "बीजक", "बनाएं", "स्कैन", "स्वचालित", "इनवॉइस", "रसीद" ].join("|"), "i" );
     return automationRegex.test(text);
+  };
+
+  const checkForReportKeywords = (text) => {
+    const reportRegex = new RegExp([
+      "monthly report", "sales summary", "send the report", "generate report",
+      "मासिक रिपोर्ट", "बिक्री का सारांश", "रिपोर्ट भेजो"
+    ].join("|"), "i");
+    return reportRegex.test(text);
   };
 
   const getFallbackResponse = (text, automationTriggered) => {
@@ -237,20 +367,39 @@ export const AIAccountant = () => {
   const stats = useMemo(() => [ { title: "Expenses (This Month)", value: 42500, prefix: "₹", icon: Wallet, iconColor: "text-orange-500", change: "+5.2%" }, { title: "ITC Claimable", value: 8600, prefix: "₹", icon: ShieldCheck, iconColor: "text-green-500", change: "+18.1%" }, { title: "Bills Processed", value: 3, icon: FileText, iconColor: "text-blue-500", change: "+1 this week" }, { title: "Total Sales", value: 150000, prefix: "₹", icon: IndianRupee, iconColor: "text-purple-500", change: "This Month" }], []);
   
   const handleChatSubmit = async (text) => {
+    setView('chat');
+    setChatHistory(prev => [...prev, { id: Date.now(), type: 'user', text }]);
+    setInputValue('');
+
+    // --- START: Report Generation Logic ---
+    if (checkForReportKeywords(text)) {
+      setIsThinking(true);
+      await handleSendSummaryReport(); // Trigger the n8n workflow
+      
+      setTimeout(() => {
+        setChatHistory(prev => [
+          ...prev,
+          { id: Date.now(), type: 'ai', component: <MonthlyReportCard /> }
+        ]);
+        setIsThinking(false);
+      }, 2500); // Simulate AI thinking time
+      
+      return; // Stop the function here to prevent calling Gemini
+    }
+    // --- END: Report Generation Logic ---
+
     let automationWasTriggered = false;
     if (checkForAutomationKeywords(text)) {
       await triggerPlaywrightAutomation();
       automationWasTriggered = true;
     }
     
-    setView('chat');
-    setChatHistory(prev => [...prev, { id: Date.now(), type: 'user', text }]);
     setIsThinking(true);
-    setInputValue('');
 
     const API_KEY = "YOUR_GOOGLE_AI_API_KEY_HERE";
     
     if (API_KEY && API_KEY !== "YOUR_GOOGLE_AI_API_KEY_HERE") {
+        // ... (rest of the Gemini API logic remains the same)
         try {
           const genAI = new GoogleGenerativeAI(API_KEY);
           const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -324,7 +473,10 @@ export const AIAccountant = () => {
   const suggestedPrompts = [ { title: "Summarize Sales", text: "What were my total sales from this data?", description: "Get quick calculations from your data." }, { title: "List Purchases", text: "List all my recent purchases.", description: "Filter and view specific transaction types." }, { title: "Find a Transaction", text: "Tell me about the transaction with XYZ Corp.", description: "Query specific details about a vendor or customer." }, { title: "Last Month's ITC", text: "What is my total ITC claimable for last month?", description: "Perform tax calculations on historical data." }, ];
 
   const renderDashboard = () => (
-    <div className="container mx-auto px-4 py-16">
+    <div className="container mx-auto px-4 py-8">
+        <div className="relative w-full h-16 flex justify-end items-center">
+             <NotificationBell onSendSummary={handleSendSummaryReport} />
+        </div>
         <div className="text-center"><h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-slate-600">AI Accountant</h1><p className="text-xl text-slate-600 max-w-2xl mt-4 mx-auto">Your intelligent command center for automated bookkeeping.</p></div>
         <div className="mt-12"><AccountantCommandBar {...commonCommandBarProps} /></div>
         <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
@@ -336,7 +488,13 @@ export const AIAccountant = () => {
   const renderChatView = () => (
      <div className="flex items-center justify-center min-h-screen p-4">
         <Card className="w-full max-w-4xl h-[calc(100vh-4rem)] flex flex-col bg-white/60 backdrop-blur-xl border-white/30 shadow-2xl rounded-2xl">
-            <CardHeader className="flex flex-row items-center justify-between border-b border-slate-200/80"><div className="flex items-center gap-3"><Bot className="h-6 w-6 text-purple-600"/><CardTitle className="text-xl">AI Accountant</CardTitle></div><Button variant="ghost" onClick={() => { setView('dashboard'); setChatHistory([]); }}><X className="h-4 w-4 mr-2"/> End Chat</Button></CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between border-b border-slate-200/80">
+                <div className="flex items-center gap-3"><Bot className="h-6 w-6 text-purple-600"/><CardTitle className="text-xl">AI Accountant</CardTitle></div>
+                <div className="flex items-center gap-2">
+                    <NotificationBell onSendSummary={handleSendSummaryReport} />
+                    <Button variant="ghost" onClick={() => { setView('dashboard'); setChatHistory([]); }}><X className="h-4 w-4 mr-2"/> End Chat</Button>
+                </div>
+            </CardHeader>
             <CardContent ref={chatContainerRef} className="flex-grow p-4 overflow-y-auto space-y-4">
                 {chatHistory.length === 0 && (
                   <motion.div variants={containerVariants} initial="hidden" animate="visible" className="pt-4 pb-8 text-center">
