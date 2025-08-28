@@ -24,7 +24,7 @@ import {
 import { cn } from "@/lib/utils";
 
 // Local asset imports (ensure these paths are correct in your project)
-import financeHub from "@/assets/finance-hub.jpg";
+// import financeHub from "@/assets/finance-hub.jpg";
 import marketplace from "@/assets/marketplace.jpg";
 import businessTools from "@/assets/business-tools.jpg";
 import dashboardPreviewImage from "@/assets/dashboard.png";
@@ -261,7 +261,6 @@ export const Homepage = () => {
               />
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
                 {[
-                  { title: "Finance Hub", desc: "Loans, credit scoring, and subsidies.", features: ["48-hour loan approval", "AI credit scoring", "Auto subsidy finder"], image: financeHub, link: "/finance", buttonText: "Get Started" },
                   { title: "Marketplace", desc: "New customers, tenders, and B2B orders.", features: ["GeM tender matching", "B2B product store", "Service gigs platform"], image: marketplace, link: "/marketplace", buttonText: "Explore Market" },
                   { title: "Business Tools", desc: "GST, accounting, and ERP made simple.", features: ["Voice-enabled ERP", "AI accountant", "GST automation"], image: businessTools, link: "/tools", buttonText: "View Tools" },
                 ].map((pillar, i) => (

@@ -4,13 +4,10 @@ export const translations: Record<Language, Record<string, string>> = {
   en: {
     // Header
     "header.nav.home": "Home",
-    "header.nav.finance": "Finance Hub",
     "header.nav.marketplace": "Marketplace",
     "header.nav.tools": "Business Tools",
-    "header.nav.support": "Support",
     "header.nav.dashboard": "Dashboard",
     "header.actions.login": "Login",
-    "header.actions.support": "Support",
     "header.actions.lang.en": "EN",
     "header.actions.lang.hi": "HI",
 

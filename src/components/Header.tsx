@@ -31,10 +31,8 @@ export function Header() {
   const navItems = isAuthenticated
     ? [
         { href: "/dashboard", label: t("header.nav.dashboard"), scroll: false },
-        { href: "/finance", label: t("header.nav.finance"), scroll: false },
         { href: "/marketplace", label: t("header.nav.marketplace"), scroll: false },
         { href: "/tools", label: t("header.nav.tools"), scroll: false },
-        { href: "/support", label: t("header.nav.support"), scroll: false },
       ]
     : [
         { href: "home", label: t("header.nav.home"), scroll: true },

@@ -7,10 +7,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./components/contexts/LanguageContext";
 import { Header } from "./components/Header";
 import { Homepage } from "./pages/Homepage";
-import { FinanceHub } from "./pages/FinanceHub";
 import MarketplacePage from "./pages/MarketPlace";
 import { BusinessTools } from "./pages/BusinessTools";
-import { Support } from "./pages/Support";
 import { Dashboard } from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 // Removed LoginModal as it's not used in routing
@@ -35,14 +33,12 @@ const App = () => (
               <Header />
               <Routes>
                 <Route path="/" element={<PublicOnly><Homepage /></PublicOnly>} />
-                <Route path="/finance" element={<RequireAuth><FinanceHub /></RequireAuth>} />
                 <Route path="/marketplace" element={<RequireAuth><MarketplacePage /></RequireAuth>} />
                 <Route path="/tools" element={<RequireAuth><BusinessTools /></RequireAuth>} />
                 
                 {/* **** ADD THE NEW ROUTE FOR THE TOOL **** */}
                 <Route path="/tools" element={<RequireAuth><AIAccountant/></RequireAuth>} />
                 
-                <Route path="/support" element={<RequireAuth><Support /></RequireAuth>} />
                 <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
                 <Route path="*" element={<NotFound />} />
               </Routes>

@@ -173,7 +173,7 @@ export const Dashboard = () => {
 
   const quickActions = useMemo(() => [
     { label: "New Order", icon: ShoppingCart, link: "/marketplace/products" },
-    { label: "Apply for Loan", icon: Wallet, link: "/finance" },
+    // { label: "Apply for Loan", icon: Wallet, link: "/finance" },
     { label: "GST Filing", icon: FileText, link: "/tools/gst" },
     { label: "View Tenders", icon: Target, link: "/marketplace/tenders" },
   ], []);
