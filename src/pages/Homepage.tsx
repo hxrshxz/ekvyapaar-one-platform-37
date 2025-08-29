@@ -219,7 +219,7 @@ export const Homepage = () => {
                   variants={slideUp}
                   className="mt-12 max-w-3xl text-xl text-slate-300"
                 >
-                  The all-in-one platform for MSMEs. Effortlessly manage your
+                  The all-in-one platform for Businesses. Effortlessly manage your
                   finances, discover and engage new customers, and{" "}
                   <span className="bg-gradient-to-r from-sky-400 to-purple-500 bg-clip-text font-bold text-2xl text-transparent">
                     Automate
@@ -256,7 +256,7 @@ export const Homepage = () => {
             <section className="space-y-16">
               <SectionHeader
                 pill="Core Features"
-                title="Three Pillars of Your Growth"
+                title="Pillars of Your Growth"
                 description="Finance, Marketplace, and Technology - a unified professional banking experience designed for MSMEs."
               />
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
@@ -300,7 +300,7 @@ export const Homepage = () => {
             </section>
 
             <section id="testimonials" className="space-y-16">
-              <SectionHeader pill="Social Proof" title="Trusted by Thousands of MSMEs" description="Real stories from businesses in Delhi, Gurgaon, and Faridabad who have accelerated their growth with EkVyapaar."/>
+              <SectionHeader pill="Social Proof" title="Trusted by Thousands of businesses" description="Real stories from businesses in Delhi, Gurgaon, and Faridabad who have accelerated their growth with EkVyapaar."/>
               <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, amount: 0.2 }} variants={staggerContainer} className="grid md:grid-cols-3 gap-8">
                 {testimonials.map((t, i) => (
                   <motion.div key={i} variants={fadeIn}>
