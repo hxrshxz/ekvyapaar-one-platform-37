@@ -23,6 +23,9 @@ import {
   ArrowDownRight,
   Clock,
   Sparkles,
+  Calendar,
+  Trophy,
+  Flame,
 } from "lucide-react";
 import {
   AreaChart,
@@ -32,6 +35,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  BarChart,
+  Bar,
 } from "recharts";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -74,163 +79,186 @@ const AnimatedCounter = ({ value, prefix = "", suffix = "" }: { value: number; p
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// GLASS CARD COMPONENT (Dark, premium glassmorphism)
+// PREMIUM CARD WITH GRADIENT TOP BORDER
 // ═══════════════════════════════════════════════════════════════════════════
 
-const GlassCard = ({ children, className = "", glowColor = "sky" }: { children: React.ReactNode; className?: string; glowColor?: "sky" | "purple" | "emerald" | "amber" }) => {
-  const glowStyles = {
-    sky: "hover:shadow-sky-500/20",
-    purple: "hover:shadow-purple-500/20",
-    emerald: "hover:shadow-emerald-500/20",
-    amber: "hover:shadow-amber-500/20",
-  };
-  return (
-    <motion.div
-      variants={itemVariants}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className={`bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg hover:shadow-2xl ${glowStyles[glowColor]} transition-all duration-300 ${className}`}
-    >
-      {children}
-    </motion.div>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
-// STAT CARD COMPONENT (with gradient icon backgrounds)
-// ═══════════════════════════════════════════════════════════════════════════
-
-interface StatCardProps {
-  title: string;
-  value: number;
-  prefix?: string;
-  suffix?: string;
-  icon: React.ElementType;
-  change: number;
-  gradient: string;
-}
-
-const StatCard = ({ title, value, prefix = "", suffix = "", icon: Icon, change, gradient }: StatCardProps) => {
-  const isPositive = change >= 0;
-
-  return (
-    <GlassCard className="p-5" glowColor="sky">
-      <div className="flex items-start justify-between mb-3">
-        <div className={`w-11 h-11 rounded-xl ${gradient} flex items-center justify-center shadow-lg`}>
-          <Icon className="w-5 h-5 text-white" />
-        </div>
-        <Badge className={`text-xs font-semibold ${isPositive ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"}`}>
-          {isPositive ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
-          {Math.abs(change)}%
-        </Badge>
-      </div>
-      <div className="space-y-0.5">
-        <p className="text-3xl font-display font-bold text-white">
-          <AnimatedCounter value={value} prefix={prefix} suffix={suffix} />
-        </p>
-        <p className="text-sm text-slate-400">{title}</p>
-      </div>
-    </GlassCard>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
-// QUICK ACTION BUTTON (with glow effect)
-// ═══════════════════════════════════════════════════════════════════════════
-
-const QuickActionButton = ({ icon: Icon, label, gradient }: { icon: React.ElementType; label: string; gradient: string }) => (
-  <motion.button
-    whileHover={{ scale: 1.03, y: -2 }}
-    whileTap={{ scale: 0.97 }}
-    className="h-20 w-full rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 flex flex-col items-center justify-center gap-2 transition-all duration-200 group"
+const PremiumCard = ({ children, className = "", gradientFrom = "from-amber-400", gradientTo = "to-orange-500" }: { children: React.ReactNode; className?: string; gradientFrom?: string; gradientTo?: string }) => (
+  <motion.div
+    variants={itemVariants}
+    whileHover={{ y: -3, transition: { duration: 0.2 } }}
+    className={`relative bg-slate-900 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 ${className}`}
   >
-    <div className={`w-9 h-9 rounded-lg ${gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-      <Icon className="w-4 h-4 text-white" />
+    {/* Gradient top border */}
+    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientFrom} ${gradientTo}`} />
+    {/* Inner glow */}
+    <div className={`absolute top-0 left-1/4 right-1/4 h-20 bg-gradient-to-b ${gradientFrom} ${gradientTo} opacity-10 blur-2xl`} />
+    <div className="relative z-10">
+      {children}
     </div>
-    <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">{label}</span>
-  </motion.button>
+  </motion.div>
 );
 
 // ═══════════════════════════════════════════════════════════════════════════
-// NOTIFICATION CARD (dark theme)
+// TIME STAT CARD (like the reference: TODAY, THIS WEEK, etc.)
 // ═══════════════════════════════════════════════════════════════════════════
 
-interface NotificationProps {
-  type: "warning" | "success" | "info";
-  title: string;
-  message: string;
+interface TimeStatCardProps {
+  label: string;
+  value: string;
   icon: React.ElementType;
+  iconColor: string;
+  gradientFrom: string;
+  gradientTo: string;
 }
 
-const NotificationCard = ({ type, title, message, icon: Icon }: NotificationProps) => {
-  const styles = {
-    warning: { bg: "bg-amber-500/10 border-amber-500/30", icon: "text-amber-400" },
-    success: { bg: "bg-emerald-500/10 border-emerald-500/30", icon: "text-emerald-400" },
-    info: { bg: "bg-sky-500/10 border-sky-500/30", icon: "text-sky-400" },
-  };
-
-  return (
-    <div className={`p-3 rounded-xl border flex items-start gap-3 ${styles[type].bg}`}>
-      <Icon className={`w-5 h-5 mt-0.5 flex-shrink-0 ${styles[type].icon}`} />
-      <div>
-        <p className="text-sm font-semibold text-white">{title}</p>
-        <p className="text-xs text-slate-400">{message}</p>
-      </div>
+const TimeStatCard = ({ label, value, icon: Icon, iconColor, gradientFrom, gradientTo }: TimeStatCardProps) => (
+  <PremiumCard gradientFrom={gradientFrom} gradientTo={gradientTo} className="p-5">
+    <div className={`w-10 h-10 rounded-xl ${iconColor} flex items-center justify-center mb-3`}>
+      <Icon className="w-5 h-5 text-white" />
     </div>
-  );
-};
-
-// ═══════════════════════════════════════════════════════════════════════════
-// ACTIVITY ITEM (dark theme)
-// ═══════════════════════════════════════════════════════════════════════════
-
-const ActivityItem = ({ icon: Icon, text, time }: { icon: React.ElementType; text: string; time: string }) => (
-  <div className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white/5 transition-colors">
-    <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-sky-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-      <Icon className="w-4 h-4 text-white" />
-    </div>
-    <div className="flex-grow min-w-0">
-      <p className="text-sm text-white font-medium truncate">{text}</p>
-      <p className="text-xs text-slate-500">{time}</p>
-    </div>
-  </div>
+    <p className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-1">{label}</p>
+    <p className="text-3xl md:text-4xl font-display font-bold text-white tracking-tight">{value}</p>
+  </PremiumCard>
 );
 
 // ═══════════════════════════════════════════════════════════════════════════
-// RADIAL PROGRESS (animated, premium)
+// GOAL CARD (with radial progress like reference)
 // ═══════════════════════════════════════════════════════════════════════════
 
-const RadialProgress = ({ progress, label, color = "#0ea5e9" }: { progress: number; label: string; color?: string }) => {
-  const radius = 32;
+const GoalCard = ({ progress, goal, completed }: { progress: number; goal: string; completed: string }) => {
+  const radius = 50;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-1.5">
-      <div className="relative">
-        <svg width="80" height="80" viewBox="0 0 80 80" className="-rotate-90">
-          <circle strokeWidth="5" stroke="rgba(255,255,255,0.1)" fill="transparent" r={radius} cx="40" cy="40" />
+    <PremiumCard gradientFrom="from-purple-500" gradientTo="to-pink-500" className="p-6 flex flex-col items-center justify-center">
+      <p className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-4 self-start">DAILY GOAL</p>
+      <div className="relative mb-4">
+        <svg width="130" height="130" viewBox="0 0 130 130" className="-rotate-90">
+          <circle strokeWidth="8" stroke="rgba(255,255,255,0.1)" fill="transparent" r={radius} cx="65" cy="65" />
           <motion.circle
-            strokeWidth="5"
-            stroke={color}
+            strokeWidth="8"
+            stroke="url(#goalGradient)"
             fill="transparent"
             r={radius}
-            cx="40"
-            cy="40"
+            cx="65"
+            cy="65"
             strokeDasharray={circumference}
             initial={{ strokeDashoffset: circumference }}
             whileInView={{ strokeDashoffset: offset }}
             viewport={{ once: true }}
             transition={{ duration: 1.2, ease: "easeOut" }}
             strokeLinecap="round"
-            style={{ filter: `drop-shadow(0 0 6px ${color})` }}
           />
+          <defs>
+            <linearGradient id="goalGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#a855f7" />
+              <stop offset="100%" stopColor="#ec4899" />
+            </linearGradient>
+          </defs>
         </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold text-white">{progress}%</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-3xl font-bold text-white">{progress}%</span>
+          <span className="text-xs text-slate-500">{goal}</span>
         </div>
       </div>
-      <p className="text-xs font-medium text-slate-400">{label}</p>
+      <p className="text-sm text-slate-400">{completed}</p>
+    </PremiumCard>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STREAK CARD (Current Streak with progress bar)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const StreakCard = ({ days, message }: { days: number; message: string }) => (
+  <PremiumCard gradientFrom="from-sky-500" gradientTo="to-cyan-400" className="p-6">
+    <p className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-3">CURRENT STREAK</p>
+    <div className="flex items-baseline gap-2 mb-4">
+      <span className="text-5xl font-display font-bold text-white">{days}</span>
+      <span className="text-xl text-slate-400">days</span>
     </div>
+    {/* Mini progress bar */}
+    <div className="flex gap-1 mb-4">
+      {[...Array(7)].map((_, i) => (
+        <div key={i} className={`h-2 flex-1 rounded-full ${i < days ? "bg-gradient-to-r from-sky-400 to-cyan-400" : "bg-slate-700"}`} />
+      ))}
+    </div>
+    <div className="flex items-center gap-2 text-amber-400">
+      <Flame className="w-4 h-4" />
+      <span className="text-sm font-medium">{message}</span>
+    </div>
+  </PremiumCard>
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BEST STREAK / RECORD CARD
+// ═══════════════════════════════════════════════════════════════════════════
+
+const RecordCard = ({ record, label, sublabel }: { record: number; label: string; sublabel: string }) => (
+  <PremiumCard gradientFrom="from-amber-400" gradientTo="to-orange-500" className="p-6">
+    <p className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-3">BEST STREAK</p>
+    <div className="flex items-baseline gap-2 mb-3">
+      <span className="text-5xl font-display font-bold text-white">{record}</span>
+      <span className="text-xl text-slate-400">days</span>
+    </div>
+    <div className="flex items-center gap-2 text-amber-400 mb-2">
+      <Trophy className="w-4 h-4" />
+      <span className="text-sm font-semibold">{label}</span>
+    </div>
+    <p className="text-xs text-slate-500">{sublabel}</p>
+  </PremiumCard>
+);
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ACTIVITY OVERVIEW (Big chart section)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const ActivityOverview = ({ data }: { data: { day: string; value: number }[] }) => {
+  const [activeTab, setActiveTab] = useState("This Week");
+  const tabs = ["Today", "This Week", "This Year"];
+
+  return (
+    <PremiumCard gradientFrom="from-violet-500" gradientTo="to-purple-600" className="p-6">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div>
+          <p className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-1">FOCUS TREND</p>
+          <h2 className="text-2xl font-display font-bold text-white">Activity Overview</h2>
+        </div>
+        <div className="flex items-center bg-slate-800 rounded-full p-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${activeTab === tab ? "bg-amber-500 text-white" : "text-slate-400 hover:text-white"}`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="h-56">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <defs>
+              <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="day" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
+            <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}h`} />
+            <Tooltip
+              contentStyle={{ backgroundColor: "rgba(15, 23, 42, 0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px" }}
+              labelStyle={{ color: "#fff", fontWeight: "600" }}
+              itemStyle={{ color: "#f59e0b" }}
+            />
+            <Area type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2.5} fill="url(#activityGradient)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+    </PremiumCard>
   );
 };
 
@@ -251,51 +279,30 @@ export const Dashboard = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const stats = useMemo(() => [
-    { title: "Today's Revenue", value: 45230, prefix: "₹", icon: IndianRupee, change: 12.5, gradient: "bg-gradient-to-br from-sky-500 to-cyan-400" },
-    { title: "New Orders", value: 28, icon: ShoppingCart, change: 8.2, gradient: "bg-gradient-to-br from-purple-500 to-pink-500" },
-    { title: "Customers", value: 1247, icon: Users, change: 15.3, gradient: "bg-gradient-to-br from-amber-500 to-orange-500" },
-    { title: "Growth Rate", value: 23, suffix: "%", icon: Target, change: 3.1, gradient: "bg-gradient-to-br from-emerald-500 to-teal-400" },
+  const timeStats = useMemo(() => [
+    { label: "TODAY", value: "₹45,230", icon: Clock, iconColor: "bg-amber-500", gradientFrom: "from-amber-400", gradientTo: "to-orange-500" },
+    { label: "THIS WEEK", value: "₹1,85,000", icon: Calendar, iconColor: "bg-sky-500", gradientFrom: "from-sky-400", gradientTo: "to-cyan-400" },
+    { label: "THIS MONTH", value: "₹7,42,000", icon: Target, iconColor: "bg-emerald-500", gradientFrom: "from-emerald-400", gradientTo: "to-teal-400" },
+    { label: "ALL TIME", value: "₹84,13,220", icon: CheckCircle2, iconColor: "bg-purple-500", gradientFrom: "from-purple-400", gradientTo: "to-pink-500" },
   ], []);
 
-  const quickActions = useMemo(() => [
-    { label: "New Order", icon: ShoppingCart, gradient: "bg-gradient-to-br from-sky-500 to-cyan-400" },
-    { label: "GST Filing", icon: FileText, gradient: "bg-gradient-to-br from-purple-500 to-pink-500" },
-    { label: "View Tenders", icon: Target, gradient: "bg-gradient-to-br from-amber-500 to-orange-500" },
-    { label: "Apply for Loan", icon: Wallet, gradient: "bg-gradient-to-br from-emerald-500 to-teal-400" },
-  ], []);
-
-  const activities = useMemo(() => [
-    { icon: CheckCircle2, text: "Loan Approved - ₹5,00,000", time: "2 hours ago" },
-    { icon: Target, text: "New Tender Match - LED Supply", time: "4 hours ago" },
-    { icon: ShoppingCart, text: "New Order - 1000 Units", time: "6 hours ago" },
-    { icon: IndianRupee, text: "Payment Received - ₹75,000", time: "3 days ago" },
-  ], []);
-
-  const notifications = useMemo(() => [
-    { type: "warning" as const, title: "GST Filing Due!", message: "File returns by 20th to avoid penalties.", icon: AlertTriangle },
-    { type: "success" as const, title: "Loan Approved", message: "Your business loan of ₹5 Lakh is approved.", icon: CheckCircle2 },
-    { type: "info" as const, title: "New Feature", message: "Voice commands are now live for Inventory.", icon: Lightbulb },
-  ], []);
-
-  const growthData = useMemo(() => [
-    { month: "Jan", revenue: 250 },
-    { month: "Feb", revenue: 320 },
-    { month: "Mar", revenue: 410 },
-    { month: "Apr", revenue: 380 },
-    { month: "May", revenue: 450 },
-    { month: "Jun", revenue: 520 },
-    { month: "Jul", revenue: 480 },
-    { month: "Aug", revenue: 550 },
+  const activityData = useMemo(() => [
+    { day: "Mon", value: 2.5 },
+    { day: "Tue", value: 3.2 },
+    { day: "Wed", value: 1.8 },
+    { day: "Thu", value: 4.1 },
+    { day: "Fri", value: 3.5 },
+    { day: "Sat", value: 2.0 },
+    { day: "Sun", value: 0.5 },
   ], []);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       {/* Animated Background Blobs */}
       <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] bg-sky-600/20 rounded-full blur-[180px] animate-pulse" />
-        <div className="absolute top-1/3 -right-1/4 w-[700px] h-[700px] bg-purple-600/20 rounded-full blur-[180px] animate-pulse" style={{ animationDelay: "1s" }} />
-        <div className="absolute -bottom-1/4 left-1/3 w-[600px] h-[600px] bg-amber-600/10 rounded-full blur-[180px] animate-pulse" style={{ animationDelay: "2s" }} />
+        <div className="absolute -top-1/3 -left-1/4 w-[700px] h-[700px] bg-amber-600/10 rounded-full blur-[200px]" />
+        <div className="absolute top-1/2 -right-1/4 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-[200px]" />
+        <div className="absolute -bottom-1/4 left-1/3 w-[500px] h-[500px] bg-sky-600/10 rounded-full blur-[200px]" />
       </div>
 
       <div className="relative pt-20 pb-12 px-4 mt-[-4rem]">
@@ -309,137 +316,37 @@ export const Dashboard = () => {
           >
             <div>
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-                <span className="text-xs font-bold tracking-widest uppercase text-amber-400">COMMAND CENTER</span>
+                <span className="text-xs font-bold tracking-widest uppercase text-amber-400">ANALYTICS</span>
               </div>
-              <h1 className="font-display text-4xl md:text-5xl font-bold text-white mt-1 bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-slate-400">
+              <h1 className="font-display text-4xl md:text-5xl font-bold italic text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 mt-1">
                 Your Business Journey
               </h1>
-              <p className="text-slate-400 mt-1">Track progress & stay ahead of the curve.</p>
+              <p className="text-slate-400 mt-1">Track your progress and stay motivated</p>
             </div>
-            <div className="flex items-center gap-2.5 text-slate-400 bg-white/5 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/10">
-              <Clock className="w-4 h-4 text-sky-400" />
-              <span className="text-base font-mono text-white">{currentTime}</span>
+            <div className="flex items-center gap-2.5 text-slate-400 bg-slate-800/50 backdrop-blur-xl px-4 py-2 rounded-xl border border-slate-700/50">
+              <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30 text-xs">IST</Badge>
+              <span className="text-lg font-mono text-white">{currentTime}</span>
             </div>
           </motion.div>
 
-          {/* Stats Grid */}
+          {/* Time Stats Row (4 cards like reference) */}
           <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {stats.map((stat, i) => (
-              <StatCard key={i} {...stat} />
+            {timeStats.map((stat, i) => (
+              <TimeStatCard key={i} {...stat} />
             ))}
           </motion.div>
 
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            {/* Left Column */}
-            <div className="lg:col-span-2 space-y-4">
-              {/* Quick Actions */}
-              <GlassCard className="p-5">
-                <div className="flex items-center gap-2.5 mb-4">
-                  <Zap className="w-5 h-5 text-amber-400" />
-                  <h2 className="font-display text-base font-semibold text-white">Quick Actions</h2>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {quickActions.map((action, i) => (
-                    <QuickActionButton key={i} {...action} />
-                  ))}
-                </div>
-              </GlassCard>
+          {/* Middle Row: Goal, Streak, Record (3 cards) */}
+          <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <GoalCard progress={45} goal="₹1L goal" completed="₹45,230 of ₹1,00,000 completed" />
+            <StreakCard days={5} message="Keep the momentum going!" />
+            <RecordCard record={12} label="Personal record" sublabel="12 days to beat" />
+          </motion.div>
 
-              {/* Financial Health */}
-              <GlassCard className="p-5" glowColor="emerald">
-                <div className="flex items-center gap-2.5 mb-4">
-                  <DollarSign className="w-5 h-5 text-emerald-400" />
-                  <h2 className="font-display text-base font-semibold text-white">Financial Health</h2>
-                </div>
-                <div className="flex justify-around items-center">
-                  <RadialProgress progress={78} label="Cash Flow" color="#0ea5e9" />
-                  <RadialProgress progress={65} label="Profit" color="#a855f7" />
-                  <RadialProgress progress={92} label="Liquidity" color="#10b981" />
-                </div>
-              </GlassCard>
-
-              {/* Activity Feed */}
-              <GlassCard className="p-5" glowColor="purple">
-                <div className="flex items-center gap-2.5 mb-4">
-                  <Activity className="w-5 h-5 text-purple-400" />
-                  <h2 className="font-display text-base font-semibold text-white">Recent Activity</h2>
-                </div>
-                <div className="space-y-1">
-                  {activities.map((activity, i) => (
-                    <ActivityItem key={i} {...activity} />
-                  ))}
-                </div>
-              </GlassCard>
-            </div>
-
-            {/* Right Column */}
-            <div className="space-y-4">
-              {/* Notifications */}
-              <GlassCard className="p-5" glowColor="amber">
-                <div className="flex items-center gap-2.5 mb-4">
-                  <Bell className="w-5 h-5 text-amber-400" />
-                  <h2 className="font-display text-base font-semibold text-white">Notifications</h2>
-                </div>
-                <div className="space-y-2.5">
-                  {notifications.map((notification, i) => (
-                    <NotificationCard key={i} {...notification} />
-                  ))}
-                </div>
-              </GlassCard>
-
-              {/* Credit Score */}
-              <GlassCard className="p-5 relative overflow-hidden" glowColor="emerald">
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                    <h2 className="font-display text-base font-semibold text-white">Credit Score</h2>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-5xl font-display font-bold text-emerald-400 mb-0.5" style={{ textShadow: "0 0 20px rgba(16, 185, 129, 0.5)" }}>
-                      <AnimatedCounter value={742} />
-                    </div>
-                    <div className="text-emerald-400 font-medium text-sm mb-3">Excellent</div>
-                    <Button variant="outline" size="sm" className="bg-white/5 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20 hover:text-emerald-300">
-                      View Full Report
-                    </Button>
-                  </div>
-                </div>
-              </GlassCard>
-
-              {/* Growth Chart */}
-              <GlassCard className="p-5">
-                <div className="flex items-center gap-2.5 mb-4">
-                  <TrendingUp className="w-5 h-5 text-sky-400" />
-                  <h2 className="font-display text-base font-semibold text-white">Business Growth</h2>
-                </div>
-                <div className="h-40">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={growthData} margin={{ top: 5, right: 5, left: -25, bottom: 5 }}>
-                      <defs>
-                        <linearGradient id="colorRevenueDark" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="#0ea5e9" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" />
-                      <XAxis dataKey="month" stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} />
-                      <YAxis stroke="#64748b" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `₹${v}K`} />
-                      <Tooltip
-                        contentStyle={{ backgroundColor: "rgba(15, 23, 42, 0.9)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", backdropFilter: "blur(10px)" }}
-                        labelStyle={{ color: "#fff", fontWeight: "600" }}
-                        itemStyle={{ color: "#0ea5e9" }}
-                        formatter={(value) => [`₹${Number(value) * 1000}`, "Revenue"]}
-                      />
-                      <Area type="monotone" dataKey="revenue" stroke="#0ea5e9" strokeWidth={2} fill="url(#colorRevenueDark)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
-              </GlassCard>
-            </div>
-          </div>
+          {/* Activity Overview (Big chart) */}
+          <motion.div initial="hidden" animate="visible" variants={containerVariants}>
+            <ActivityOverview data={activityData} />
+          </motion.div>
         </div>
       </div>
     </div>
