@@ -548,7 +548,7 @@ export const AIAccountant = () => {
     
     setIsThinking(true);
 
-    const API_KEY = "AIzaSyBOxnT8mLe5pxbkj_XbOkrSrxKU3MZfyKg";
+    const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
     
     if (API_KEY ) {
         try {
