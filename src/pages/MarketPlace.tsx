@@ -151,7 +151,7 @@ const PerformanceAnalysisModal = ({ isOpen, onClose, product }: { isOpen: boolea
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-4xl bg-slate-50/80 backdrop-blur-xl border-slate-200/60">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-slate-50/80 backdrop-blur-xl border-slate-200/60">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold text-slate-900">ONDC Network Performance</DialogTitle>
                     <p className="text-slate-600 pt-1">Analytics for '{product.name}'</p>
@@ -315,7 +315,13 @@ Respond ONLY with valid JSON.`;
             <motion.p variants={itemVariants} className="text-xl text-slate-600 max-w-2xl mt-4 mb-8">All tasks in one ask. Your B2B hub for services, products, and new opportunities.</motion.p>
             <motion.div variants={itemVariants} className="flex justify-center gap-8 mb-6">
               {searchTypes.map((type) => (
-                <button key={type} onClick={() => setSearchType(type)} className="relative text-xl font-bold transition-colors pb-2">
+                <button key={type} onClick={() => {
+                  setSearchType(type);
+                  // Clear previous search results when switching tabs
+                  setParsedProducts([]);
+                  setSearchSummary("");
+                  setInputValue("");
+                }} className="relative text-xl font-bold transition-colors pb-2">
                   <span className={searchType === type ? "text-slate-900" : "text-slate-500 hover:text-slate-700"}>{type}</span>
                   {searchType === type && <motion.div className="absolute bottom-0 left-0 right-0 h-1 bg-purple-500 rounded-full" layoutId="searchTypeUnderline" transition={{ type: "spring", stiffness: 500, damping: 30 }} />}
                 </button>
