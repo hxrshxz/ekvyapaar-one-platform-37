@@ -67,20 +67,26 @@ export function Header() {
                   duration={600}
                   offset={-80}
                   onSetActive={() => setActiveLink(item.href)}
-                  // --- MODIFIED: Added hover effect for non-active links ---
-                  className={`cursor-pointer relative text-sm font-medium transition-colors duration-300 rounded-full px-4 py-2 ${
+                  // --- MODIFIED: Added more "blue" hover effect and active state ---
+                  className={`cursor-pointer relative text-sm font-medium transition-all duration-300 rounded-full px-4 py-2 ${
                     activeLink === item.href
                       ? "text-white"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"
+                      : "text-slate-500 hover:text-sky-600 hover:bg-sky-50"
                   }`}
-                  onClick={() => setIsOpen(false)}
+                  onClick={() => {
+                    setIsOpen(false);
+                    if (item.href === 'home') {
+                        setActiveLink('home');
+                    }
+                  }}
                 >
                   {activeLink === item.href && (
                     <motion.div
-                      layoutId="active-pill-header"
-                      className="absolute inset-0 bg-sky-500"
+                      className="absolute inset-0 bg-sky-500 shadow-md shadow-sky-200"
                       style={{ borderRadius: 9999 }}
-                      transition={{ duration: 0.6, type: "spring" }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
                     />
                   )}
                   <span className="relative z-10">{item.label}</span>
@@ -89,19 +95,20 @@ export function Header() {
                 <Link
                   key={item.href}
                   to={item.href}
-                  // --- MODIFIED: Added hover effect for non-active links ---
-                  className={`relative text-sm font-medium transition-colors duration-300 rounded-full px-4 py-2 ${
+                  // --- MODIFIED: Added more "blue" hover effect and active state ---
+                  className={`relative text-sm font-medium transition-all duration-300 rounded-full px-4 py-2 ${
                     activeLink === item.href
                       ? "text-white"
-                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-200/60"
+                      : "text-slate-500 hover:text-sky-600 hover:bg-sky-50"
                   }`}
                 >
                   {activeLink === item.href && (
                     <motion.div
-                      layoutId="active-pill-header"
-                      className="absolute inset-0 bg-sky-500"
+                      className="absolute inset-0 bg-sky-500 shadow-md shadow-sky-200"
                       style={{ borderRadius: 9999 }}
-                      transition={{ duration: 0.6, type: "spring" }}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
                     />
                   )}
                   <span className="relative z-10">{item.label}</span>
