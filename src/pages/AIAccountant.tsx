@@ -548,7 +548,7 @@ export const AIAccountant = () => {
     
     setIsThinking(true);
 
-    const API_KEY = "AIzaSyDNHmmsmvod1_WQfIAjh5Tq7lu4NyLfo7Q";
+    const API_KEY = "AIzaSyBOxnT8mLe5pxbkj_XbOkrSrxKU3MZfyKg";
     
     if (API_KEY ) {
         try {
