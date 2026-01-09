@@ -239,7 +239,7 @@ A comprehensive business intelligence dashboard with real-time metrics and analy
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/hxrshxz/ekvyapaar-one-platform-37.git
+git clone <YOUR_GIT_URL>
 cd ekvyapaar-one-platform-37
 ```
 
@@ -265,7 +265,7 @@ Navigate to `http://localhost:5173` to see the application.
 
 ### Environment Setup
 
-The application uses Google Gemini AI for intelligent features. The API key is currently hardcoded for demo purposes, but for production, you should:
+The application uses Google Gemini AI for intelligent features. To set up:
 
 1. Create a `.env` file in the root directory
 2. Add your Google AI API key:
@@ -273,6 +273,8 @@ The application uses Google Gemini AI for intelligent features. The API key is c
 ```env
 VITE_GOOGLE_AI_KEY=your_api_key_here
 ```
+
+**Note**: Obtain your API key from [Google AI Studio](https://makersuite.google.com/app/apikey).
 
 ---
 
