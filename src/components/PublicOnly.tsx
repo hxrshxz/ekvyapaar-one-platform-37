@@ -7,7 +7,7 @@ const PublicOnly = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace state={{ from: location.pathname }} />;
+    return <Navigate to="/tools" replace state={{ from: location.pathname }} />;
   }
 
   return <>{children}</>;
