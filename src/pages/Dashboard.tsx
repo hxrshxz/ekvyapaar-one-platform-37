@@ -83,13 +83,14 @@ const AnimatedCounter = ({ value, prefix = "", suffix = "" }: { value: number; p
 const PremiumCard = ({ children, className = "", gradientFrom = "from-amber-400", gradientTo = "to-orange-500" }: { children: React.ReactNode; className?: string; gradientFrom?: string; gradientTo?: string }) => (
   <motion.div
     variants={itemVariants}
-    whileHover={{ y: -3, transition: { duration: 0.2 } }}
-    className={`relative bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-200/60 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 ${className}`}
+    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+    className={`relative bg-white rounded-3xl overflow-hidden shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)] border border-slate-200/50 hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.12)] transition-all duration-500 ${className}`}
   >
-    {/* Gradient top border */}
-    <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientFrom} ${gradientTo}`} />
-    {/* Inner glow (very subtle) */}
-    <div className={`absolute top-0 left-1/4 right-1/4 h-20 bg-gradient-to-b ${gradientFrom} ${gradientTo} opacity-[0.03] blur-3xl`} />
+    {/* Gradient top border with subtle glow */}
+    <div className={`absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r ${gradientFrom} ${gradientTo} z-20`} />
+    {/* Subtle Inner Accent Glow */}
+    <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-32 bg-gradient-to-b ${gradientFrom} ${gradientTo} opacity-[0.04] blur-[40px] z-0`} />
+    
     <div className="relative z-10 h-full flex flex-col justify-between">
       {children}
     </div>
@@ -97,7 +98,7 @@ const PremiumCard = ({ children, className = "", gradientFrom = "from-amber-400"
 );
 
 // ═══════════════════════════════════════════════════════════════════════════
-// UI COMPONENTS
+// UI COMPONENTS (No changes to TimeStatCard, GoalCard, StreakCard, RecordCard logic, but added padding/radius)
 // ═══════════════════════════════════════════════════════════════════════════
 
 interface TimeStatCardProps {
@@ -110,13 +111,13 @@ interface TimeStatCardProps {
 }
 
 const TimeStatCard = ({ label, value, icon: Icon, iconColor, gradientFrom, gradientTo }: TimeStatCardProps) => (
-  <PremiumCard gradientFrom={gradientFrom} gradientTo={gradientTo} className="p-6">
+  <PremiumCard gradientFrom={gradientFrom} gradientTo={gradientTo} className="p-7">
     <div className="flex flex-col h-full justify-between">
-      <div className={`w-10 h-10 rounded-xl ${iconColor} flex items-center justify-center mb-4 shadow-sm`}>
-        <Icon className="w-5 h-5 text-white" />
+      <div className={`w-12 h-12 rounded-2xl ${iconColor} flex items-center justify-center mb-5 shadow-lg shadow-inherit/20`}>
+        <Icon className="w-6 h-6 text-white" />
       </div>
       <div>
-        <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-1">{label}</p>
+        <p className="text-xs font-bold tracking-[0.15em] uppercase text-slate-400 mb-2">{label}</p>
         <p className="text-3xl md:text-4xl font-display font-bold text-slate-900 tracking-tight">{value}</p>
       </div>
     </div>
@@ -129,24 +130,24 @@ const GoalCard = ({ progress, goal, completed }: { progress: number; goal: strin
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <PremiumCard gradientFrom="from-purple-500" gradientTo="to-pink-500" className="p-7">
+    <PremiumCard gradientFrom="from-purple-500" gradientTo="to-pink-500" className="p-8">
       <div className="flex flex-col h-full items-center justify-center text-center">
-        <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-5 self-center">DAILY GOAL</p>
-        <div className="relative mb-5">
-          <svg width="140" height="140" viewBox="0 0 140 140" className="-rotate-90">
-            <circle strokeWidth="8" stroke="#f1f5f9" fill="transparent" r={radius} cx="70" cy="70" />
+        <p className="text-xs font-bold tracking-[0.15em] uppercase text-slate-400 mb-6 self-center">DAILY TARGET</p>
+        <div className="relative mb-6">
+          <svg width="150" height="150" viewBox="0 0 150 150" className="-rotate-90">
+            <circle strokeWidth="10" stroke="#f1f5f9" fill="transparent" r={radius} cx="75" cy="75" />
             <motion.circle
-              strokeWidth="8"
+              strokeWidth="10"
               stroke="url(#goalGradient)"
               fill="transparent"
               r={radius}
-              cx="70"
-              cy="70"
+              cx="75"
+              cy="75"
               strokeDasharray={circumference}
               initial={{ strokeDashoffset: circumference }}
               whileInView={{ strokeDashoffset: offset }}
               viewport={{ once: true }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
               strokeLinecap="round"
             />
             <defs>
@@ -158,32 +159,32 @@ const GoalCard = ({ progress, goal, completed }: { progress: number; goal: strin
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-4xl font-bold text-slate-900">{progress}%</span>
-            <span className="text-xs text-slate-500 font-bold uppercase tracking-tighter">{goal}</span>
+            <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest mt-1">{goal}</span>
           </div>
         </div>
-        <p className="text-sm font-medium text-slate-500">{completed}</p>
+        <p className="text-sm font-semibold text-slate-500 bg-slate-50 px-4 py-1.5 rounded-full border border-slate-100">{completed}</p>
       </div>
     </PremiumCard>
   );
 };
 
 const StreakCard = ({ days, message }: { days: number; message: string }) => (
-  <PremiumCard gradientFrom="from-sky-500" gradientTo="to-cyan-400" className="p-7">
+  <PremiumCard gradientFrom="from-sky-500" gradientTo="to-cyan-400" className="p-8">
     <div className="flex flex-col h-full justify-between">
-      <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-2">CURRENT STREAK</p>
+      <p className="text-xs font-bold tracking-[0.15em] uppercase text-slate-400 mb-3">CURRENT MOMENTUM</p>
       <div>
-        <div className="flex items-baseline gap-2 mb-5">
-          <span className="text-6xl font-display font-bold text-slate-900 leading-none">{days}</span>
-          <span className="text-2xl text-slate-400 font-medium">days</span>
+        <div className="flex items-baseline gap-3 mb-6">
+          <span className="text-7xl font-display font-bold text-slate-900 leading-none tracking-tighter">{days}</span>
+          <span className="text-2xl text-slate-400 font-bold">DAYS</span>
         </div>
-        <div className="flex gap-1.5 mb-5 h-2.5">
+        <div className="flex gap-2 mb-6 h-3">
           {[...Array(7)].map((_, i) => (
-            <div key={i} className={`h-full flex-1 rounded-full ${i < days ? "bg-gradient-to-r from-sky-400 to-cyan-400 shadow-sm" : "bg-slate-100"}`} />
+            <div key={i} className={`h-full flex-1 rounded-full ${i < days ? "bg-gradient-to-r from-sky-400 to-cyan-400 shadow-[0_2px_10px_rgba(56,189,248,0.4)]" : "bg-slate-100"}`} />
           ))}
         </div>
-        <div className="flex items-center gap-2 text-amber-500">
-          <Flame className="w-5 h-5 fill-amber-500" />
-          <span className="text-sm font-bold uppercase tracking-wide">{message}</span>
+        <div className="flex items-center gap-3 text-amber-500 bg-amber-50/50 w-fit px-4 py-2 rounded-2xl border border-amber-100/50">
+          <Flame className="w-5 h-5 fill-amber-500 animate-pulse" />
+          <span className="text-xs font-black uppercase tracking-widest">{message}</span>
         </div>
       </div>
     </div>
@@ -191,19 +192,19 @@ const StreakCard = ({ days, message }: { days: number; message: string }) => (
 );
 
 const RecordCard = ({ record, label, sublabel }: { record: number; label: string; sublabel: string }) => (
-  <PremiumCard gradientFrom="from-amber-400" gradientTo="to-orange-500" className="p-7">
+  <PremiumCard gradientFrom="from-amber-400" gradientTo="to-orange-500" className="p-8">
      <div className="flex flex-col h-full justify-between">
-      <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-2">BEST STREAK</p>
+      <p className="text-xs font-bold tracking-[0.15em] uppercase text-slate-400 mb-3">ELITE PERFORMANCE</p>
       <div>
-        <div className="flex items-baseline gap-2 mb-4">
-          <span className="text-6xl font-display font-bold text-slate-900 leading-none">{record}</span>
-          <span className="text-2xl text-slate-400 font-medium">days</span>
+        <div className="flex items-baseline gap-3 mb-5">
+          <span className="text-7xl font-display font-bold text-slate-900 leading-none tracking-tighter">{record}</span>
+          <span className="text-2xl text-slate-400 font-bold">RECORD</span>
         </div>
-        <div className="flex items-center gap-2 text-amber-500 mb-2">
-          <Trophy className="w-5 h-5 fill-amber-500" />
-          <span className="text-sm font-bold uppercase tracking-wide">{label}</span>
+        <div className="flex items-center gap-3 text-emerald-600 bg-emerald-50/50 w-fit px-4 py-2 rounded-2xl border border-emerald-100/50 mb-3">
+          <Trophy className="w-5 h-5 fill-emerald-500" />
+          <span className="text-xs font-black uppercase tracking-widest">{label}</span>
         </div>
-        <p className="text-xs font-semibold text-slate-400 tracking-wider font-mono">{sublabel}</p>
+        <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] font-mono leading-none">{sublabel}</p>
       </div>
     </div>
   </PremiumCard>
@@ -230,43 +231,43 @@ const ActivityOverview = () => {
   const tabs = ["Today", "This Week", "This Year"];
 
   return (
-    <PremiumCard gradientFrom="from-slate-700" gradientTo="to-slate-900" className="p-8 bg-slate-900 border-none text-white overflow-visible shadow-2xl">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
-        <div>
-          <p className="text-xs font-bold tracking-widest uppercase text-slate-500 mb-2">FOCUS TREND</p>
-          <h2 className="text-3xl font-display font-bold text-white tracking-tight">Activity Overview</h2>
+    <PremiumCard gradientFrom="from-slate-800" gradientTo="to-black" className="p-10 bg-slate-950 border-none text-white overflow-visible shadow-[0_40px_100px_-20px_rgba(0,0,0,0.4)]">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 mb-14">
+        <div className="space-y-2">
+          <p className="text-xs font-black tracking-[0.3em] uppercase text-slate-500">MOMENTUM ANALYTICS</p>
+          <h2 className="text-4xl font-display font-bold text-white tracking-tighter">Activity Overview</h2>
         </div>
-        <div className="flex items-center bg-white/5 backdrop-blur-md p-1 rounded-xl border border-white/10">
+        <div className="flex items-center bg-white/5 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-2xl">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-2 rounded-lg text-sm font-bold transition-all ${activeTab === tab ? "bg-amber-500 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.3)]" : "text-slate-400 hover:text-white"}`}
+              className={`px-7 py-3 rounded-xl text-xs font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab ? "bg-amber-500 text-slate-950 shadow-[0_0_30px_rgba(245,158,11,0.4)] scale-105" : "text-slate-500 hover:text-white"}`}
             >
               {tab}
             </button>
           ))}
         </div>
       </div>
-      <div className="h-80 w-full">
+      <div className="h-[400px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={dataMap[activeTab as keyof typeof dataMap]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
+                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.5} />
                 <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
               </linearGradient>
             </defs>
-            <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="time" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} dy={10} />
-            <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}h`} />
+            <CartesianGrid stroke="rgba(255,255,255,0.03)" strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="time" stroke="#475569" fontSize={12} fontWeight="bold" tickLine={false} axisLine={false} dy={20} />
+            <YAxis stroke="#475569" fontSize={12} fontWeight="bold" tickLine={false} axisLine={false} tickFormatter={(v) => `${v}h`} />
             <Tooltip
-              contentStyle={{ backgroundColor: "rgba(15, 23, 42, 0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", boxShadow: "0 20px 50px -12px rgba(0, 0, 0, 0.5)" }}
-              labelStyle={{ color: "#e2e8f0", fontWeight: "700", marginBottom: "0.5rem" }}
-              itemStyle={{ color: "#f59e0b", fontWeight: "600" }}
-              formatter={(value: any) => [`${value} hours`, "Focus Time"]}
+              contentStyle={{ backgroundColor: "rgba(2, 6, 23, 0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "24px", padding: "20px", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 1)" }}
+              labelStyle={{ color: "#f8fafc", fontWeight: "900", textTransform: "uppercase", letterSpacing: "0.1em", fontSize: "14px", marginBottom: "10px" }}
+              itemStyle={{ color: "#f59e0b", fontWeight: "bold" }}
+              formatter={(value: any) => [`${value} hours`, "ACTIVE FOCUS"]}
             />
-            <Area type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={4} fill="url(#activityGradient)" activeDot={{ r: 8, strokeWidth: 0, fill: "#f59e0b" }} />
+            <Area type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={5} fill="url(#activityGradient)" activeDot={{ r: 10, strokeWidth: 0, fill: "#f59e0b" }} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -292,45 +293,49 @@ export const Dashboard = () => {
   }, []);
 
   const timeStats = useMemo(() => [
-    { label: "TODAY", value: "₹45,230", icon: Clock, iconColor: "bg-amber-500", gradientFrom: "from-amber-400", gradientTo: "to-orange-500" },
-    { label: "THIS WEEK", value: "₹1,85,000", icon: Calendar, iconColor: "bg-sky-500", gradientFrom: "from-sky-500", gradientTo: "to-blue-600" },
-    { label: "THIS MONTH", value: "₹7,42,000", icon: Target, iconColor: "bg-emerald-500", gradientFrom: "from-emerald-500", gradientTo: "to-teal-600" },
-    { label: "ALL TIME", value: "₹84,13,220", icon: CheckCircle2, iconColor: "bg-purple-500", gradientFrom: "from-purple-500", gradientTo: "to-pink-600" },
+    { label: "DAILY REVENUE", value: "₹45,230", icon: Clock, iconColor: "bg-amber-500", gradientFrom: "from-amber-400", gradientTo: "to-orange-500" },
+    { label: "WEEKLY GAIN", value: "₹1,85,000", icon: Calendar, iconColor: "bg-sky-500", gradientFrom: "from-sky-500", gradientTo: "to-blue-600" },
+    { label: "MONTHLY TARGET", value: "₹7,42,000", icon: Target, iconColor: "bg-emerald-500", gradientFrom: "from-emerald-500", gradientTo: "to-teal-600" },
+    { label: "TOTAL ASSETS", value: "₹84.13L", icon: CheckCircle2, iconColor: "bg-purple-500", gradientFrom: "from-purple-500", gradientTo: "to-pink-600" },
   ], []);
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
-      {/* Subtle Premium Background */}
-      <div className="fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute -top-[10%] -right-[10%] w-[60%] h-[60%] bg-sky-50/50 rounded-full blur-[120px]" />
-        <div className="absolute top-[40%] -left-[10%] w-[40%] h-[40%] bg-slate-50/80 rounded-full blur-[100px]" />
+    <div className="min-h-screen bg-slate-50/80 text-slate-900 selection:bg-amber-200 selection:text-amber-900">
+      {/* Dynamic Ambient Glows */}
+      <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+        <div className="absolute top-[5%] right-[10%] w-[50%] h-[50%] bg-blue-100/30 rounded-full blur-[160px] animate-pulse" />
+        <div className="absolute bottom-[10%] left-[5%] w-[40%] h-[40%] bg-amber-50/40 rounded-full blur-[140px]" />
+        <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] bg-purple-50/30 rounded-full blur-[120px]" />
       </div>
 
-      <div className="relative pt-32 pb-24 px-10 mt-[-4rem]">
-        <div className="max-w-7xl mx-auto space-y-12">
-          {/* Header */}
+      <div className="relative pt-36 pb-32 px-12 mt-[-4rem]">
+        <div className="max-w-7xl mx-auto space-y-16">
+          {/* Advanced Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col md:flex-row md:items-end md:justify-between gap-6"
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="flex flex-col md:flex-row md:items-end md:justify-between gap-10"
           >
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-1 bg-amber-500 rounded-full" />
-                <span className="text-xs font-bold tracking-widest uppercase text-slate-400">COMMAND CENTER</span>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <div className="h-[2px] w-16 bg-gradient-to-r from-amber-500 to-transparent rounded-full" />
+                <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400">COMMAND CENTER v3.0</span>
               </div>
-              <h1 className="font-display text-5xl md:text-7xl font-bold text-slate-900 tracking-tight leading-none">
-                Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600 italic">Business</span> Journey
+              <h1 className="font-display text-6xl md:text-8xl font-bold text-slate-900 tracking-tighter leading-none">
+                Elite <span className="text-transparent bg-clip-text bg-gradient-to-br from-amber-500 via-orange-600 to-pink-600 italic">Insights</span>
               </h1>
-              <p className="text-xl text-slate-500 font-medium max-w-xl leading-relaxed">Advanced insights and real-time tracking for your enterprise success.</p>
+              <p className="text-xl text-slate-500 font-bold max-w-2xl leading-relaxed tracking-tight">Real-time enterprise intelligence & strategic growth monitoring.</p>
             </div>
-            <div className="flex items-center gap-5 text-slate-600 bg-white px-8 py-4 rounded-3xl border border-slate-100 shadow-[0_4px_30px_rgba(0,0,0,0.03)] group transition-all hover:shadow-lg">
-              <div className="flex items-center gap-3 pr-5 border-r border-slate-100">
-                <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-xs font-bold tracking-[0.2em] text-slate-400">LIVE FEED</span>
+            <div className="flex items-center gap-6 text-slate-600 bg-white/80 backdrop-blur-2xl px-10 py-6 rounded-[32px] border border-white shadow-[0_10px_50px_rgba(0,0,0,0.04)] group transition-all duration-500 hover:shadow-2xl hover:scale-105">
+              <div className="flex items-center gap-4 pr-6 border-r border-slate-100">
+                <div className="relative">
+                  <div className="w-4 h-4 rounded-full bg-emerald-500 animate-ping absolute inset-0" />
+                  <div className="w-4 h-4 rounded-full bg-emerald-500 relative" />
+                </div>
+                <span className="text-xs font-black tracking-[0.3em] text-slate-400">REALTIME</span>
               </div>
-              <span className="text-2xl font-mono font-bold text-slate-800 tracking-tighter">{currentTime}</span>
+              <span className="text-3xl font-mono font-black text-slate-900 tracking-tighter">{currentTime}</span>
             </div>
           </motion.div>
 
