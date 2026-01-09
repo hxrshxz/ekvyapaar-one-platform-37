@@ -62,7 +62,7 @@ export const HeroSearch = ({
   return (
     <div className="w-full max-w-3xl mx-auto">
       <div className="relative">
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-sky-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-50 transition-opacity duration-500"></div>
+        <div className="absolute -inset-1 bg-slate-200/50 rounded-3xl blur-md opacity-30 group-hover:opacity-40 transition-opacity duration-500"></div>
         <div className="relative bg-white/70 backdrop-blur-xl border border-white/40 rounded-2xl shadow-lg p-4 space-y-4">
           <div className="flex items-center space-x-4">
             <div className="relative w-full flex items-center">
@@ -90,11 +90,11 @@ export const HeroSearch = ({
                 }
               />
             </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
                 onClick={handleSearch}
                 disabled={isLoading}
-                className="rounded-xl h-12 px-8 bg-gradient-to-r from-purple-500 to-sky-500 hover:opacity-90 transition-opacity text-white font-semibold w-32 flex-shrink-0"
+                className="rounded-xl h-12 px-8 bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 hover:from-blue-400 hover:to-blue-600 text-white font-bold w-32 flex-shrink-0 shadow-lg hover:shadow-xl transition-all duration-200 border border-blue-800 border-t-white/40 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
               >
                 {isLoading ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
