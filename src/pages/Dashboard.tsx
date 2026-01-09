@@ -19,6 +19,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  ReferenceLine,
 } from "recharts";
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -36,14 +37,14 @@ const itemVariants = {
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
-// PREMIUM CARD COMPONENT (Compact & Subtle Glow)
+// PREMIUM CARD COMPONENT
 // ═══════════════════════════════════════════════════════════════════════════
 
 const PremiumCard = ({ children, className = "", gradientFrom = "from-amber-400", gradientTo = "to-orange-500" }: { children: React.ReactNode; className?: string; gradientFrom?: string; gradientTo?: string }) => (
   <motion.div
     variants={itemVariants}
     whileHover={{ y: -3, transition: { duration: 0.2 } }}
-    className={`relative bg-white/90 backdrop-blur-md rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-200/50 hover:shadow-[0_15px_35px_rgb(0,0,0,0.05)] transition-all duration-300 ${className}`}
+    className={`relative bg-white/95 backdrop-blur-md rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] border border-slate-200/50 hover:shadow-[0_15px_35px_rgb(0,0,0,0.05)] transition-all duration-300 ${className}`}
   >
     {/* Gradient top border */}
     <div className={`absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r ${gradientFrom} ${gradientTo} z-20`} />
@@ -70,7 +71,7 @@ interface TimeStatCardProps {
 }
 
 const TimeStatCard = ({ label, value, icon: Icon, iconColor, gradientFrom, gradientTo }: TimeStatCardProps) => (
-  <PremiumCard gradientFrom={gradientFrom} gradientTo={gradientTo} className="p-4 md:p-5">
+  <PremiumCard gradientFrom={gradientFrom} gradientTo={gradientTo} className="p-5">
     <div className="flex flex-col h-full justify-between">
       <div className={`w-9 h-9 rounded-xl ${iconColor} flex items-center justify-center mb-3 shadow-sm`}>
         <Icon className="w-4.5 h-4.5 text-white" />
@@ -89,7 +90,7 @@ const GoalCard = ({ progress, goal, completed }: { progress: number; goal: strin
   const offset = circumference - (progress / 100) * circumference;
 
   return (
-    <PremiumCard gradientFrom="from-purple-500" gradientTo="to-pink-500" className="p-5 md:p-6">
+    <PremiumCard gradientFrom="from-purple-500" gradientTo="to-pink-500" className="p-6">
       <div className="flex flex-col h-full items-center justify-center text-center">
         <p className="text-[9px] font-black tracking-[0.1em] uppercase text-slate-400 mb-3">DAILY TARGET</p>
         <div className="relative mb-3">
@@ -128,7 +129,7 @@ const GoalCard = ({ progress, goal, completed }: { progress: number; goal: strin
 };
 
 const StreakCard = ({ days, message }: { days: number; message: string }) => (
-  <PremiumCard gradientFrom="from-sky-500" gradientTo="to-cyan-400" className="p-5 md:p-6">
+  <PremiumCard gradientFrom="from-sky-500" gradientTo="to-cyan-400" className="p-6">
     <div className="flex flex-col h-full justify-between">
       <p className="text-[9px] font-black tracking-[0.1em] uppercase text-slate-400 mb-2">MOMENTUM</p>
       <div>
@@ -151,7 +152,7 @@ const StreakCard = ({ days, message }: { days: number; message: string }) => (
 );
 
 const RecordCard = ({ record, label, sublabel }: { record: number; label: string; sublabel: string }) => (
-  <PremiumCard gradientFrom="from-amber-400" gradientTo="to-orange-500" className="p-5 md:p-6">
+  <PremiumCard gradientFrom="from-amber-400" gradientTo="to-orange-500" className="p-6">
      <div className="flex flex-col h-full justify-between">
       <p className="text-[9px] font-black tracking-[0.1em] uppercase text-slate-400 mb-2">PERSONAL BEST</p>
       <div>
@@ -174,61 +175,88 @@ const ActivityOverview = () => {
   
   const dataMap = {
       "Today": [
-          { time: "9am", value: 0.5 }, { time: "11am", value: 1.2 }, { time: "1pm", value: 0.8 }, 
-          { time: "3pm", value: 1.5 }, { time: "5pm", value: 0.9 }, { time: "7pm", value: 0.4 }
+          { time: "00:00", value: 0.2, target: 0.5 }, { time: "02:00", value: 0.1, target: 0.5 }, { time: "04:00", value: 0.1, target: 0.5 },
+          { time: "06:00", value: 0.4, target: 0.8 }, { time: "08:00", value: 1.2, target: 1.0 }, { time: "10:00", value: 2.1, target: 1.5 },
+          { time: "12:00", value: 1.8, target: 1.5 }, { time: "14:00", value: 2.5, target: 2.0 }, { time: "16:00", value: 2.2, target: 2.0 },
+          { time: "18:00", value: 1.4, target: 1.5 }, { time: "20:00", value: 0.9, target: 1.0 }, { time: "22:00", value: 0.5, target: 0.5 }
       ],
       "This Week": [
-          { time: "Mon", value: 2.5 }, { time: "Tue", value: 3.2 }, { time: "Wed", value: 1.8 },
-          { time: "Thu", value: 4.1 }, { time: "Fri", value: 3.5 }, { time: "Sat", value: 2.0 }, { time: "Sun", value: 0.5 }
+          { time: "Mon", value: 2.5, target: 3.0 }, { time: "Tue", value: 3.2, target: 3.0 }, { time: "Wed", value: 1.8, target: 3.0 },
+          { time: "Thu", value: 4.1, target: 4.0 }, { time: "Fri", value: 3.5, target: 4.0 }, { time: "Sat", value: 2.0, target: 2.5 }, 
+          { time: "Sun", value: 0.5, target: 1.0 }
       ],
       "This Year": [
-          { time: "Jan", value: 120 }, { time: "Feb", value: 145 }, { time: "Mar", value: 160 },
-          { time: "Apr", value: 135 }, { time: "May", value: 190 }, { time: "Jun", value: 210 }
+          { time: "Jan", value: 120, target: 140 }, { time: "Feb", value: 145, target: 140 }, { time: "Mar", value: 160, target: 150 },
+          { time: "Apr", value: 135, target: 150 }, { time: "May", value: 190, target: 180 }, { time: "Jun", value: 210, target: 200 },
+          { time: "Jul", value: 180, target: 200 }, { time: "Aug", value: 205, target: 210 }, { time: "Sep", value: 195, target: 220 },
+          { time: "Oct", value: 240, target: 230 }, { time: "Nov", value: 220, target: 230 }, { time: "Dec", value: 260, target: 250 }
       ]
   };
 
   const tabs = ["Today", "This Week", "This Year"];
 
   return (
-    <PremiumCard gradientFrom="from-slate-800" gradientTo="to-black" className="p-5 bg-slate-950 border-none text-white overflow-visible">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-6">
-        <div className="space-y-0.5">
-          <p className="text-[9px] font-black tracking-[0.2em] uppercase text-slate-500">ANALYTICS</p>
-          <h2 className="text-xl font-display font-bold text-white tracking-tight">Activity Overview</h2>
+    <PremiumCard gradientFrom="from-slate-800" gradientTo="to-black" className="p-6 bg-slate-950 border-none text-white overflow-visible">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
+        <div className="space-y-1">
+          <p className="text-[10px] font-black tracking-[0.2em] uppercase text-slate-500 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            LIVE PERFORMANCE TRACKING
+          </p>
+          <h2 className="text-2xl font-display font-bold text-white tracking-tight">Activity Overview</h2>
         </div>
-        <div className="flex items-center bg-white/5 backdrop-blur-xl p-1 rounded-xl border border-white/10">
+        <div className="flex items-center bg-white/5 backdrop-blur-xl p-1 rounded-xl border border-white/10 shadow-lg">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab ? "bg-amber-500 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.3)]" : "text-slate-500 hover:text-white"}`}
+              className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTab === tab ? "bg-amber-500 text-slate-950 shadow-[0_0_20px_rgba(245,158,11,0.4)] scale-105" : "text-slate-500 hover:text-white"}`}
             >
               {tab}
             </button>
           ))}
         </div>
       </div>
-      <div className="h-[250px] w-full">
+      <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={dataMap[activeTab as keyof typeof dataMap]} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+          <AreaChart data={dataMap[activeTab as keyof typeof dataMap]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.4} />
+                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.6} />
                 <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
               </linearGradient>
+              <linearGradient id="targetGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#64748b" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#64748b" stopOpacity={0} />
+              </linearGradient>
             </defs>
-            <CartesianGrid stroke="rgba(255,255,255,0.03)" strokeDasharray="3 3" vertical={false} />
-            <XAxis dataKey="time" stroke="#475569" fontSize={9} fontWeight="bold" tickLine={false} axisLine={false} dy={5} />
-            <YAxis stroke="#475569" fontSize={9} fontWeight="bold" tickLine={false} axisLine={false} tickFormatter={(v) => `${v}h`} />
+            <CartesianGrid stroke="rgba(255,255,255,0.03)" strokeDasharray="5 5" vertical={true} horizontal={true} />
+            <XAxis dataKey="time" stroke="#475569" fontSize={10} fontWeight="bold" tickLine={false} axisLine={false} dy={15} />
+            <YAxis stroke="#475569" fontSize={10} fontWeight="bold" tickLine={false} axisLine={false} tickFormatter={(v) => `${v}${activeTab === 'This Year' ? '' : 'h'}`} />
             <Tooltip
-              contentStyle={{ backgroundColor: "rgba(2, 6, 23, 0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "8px", boxShadow: "0 10px 20px rgba(0, 0, 0, 0.4)" }}
-              labelStyle={{ color: "#f8fafc", fontWeight: "900", textTransform: "uppercase", letterSpacing: "0.1em", fontSize: "9px", marginBottom: "3px" }}
-              itemStyle={{ color: "#f59e0b", fontWeight: "bold", fontSize: "11px" }}
-              formatter={(value: any) => [`${value}h`, "TIME"]}
+              contentStyle={{ backgroundColor: "rgba(2, 6, 23, 0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "16px", padding: "16px", boxShadow: "0 20px 40px rgba(0, 0, 0, 0.6)" }}
+              labelStyle={{ color: "#f8fafc", fontWeight: "900", textTransform: "uppercase", letterSpacing: "0.2em", fontSize: "10px", marginBottom: "8px" }}
+              itemStyle={{ fontWeight: "bold", fontSize: "12px", padding: "2px 0" }}
+              cursor={{ stroke: '#f59e0b', strokeWidth: 1, strokeDasharray: '5 5' }}
             />
-            <Area type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2.5} fill="url(#activityGradient)" activeDot={{ r: 5, strokeWidth: 0, fill: "#f59e0b" }} />
+            {/* Target Area (Subtle Layer) */}
+            <Area type="monotone" dataKey="target" stroke="#64748b" strokeWidth={1} strokeDasharray="4 4" fill="url(#targetGradient)" />
+            {/* Actual Activity Area (High Density) */}
+            <Area type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={4} fill="url(#activityGradient)" activeDot={{ r: 8, strokeWidth: 0, fill: "#f59e0b" }} />
+            
+            <ReferenceLine y={Math.max(...dataMap[activeTab as keyof typeof dataMap].map(d => d.value))} stroke="#f59e0b" strokeDasharray="3 3" opacity={0.3} label={{ value: 'PEAK', position: 'right', fill: '#f59e0b', fontSize: 9, fontWeight: 'bold' }} />
           </AreaChart>
         </ResponsiveContainer>
+      </div>
+      <div className="mt-8 flex items-center justify-center gap-6">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]" />
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Current Performance</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-slate-600/50" />
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Baseline Target</span>
+        </div>
       </div>
     </PremiumCard>
   );
@@ -260,57 +288,62 @@ export const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#fafbfc] text-slate-900 selection:bg-amber-100 selection:text-amber-900 overflow-x-hidden">
-      {/* Subtle Marketplace-style Ambient Glows */}
+      {/* VIBRANT Ambient Glows (Marketplace Style) */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-        {/* Top-right sky blue glow */}
-        <div className="absolute top-[-5%] right-[-10%] w-[60%] h-[60%] bg-sky-200/20 rounded-full blur-[100px]" />
-        {/* Mid-left purple/pink glow */}
-        <div className="absolute top-[15%] left-[-10%] w-[50%] h-[50%] bg-purple-200/20 rounded-full blur-[100px]" />
-        {/* Soft bottom-center glow */}
-        <div className="absolute bottom-[-10%] left-1/2 -translate-x-1/2 w-[70%] h-[40%] bg-blue-100/10 rounded-full blur-[120px]" />
+        {/* Sky Blue Glow - Top Right */}
+        <div className="absolute top-[-10%] right-[-15%] w-[70%] h-[70%] bg-blue-400/15 rounded-full blur-[140px] animate-pulse" />
+        {/* Soft Pink Glow - Top Left */}
+        <div className="absolute top-[5%] left-[-15%] w-[60%] h-[60%] bg-pink-400/10 rounded-full blur-[120px]" />
+        {/* Vibrant Cyan Glow - Mid Right */}
+        <div className="absolute top-[40%] right-[-10%] w-[40%] h-[40%] bg-cyan-400/10 rounded-full blur-[100px]" />
+        {/* Soft Purple Glow - Lower Left */}
+        <div className="absolute bottom-[10%] left-[-5%] w-[45%] h-[45%] bg-purple-400/10 rounded-full blur-[110px]" />
       </div>
 
-      <div className="relative pt-20 pb-12 px-4 md:px-8 mt-[-4rem]">
-        <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
+      <div className="relative pt-28 pb-16 px-6 md:px-10">
+        <div className="max-w-7xl mx-auto space-y-10">
           {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col md:flex-row md:items-end md:justify-between gap-4"
+            transition={{ duration: 0.6 }}
+            className="flex flex-col md:flex-row md:items-end md:justify-between gap-6"
           >
-            <div className="space-y-1.5 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <div className="h-[1px] w-8 bg-amber-500" />
-                <span className="text-[9px] font-black tracking-[0.2em] uppercase text-slate-400">COMMAND CENTER</span>
+            <div className="space-y-3 text-center md:text-left">
+              <div className="flex items-center justify-center md:justify-start gap-3">
+                <div className="h-[2px] w-12 bg-amber-500" />
+                <span className="text-[10px] font-black tracking-[0.4em] uppercase text-slate-400">COMMAND CENTER v4.0</span>
               </div>
-              <h1 className="font-display text-4xl md:text-5xl font-bold text-slate-900 tracking-tight leading-none">
-                Your <span className="text-transparent bg-clip-text bg-gradient-to-br from-amber-500 to-orange-600 italic">Business</span> Journey
+              <h1 className="font-display text-5xl md:text-6xl font-bold text-slate-900 tracking-tighter leading-none">
+                Elite <span className="text-transparent bg-clip-text bg-gradient-to-br from-amber-500 via-orange-600 to-pink-600 italic">Insights</span>
               </h1>
-              <p className="text-xs md:text-sm text-slate-500 font-bold tracking-tight">Advanced tracking and real-time enterprise insights.</p>
+              <p className="text-sm md:text-base text-slate-500 font-bold tracking-tight opacity-80">Real-time enterprise intelligence & strategic growth monitoring.</p>
             </div>
             
-            <div className="flex items-center justify-center gap-3 text-slate-600 bg-white/60 backdrop-blur-xl px-4 py-2 rounded-xl border border-white/80 shadow-sm self-center md:self-end">
-              <div className="flex items-center gap-2 pr-3 border-r border-slate-200">
-                <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[8px] font-black tracking-widest text-slate-400">LIVE FEED</span>
+            <div className="flex items-center justify-center gap-5 text-slate-600 bg-white/70 backdrop-blur-2xl px-6 py-4 rounded-2xl border border-white shadow-xl shadow-slate-200/20 self-center md:self-end">
+              <div className="flex items-center gap-3 pr-5 border-r border-slate-200">
+                <div className="relative">
+                  <div className="w-3 h-3 rounded-full bg-emerald-500 animate-ping absolute inset-0" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500 relative" />
+                </div>
+                <span className="text-[10px] font-black tracking-widest text-slate-400">SYNCED</span>
               </div>
-              <span className="text-lg font-mono font-black text-slate-800 tracking-tighter">{currentTime}</span>
+              <span className="text-2xl font-mono font-black text-slate-800 tracking-tighter">{currentTime}</span>
             </div>
           </motion.div>
 
           {/* Time Stats Row */}
-          <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+          <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {timeStats.map((stat, i) => (
               <TimeStatCard key={i} {...stat} />
             ))}
           </motion.div>
 
           {/* Middle Row */}
-          <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
-            <GoalCard progress={45} goal="₹1L target" completed="₹45,230 of ₹1,00,000 processed" />
-            <StreakCard days={5} message="keep the momentum" />
-            <RecordCard record={12} label="Elite High" sublabel="VERIFIED BEST" />
+          <motion.div initial="hidden" animate="visible" variants={containerVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <GoalCard progress={45} goal="Target Processed" completed="₹45,230 of ₹1,00,000 Today" />
+            <StreakCard days={5} message="unboxing excellence" />
+            <RecordCard record={12} label="New Daily High" sublabel="VERIFIED PERFORMANCE" />
           </motion.div>
 
           {/* Activity Overview */}
