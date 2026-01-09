@@ -39,15 +39,15 @@ import {
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-};
+} as const;
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
   visible: { opacity: 1, y: 0 },
-};
+} as const;
 const titleVariants = {
   hidden: { opacity: 0, y: -20 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 120, damping: 12 } },
-};
+  visible: { opacity: 1, y: 0, transition: { type: "spring" as const, stiffness: 120, damping: 12 } },
+} as const;
 
 // --- Custom Shimmer Styles and Skeleton Component ---
 const ShimmerStyle = () => (
@@ -256,8 +256,11 @@ export default function MarketplacePage() {
     try { 
       const API_KEY = "YOUR_API_KEY_HERE";
       const genAI = new GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const prompt = `You are a B2B product sourcing AI...`;
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+      const prompt = `You are a B2B product sourcing AI. Based on the user query: "${inputValue}", generate a JSON response with:
+1. "summary": A brief 1-2 sentence summary of the search results.
+2. "products": An array of 4-8 product objects with "name", "price", "seller", and "image_query" (a short keyword for finding a stock image).
+Respond ONLY with valid JSON.`;
       const result = await model.generateContent(prompt);
       const response = await result.response;
       let text = response.text();
@@ -273,9 +276,17 @@ export default function MarketplacePage() {
       setParsedProducts(productsWithImages);
     } catch (err) {
       console.error("Error with AI Search, initiating seamless fallback:", err);
-      setSearchSummary("Screening the market for high-performance laptops shows strong availability from top suppliers. Here are 10 top-rated models that match your query.");
-      const fallbackLaptops = marketplaceProducts.filter(product => product.name.toLowerCase().includes('laptop')).slice(0, 10);
-      setParsedProducts(fallbackLaptops); 
+      // Query-aware fallback: search the local product database
+      const queryWords = inputValue.toLowerCase().split(" ").filter(w => w.length > 2);
+      let fallbackProducts = marketplaceProducts.filter(product => 
+        queryWords.some(word => product.name.toLowerCase().includes(word))
+      );
+      if (fallbackProducts.length === 0) {
+        // If no match, show a random selection
+        fallbackProducts = marketplaceProducts.sort(() => 0.5 - Math.random()).slice(0, 8);
+      }
+      setSearchSummary(`Showing results for "${inputValue}". Here are ${fallbackProducts.length} products that match your query.`);
+      setParsedProducts(fallbackProducts.slice(0, 10)); 
     }
     await new Promise((r) => setTimeout(r, 2500)); // Increased delay for demo
     setSearchState("idle"); setIsLoading(false);
@@ -298,7 +309,7 @@ export default function MarketplacePage() {
       <PerformanceAnalysisModal isOpen={isPerformanceModalOpen} onClose={handleClosePerformanceModal} product={selectedProductForAnalysis} />
 
       <div className="relative">
-        <div className="relative pt-28 pb-8 flex items-center justify-center text-center bg-gradient-to-b from-slate-50/0 via-slate-50/80 to-slate-50">
+        <div className="relative pt-28 pb-8 flex items-center justify-center text-center bg-gradient-to-b from-slate-50/0 via-slate-50/80 to-slate-50 mt-[-4rem]">
           <motion.div initial="hidden" animate="visible" variants={containerVariants} className="relative flex flex-col items-center px-4 w-full">
             <motion.h1 variants={titleVariants} className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-slate-600">Smart Sourcing, Simplified.</motion.h1>
             <motion.p variants={itemVariants} className="text-xl text-slate-600 max-w-2xl mt-4 mb-8">All tasks in one ask. Your B2B hub for services, products, and new opportunities.</motion.p>
