@@ -254,7 +254,7 @@ export default function MarketplacePage() {
     if (!inputValue.trim() && !selectedImage) return;
     setIsLoading(true); setSearchSummary(""); setParsedProducts([]); setError(""); setSearchState("thinking");
     try { 
-      const API_KEY = "YOUR_API_KEY_HERE";
+      const API_KEY = "AIzaSyBOxnT8mLe5pxbkj_XbOkrSrxKU3MZfyKg";
       const genAI = new GoogleGenerativeAI(API_KEY);
       const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
       const prompt = `You are a B2B product sourcing AI. Based on the user query: "${inputValue}", generate a JSON response with:
