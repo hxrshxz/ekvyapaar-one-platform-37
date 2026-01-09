@@ -287,7 +287,7 @@ export const Dashboard = () => {
   ], []);
 
   return (
-    <div className="min-h-screen bg-[#fafbfc] text-slate-900 selection:bg-amber-100 selection:text-amber-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#fafbfc] text-slate-900 selection:bg-amber-100 selection:text-amber-900 overflow-x-hidden mt-[-4rem]">
       {/* VIBRANT Ambient Glows (Marketplace Style) */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         {/* Sky Blue Glow - Top Right */}
