@@ -251,35 +251,25 @@ export default function MarketplacePage() {
   };
   
   const handleSearch = async () => {
-    console.log("Starting handleSearch...");
-    if (!inputValue.trim() && !selectedImage) {
-        console.log("Empty input, returning.");
-        return;
-    }
+    if (!inputValue.trim() && !selectedImage) return;
     setIsLoading(true); setSearchSummary(""); setParsedProducts([]); setError(""); setSearchState("thinking");
     try { 
       const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-      console.log("Using API Key:", API_KEY ? "Present" : "Missing");
       
       // 1. Get structured product data from Gemini
       const genAI = new GoogleGenerativeAI(API_KEY);
       const modelName = "gemini-flash-latest"; 
-      console.log("Using Model:", modelName);
       const model = genAI.getGenerativeModel({ model: modelName });
       
       const prompt = `You are a B2B product sourcing AI. Based on the user query: "${inputValue}", generate a JSON response with:
 1. "summary": A brief 1-2 sentence summary of the search results.
-2. "products": An array of 4-8 product objects with "name", "price", "seller", and "image_query" (a short, specific english keyword for finding a high-quality stock photo of this exact product).
+2. "products": An array of 4-8 product objects with "name", "price", "seller", and "image_query" (a strict 1-3 word english keyword for stock photos, e.g., "red roses", "laptop", "solar panel").
 Respond ONLY with valid JSON. Do not include markdown formatting like \`\`\`json.`;
       
-      console.log("Sending Prompt:", prompt);
-
       const result = await model.generateContent(prompt);
       const response = await result.response;
       let text = response.text();
       
-      console.log("Raw AI Response:", text);
-
       // Robust JSON extraction
       const jsonStart = text.indexOf("{");
       const jsonEnd = text.lastIndexOf("}");
@@ -288,17 +278,17 @@ Respond ONLY with valid JSON. Do not include markdown formatting like \`\`\`json
       }
       
       const aiData = JSON.parse(text);
-      console.log("Parsed AI Data:", aiData);
-
       setSearchSummary(aiData.summary);
 
-      // 2. Fetch real images using LoremFlickr (Reliable fallback while Pollinations is upgrading)
+      // 2. Fetch real images using Pollinations.ai (Reliable & High Quality)
       const productsWithImages = aiData.products.map((p: any) => {
         const lowerImageQuery = p.image_query.toLowerCase();
         let dbProduct = marketplaceProducts.find((db) => lowerImageQuery.split(" ").some((keyword: string) => db.name.toLowerCase().includes(keyword)));
         
-        // Dynamic Image URL using LoremFlickr
-        const imageUrl = `https://loremflickr.com/800/600/${encodeURIComponent(p.image_query)}?lock=${Math.floor(Math.random() * 1000)}`;
+        // Clean query: take max 3 words to ensure valid URL and good image
+        const safeQuery = lowerImageQuery.split(" ").slice(0, 3).join(" ");
+        // Dynamic Image URL using Pollinations
+        const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(safeQuery)}?width=800&height=600&nologo=true&seed=${Math.floor(Math.random() * 1000)}`;
 
         return { 
           ...(dbProduct || { id: Date.now() + Math.random(), certified: true }),
@@ -309,11 +299,10 @@ Respond ONLY with valid JSON. Do not include markdown formatting like \`\`\`json
         };
       });
       
-      console.log("Final Products with Images:", productsWithImages);
       setParsedProducts(productsWithImages);
 
     } catch (err) {
-      console.error("Error with AI Search, initiating seamless fallback:", JSON.stringify(err, Object.getOwnPropertyNames(err)));
+      console.error("Error with AI Search, initiating seamless fallback:", err);
       // Query-aware fallback: search the local product database
       const queryWords = inputValue.toLowerCase().split(" ").filter(w => w.length > 2);
       let fallbackProducts = marketplaceProducts.filter(product => 
@@ -324,14 +313,13 @@ Respond ONLY with valid JSON. Do not include markdown formatting like \`\`\`json
         fallbackProducts = marketplaceProducts.sort(() => 0.5 - Math.random()).slice(0, 8);
       }
       
-      console.log("Fallback Products Selected:", fallbackProducts);
-
       // ENHANCED FALLBACK: Apply dynamic images to fallback products too!
       const dynamicFallbackProducts = fallbackProducts.map(p => {
+         // Use first 3 words of name for image
+         const safeNameQuery = p.name.split(" ").slice(0, 3).join(" ");
          return {
             ...p,
-            // Use the product name as the image query for dynamic generation
-            image: `https://loremflickr.com/800/600/${encodeURIComponent(p.name.split(' ')[0])}?lock=${Math.floor(Math.random() * 1000)}`
+            image: `https://image.pollinations.ai/prompt/${encodeURIComponent(safeNameQuery)}?width=800&height=600&nologo=true&seed=${Math.floor(Math.random() * 1000)}`
          };
       });
 
