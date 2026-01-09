@@ -20,11 +20,8 @@ export default {
         },
         extend: {
             fontFamily: {
-                'sans': ['Inter', 'Poppins', 'system-ui', 'sans-serif'],
-                'display': ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
-                'sora': ['Sora', 'sans-serif'],
-                'outfit': ['Outfit', 'sans-serif'],
-                'boldonse': ['Boldonse', 'system-ui'],
+                'sans': ['Outfit', 'system-ui', 'sans-serif'],
+                'display': ['Syne', 'system-ui', 'sans-serif'],
             },
             colors: {
                 border: 'hsl(var(--border))',
@@ -91,58 +88,41 @@ export default {
             },
             keyframes: {
                 'accordion-down': {
-                    from: {
-                        height: '0'
-                    },
-                    to: {
-                        height: 'var(--radix-accordion-content-height)'
-                    }
+                    from: { height: '0' },
+                    to: { height: 'var(--radix-accordion-content-height)' }
                 },
                 'accordion-up': {
-                    from: {
-                        height: 'var(--radix-accordion-content-height)'
-                    },
-                    to: {
-                        height: '0'
-                    }
+                    from: { height: 'var(--radix-accordion-content-height)' },
+                    to: { height: '0' }
                 },
                 'spotlight': {
-                    "0%": {
-                        opacity: '0',
-                        transform: "translate(-72%, -62%) scale(0.5)",
-                    },
-                    "100%": {
-                        opacity: '1',
-                        transform: "translate(-50%,-40%) scale(1)",
-                    },
+                    "0%": { opacity: '0', transform: "translate(-72%, -62%) scale(0.5)" },
+                    "100%": { opacity: '1', transform: "translate(-50%,-40%) scale(1)" },
                 },
+                'float': {
+                    '0%, 100%': { transform: 'translateY(0px)' },
+                    '50%': { transform: 'translateY(-15px)' }
+                },
+                'pulse-glow': {
+                    '0%, 100%': { boxShadow: '0 0 20px rgba(245, 158, 11, 0.2)' },
+                    '50%': { boxShadow: '0 0 40px rgba(245, 158, 11, 0.4)' }
+                }
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out',
-                'slide-up': 'slideInUp 0.6s ease-out forwards',
-                'slide-right': 'slideInRight 0.6s ease-out forwards',
-                'fade-in': 'fadeIn 0.5s ease-out forwards',
-                'scale-in': 'scaleIn 0.4s ease-out forwards',
-                'shimmer': 'shimmer 2s infinite',
-                'pulse-banking': 'pulse-banking 0.6s ease-in-out',
-                'float': 'float 3s ease-in-out infinite',
-                'glow': 'glow 2s infinite',
-                'progress-bar': 'progress-bar 2s ease-out forwards',
-                'slide-in-banking': 'slide-in-banking 0.8s ease-out forwards',
                 'spotlight': "spotlight 2s ease .75s 1 forwards",
+                'float': 'float 6s ease-in-out infinite',
+                'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
             },
             boxShadow: {
-                'banking': 'var(--shadow-banking)',
-                'glow': 'var(--shadow-glow)',
-                'magenta': 'var(--shadow-magenta)'
-		}
+                'glow-primary': '0 0 30px rgba(245, 158, 11, 0.3)',
+                'glow-cyan': '0 0 30px rgba(34, 211, 238, 0.3)',
+            }
         }
     },
-    // MODIFICATION: Changed `require("tailwindcss-animate")` to use the imported variable
-    plugins: [tailwindcssAnimate],
     plugins: [
-    require('@tailwindcss/typography'), // Add this line
-  ],
-    
+        tailwindcssAnimate,
+        require('@tailwindcss/typography')
+    ],
 } satisfies Config;
